@@ -1,0 +1,52 @@
+prontera,191,174,5	script	อัพเกรดอุปกรณ์	813,{
+	if( getbattleflag( "feature.refineui" ) ){
+		mes "^738C5A[ อัพเกรดอุปกรณ์ ]^000000";
+		mes "มีอะไรให้ข้าช่วยท่านหรือเปล่าล่ะ ?";
+		next;
+		menu 
+		"^738C5A•^000000 ตีบวกปกติ",NormalRefine,
+		"^738C5A•^000000 ตีบวกสัตว์เลี้ยง",Refinepet,
+		"^738C5A•^000000 ตีบวก 5 ทั้งตัว",All5Refine;
+		close;
+
+NormalRefine:
+refineui();
+end;
+
+Refinepet:
+petrefine();
+end;
+
+All5Refine:
+	if (getequipisenableref(EQI_HEAD_TOP) && getequiprefinerycnt(EQI_HEAD_TOP) < 5) {
+		successrefitem EQI_HEAD_TOP, 5 - getequiprefinerycnt(EQI_HEAD_TOP);
+	}
+
+	if (getequipisenableref(EQI_HAND_R) && getequiprefinerycnt(EQI_HAND_R) < 5) {
+		successrefitem EQI_HAND_R, 5 - getequiprefinerycnt(EQI_HAND_R);
+	}
+
+	if (getequipisenableref(EQI_ARMOR) && getequiprefinerycnt(EQI_ARMOR) < 5) {
+		successrefitem EQI_ARMOR, 5 - getequiprefinerycnt(EQI_ARMOR);
+	}
+
+	if (getequipisenableref(EQI_HAND_L) && getequiprefinerycnt(EQI_HAND_L) < 5) {
+		successrefitem EQI_HAND_L, 5 - getequiprefinerycnt(EQI_HAND_L);
+	}
+
+	if (getequipisenableref(EQI_GARMENT) && getequiprefinerycnt(EQI_GARMENT) < 5) {
+		successrefitem EQI_GARMENT, 5 - getequiprefinerycnt(EQI_GARMENT);
+	}
+
+	if (getequipisenableref(EQI_SHOES) && getequiprefinerycnt(EQI_SHOES) < 5) {
+		successrefitem EQI_SHOES, 5 - getequiprefinerycnt(EQI_SHOES);
+	}
+
+	message strcharinfo(0),"ตีบวกให้เรียบร้อยแล้ว";
+	end;
+
+OnInit:		
+	waitingroom "  อัพเกรดอุปกรณ์",0;
+	end;
+	}
+}

@@ -1,0 +1,41 @@
+new_1-1,66,114,0	script	Server Time	111,{
+end;
+
+OnInit:
+while(1) {
+	showscript "เวลา " + gettimestr("%H:%M:%S",19)+ " วินาที",getnpcid(0);
+	sleep 1000;
+}
+end;
+}
+
+-	script	atcmd_example	-1,{
+OnInit:
+	bindatcmd "dice",strnpcinfo(3) + "::OnAtcommand";
+	end;
+OnAtcommand:
+	switch (atoi(.@atcmd_parameters$)) {
+		case 1:
+			emotion ET_DICE1, getcharid(3);
+			break;
+		case 2:
+			emotion ET_DICE2, getcharid(3);
+			break;
+		case 3:
+			emotion ET_DICE3, getcharid(3);
+			break;
+		case 4:
+			emotion ET_DICE4, getcharid(3);
+			break;
+		case 5:
+			emotion ET_DICE5, getcharid(3);
+			break;
+		case 6:
+			emotion ET_DICE6, getcharid(3);
+			break;
+		default:
+			dispbottom "Invalid. " + .@atcmd_command$ + " <1-6>";
+			break;
+	}
+	end;
+}

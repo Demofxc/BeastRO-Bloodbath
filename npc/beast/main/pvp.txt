@@ -1,0 +1,137 @@
+prontera,149,189,3	script	PVP	65,{
+	cutin "4job_robin_01.png", 2;
+    mes "^738C5A[ สนามประลอง ]^000000";
+	mes "สวัสดีท่าน : ^738C5A "+strcharinfo(0)+" ^000000"; 
+	mes "ต้องการเข้าสู่สนามประลอง"; 
+	mes "เพื่อทดสอบฝีมือของคุณไหม?"; 
+	next;
+	cutin "4job_robin_02.png", 2;
+	switch (select(
+		"^738C5A•^000000 Izlude  [ "+getmapusers("pvp_y_1-2")+" ] คน.",
+		"^738C5A•^000000 Arena DM  [ "+getmapusers("hallow01")+" ] คน.",
+		"^738C5A•^000000 Champion  [ "+getmapusers("pvp_n_2-3")+" ] คน.",
+		"^738C5A•^000000 Champion & Scholar  [ "+getmapusers("pvp_n_2-5")+" ] คน."))
+	{
+	case 1:
+		cutin " ", 255;
+		sc_end SC_ASSUMPTIO;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_APPLEIDUN;
+		sc_end SC_ASSNCROS;
+		sc_end SC_SKE;
+		sc_end SC_KAITE;
+		sc_end SC_SWOO;
+		sc_end SC_SKA;
+		sc_end SC_BATTLEORDERS;
+		sc_end SC_SERVICE4U;
+			warp "pvp_y_1-2",0,0;
+			announce "ขณะนี้ คุณ [ "+strcharinfo(0)+" ] เข้าสู่ PVP Izlude ขณะนี้มีผู้เล่นทั้งหมด [ "+getmapusers("pvp_y_1-2")+" ] คน",0,0x33FF77;
+			break;
+		
+	case 2:
+		cutin " ", 255;
+		sc_end SC_ASSUMPTIO;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_APPLEIDUN;
+		sc_end SC_ASSNCROS;
+		sc_end SC_SKE;
+		sc_end SC_KAITE;
+		sc_end SC_SWOO;
+		sc_end SC_SKA;
+		sc_end SC_BATTLEORDERS;
+		sc_end SC_SERVICE4U;
+			warp "hallow01",0,0; 
+			announce "ขณะนี้ คุณ [ "+strcharinfo(0)+" ] เข้าสู่ PVP Death Match ขณะนี้มีผู้เล่นทั้งหมด [ "+getmapusers("hallow01")+" ] คน",0,0x33FF77;
+			break;
+		
+	case 3:
+		cutin " ", 255;
+		sc_end SC_ASSUMPTIO;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_APPLEIDUN;
+		sc_end SC_ASSNCROS;
+		sc_end SC_SKE;
+		sc_end SC_KAITE;
+		sc_end SC_SWOO;
+		sc_end SC_SKA;
+		sc_end SC_BATTLEORDERS;
+		sc_end SC_SERVICE4U;
+			if (BaseJob == Job_Monk) {warp "pvp_n_2-3",0,0;}
+			announce "ขณะนี้ คุณ [ "+strcharinfo(0)+" ] เข้าสู่ PVP Champion ขณะนี้มีผู้เล่นทั้งหมด [ "+getmapusers("pvp_n_2-3")+" ] คน",0,0x33FF77;
+			break;
+		
+	case 4:
+		cutin " ", 255;
+		sc_end SC_ASSUMPTIO;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_APPLEIDUN;
+		sc_end SC_ASSNCROS;
+		sc_end SC_SKE;
+		sc_end SC_KAITE;
+		sc_end SC_SWOO;
+		sc_end SC_SKA;
+		sc_end SC_BATTLEORDERS;
+		sc_end SC_SERVICE4U;
+			if (BaseJob == Job_Sage || BaseJob == Job_Monk) {warp "pvp_n_2-5",0,0;}
+			announce "ขณะนี้ คุณ [ "+strcharinfo(0)+" ] เข้าสู่ PVP Champion & Scholar ขณะนี้มีผู้เล่นทั้งหมด [ "+getmapusers("pvp_n_2-5")+" ] คน",0,0x33FF77;
+		break;
+	}
+
+OnInit:
+    while(1){
+		delwaitingroom;
+		waitingroom "เข้าสู่ PVP ["+(getmapusers("pvp_y_1-2")+getmapusers("hallow01")+getmapusers("pvp_n_2-3")+getmapusers("pvp_n_2-5"))+"] คน",0;
+		//showscript "เข้าสู่ PVP ["+(getmapusers("pvp_y_1-2")+getmapusers("hallow01")+getmapusers("pvp_n_2-3")+getmapusers("pvp_n_2-5"))+"] คน", getnpcid(0);
+		sleep 500;
+	}
+end;
+}
+
+-	script	Death Match	-1,{
+	
+OnPCDieEvent:
+			if(strcharinfo(3) == "hallow01") {
+			sleep2 1000;
+			atcommand "@alive";
+			atcommand "@repairall";
+			percentheal 100,100;
+			
+			//บัพค่าอาหาร 30นาที Support rAthena
+			sc_start SC_STRFood, 1800000,5;
+			sc_start SC_AGIFood, 1800000,5;
+			sc_start SC_VITFood, 1800000,5;
+			sc_start SC_INTFood, 1800000,5;
+			sc_start SC_DEXFood, 1800000,5;
+			sc_start SC_LUKFood, 1800000,5;
+
+			//บัพสกิลต่างๆ
+			sc_start SC_BLESSING,1800000,10;
+			sc_start SC_INCREASEAGI,1800000,10;
+			sc_start 41,1800000,10; //กอเรีย
+			sc_start 40,1800000,10; // MAGNIFICAT เร่ง
+	
+			sc_end SC_Poison;
+			sc_end SC_Freeze;
+			sc_end SC_Sleep;
+			sc_end SC_Stan;
+			sc_end SC_Stun;
+			sc_end SC_Stone;
+			sc_end SC_Silence;
+			sc_end SC_Blind;
+			sc_end SC_Bleeding;
+			sc_end SC_Confusion;
+			sc_end SC_Curse;
+			sc_end SC_Hallucination;
+			sc_end SC_ORCISH;	
+			percentheal 100,100;
+			warp "hallow01",0,0;
+		}
+		end;
+}
+
+hallow01	mapflag	pvp
+hallow01	mapflag	hidemobhpbar
+hallow01	mapflag	nopenalty
+hallow01	mapflag	noreturn
+hallow01	mapflag	nosave
+hallow01	mapflag	noteleport

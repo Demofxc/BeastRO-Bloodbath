@@ -1,0 +1,44 @@
+// NPC สำหรับรีเซ็ตข้อมูลในตาราง pvpladder และ ownladder
+morocc,160,91,4	script	Reset Ladder	120,{
+    mes "[ ^738C5AReset จัดอันดับ PVP/MVP^000000 ]";
+    mes "ยินดีต้อนรับ! ฉันสามารถรีเซ็ตข้อมูลในระบบ ladder ได้.";
+    mes "คุณต้องการรีเซ็ตข้อมูลหรือไม่?";
+    menu "รีเซ็ตอันดับ PVP", Resetpvp,
+         "รีเซ็ตอันดับ MVP", Resetmvp,
+         "รีเซ็ตอันดับ TRAINING", Resettraining,
+         "ไม่ต้องการ", NoReset;
+
+    Resetpvp:
+        // ลบข้อมูลทั้งหมดในตาราง pvpladder
+        query_sql "DELETE FROM pvpladder";
+        
+        // ลบข้อมูลทั้งหมดในตาราง ownladder
+        query_sql "DELETE FROM ownladder";
+        next;
+        mes "[ ^738C5AReset จัดอันดับ PVP/MVP^000000 ]";
+        mes "รีเซ็ตอันดับ PVP เรียบร้อย!";
+        close;
+
+    Resetmvp:
+        // ลบข้อมูลทั้งหมดในตาราง pvpladder
+        query_sql "DELETE FROM mvpladder";
+        
+        next;
+        mes "[ ^738C5AReset จัดอันดับ PVP/MVP^000000 ]";
+        mes "รีเซ็ตอันดับ MVP เรียบร้อย!";
+        close;
+
+    NoReset:
+        mes "[Reset Ladder NPC]";
+        mes "โอเค, ถ้าคุณต้องการรีเซ็ตข้อมูลเมื่อไหร่ก็บอกได้.";
+        close;
+
+    Resettraining:
+        // ลบข้อมูลทั้งหมดในตาราง pvpladder
+        query_sql "DELETE FROM guild_stats";
+        
+        next;
+        mes "[ ^738C5AReset จัดอันดับ TRAINING^000000 ]";
+        mes "รีเซ็ตอันดับ TRAINING เรียบร้อย!";
+        close;
+}

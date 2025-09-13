@@ -1,0 +1,34 @@
+-	script	WALLNEWBIE#1	-1,{
+}
+new_1-1,69,114,4	duplicate(WALLNEWBIE#1)	#WALLNEWBIE1	1905
+new_1-1,69,113,4	duplicate(WALLNEWBIE#1)	#WALLNEWBIE2	1905
+new_1-1,69,112,4	duplicate(WALLNEWBIE#1)	#WALLNEWBIE3	1905
+new_1-1,69,111,4	duplicate(WALLNEWBIE#1)	#WALLNEWBIE4	1905
+new_1-1,69,110,4	duplicate(WALLNEWBIE#1)	#WALLNEWBIE5	1905
+new_1-1,69,109,4	duplicate(WALLNEWBIE#1)	#WALLNEWBIE6	1905
+
+-	script	Openarea	-1,{
+
+OnInit:
+setcell "new_1-1", 69, 114, 69, 109, CELL_WALKABLE, 0;
+setcell "new_1-1", 69, 114, 69, 109, CELL_SHOOTABLE, 0;
+bindatcmd "openarea",strnpcinfo(3)+"::OnOpenarea",99,99;
+bindatcmd "closearea",strnpcinfo(3)+"::OnClosearea",99,99;
+end;
+
+OnClosearea:
+setcell "new_1-1", 69, 114, 69, 109, CELL_WALKABLE, 0;
+setcell "new_1-1", 69, 114, 69, 109, CELL_SHOOTABLE, 0;
+		for (.@i = 1; .@i <= 6; .@i++) {
+			enablenpc "#WALLNEWBIE"+.@i;
+		}
+end;
+
+OnOpenarea:
+setcell "new_1-1", 69, 114, 69, 109, CELL_WALKABLE, 1;
+setcell "new_1-1", 69, 114, 69, 109, CELL_SHOOTABLE, 1;
+		for (.@i = 1; .@i <= 6; .@i++) {
+			disablenpc "#WALLNEWBIE"+.@i;
+		}
+end;
+}

@@ -1,0 +1,354 @@
+//==============================================
+// - Script By : Awakening & Moskid
+//==============================================
+
+-	script	KafraServices::KFSV	-1,{
+cutin "kafra_02.bmp", 2;
+mes "^738C5A[ Kafra Express ]^000000";
+mes "สวัสดีท่าน : ^738C5A "+strcharinfo(0)+" ^000000"; 
+mes "^000000Guild ID ของท่านคือ : ^738C5A"+ getcharid(2) +"^000000";
+mes "^000000Party ID ของท่านคือ : ^738C5A"+ getcharid(1) +"^000000";
+mes "ต้องการให้ฉันช่วยเหลืออะไร ?";
+next;
+menu 
+"^738C5A•^000000 เซฟจุดเกิด",saves,
+"^738C5A•^000000 เก็บของ",Storages,
+"^738C5A•^000000 สร้างกิลด์",CreateGuild,
+"^738C5A•^000000 เช่าเป็ด/นก/รถเข็น",Rent,
+"^738C5A•^000000 เรียนสกิลเสริม",Platinumskill,
+"^738C5A•^000000 รับสกิล Homunculus",Skill_homun,
+"^738C5A•^000000 Reset Status/Skill",Resetss,
+"^738C5A•^000000 ยกเลิก",Lkcancel;
+
+Saves:
+cutin "", 255;
+atcommand "@save";
+close;
+
+Storages:
+cutin "", 255;
+mes "[ ^738C5Aเก็บของ^000000 ]";
+mes "เปิดคลังเก็บของเรียบร้อยแล้ว";
+close2;
+openstorage;
+end;
+
+CreateGuild:
+	set @GIDGUILD,getcharid(2);
+	set .@name$, "^FF0000[ระบบจัดการกิลด์]^000000";
+
+	switch (select("^738C5A•^000000 สร้างกิลด์","^738C5A•^000000 อัพเลเวลกิลด์","^738C5A•^000000 ลบกิลด์")) {
+	case 1:
+		if( getcharid(2) ){
+			mes .@name$;
+			mes "ท่านมีกิลด์อยู่แล้ว";
+			close; 
+			}
+		mes .@name$;
+		mes "กรอกชื่อกิลด์ครับ";
+		input @nameguild$;
+		atcommand "@guild "+@nameguild$;
+		close;
+		end;		
+	break;
+	case 2:
+		atcommand "@guildlvup 50";
+		mes "อัพเลเวลกิลด์เรียบร้อยครับ";
+		close;
+	break;
+	case 3:
+		atcommand "@breakguild";
+		mes "ลบกิลด์เรียบร้อยครับ";
+		close;
+	break;
+	}
+end;
+
+Rent:
+cutin "", 255;
+	mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+	mes "เลือกสิ่งที่ต้องการเช่าค่ะ";
+	next;
+	switch (select("^738C5A•^000000 Peco Peco","^738C5A•^000000 Falcon","^738C5A•^000000 Cart")) {
+	case 1:
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		if (checkriding()) {
+			mes "คุณมี Peco Peco อยู่แล้ว";
+			close2;
+		} else if ( (Class == 7) || (Class == 14) || (Class == 4008) || (Class == 4015) || (Class == 4030) || (Class == 4037) ) {
+			mes "ทำการเช่าเรียบร้อยแล้วค่ะ";
+			setriding;
+			close2;
+		} else {
+			mes "คุณไม่มีสิทธิ์เช่า Peco Peco ค่ะ";
+			close2;
+		}
+	break;
+	case 2:
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		if (checkfalcon()) {
+			mes "คุณมี Falcon อยู่แล้ว";
+			close2;
+		} else if ( (Class == 11) || (Class == 4012) || (Class == 4034) ) {
+			mes "ทำการเช่าเรียบร้อยแล้วค่ะ";
+			setfalcon;
+			close2;
+		} else {
+			mes "คุณไม่มีสิทธิ์เช่า Falcon ค่ะ";
+			close2;
+		}
+	break;
+	case 3:
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		if (checkcart()) {
+			mes "คุณมี Cart อยู่แล้ว";
+			close2;
+		} else if ( (Class == 5) || (Class == 10) || (Class == 23) || (Class == 18) 
+		|| (Class == 4006) || (Class == 4011) || (Class == 4019) || (Class == 4028) 
+		|| (Class == 4033) || (Class == 4041) || (Class == 4045) ) {
+			mes "ทำการเช่าเรียบร้อยแล้วค่ะ";
+			setcart;
+			close2;
+		} else {
+			mes "คุณไม่มีสิทธิ์เช่า Cart ค่ะ";
+			close2;
+		}
+	break;
+	}
+end;
+
+Platinumskill:
+cutin "", 255;
+	mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+	mes "ฉันสามารถสอนสกิลพิเศษให้แก่คุณได้";
+	next;
+	if (select("^738C5A•^000000 ได้โปรดสอนฉันที","^738C5A•^000000 ไม่ล่ะ")-1)
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "งั้นขอให้โชคดี บ๊าย บาย";
+		close;
+	}
+	if ((Class==1) || (Class==7) || (Class==4008) || (Class==4030)) 
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Knight, Lord Knight or Baby Knight. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 144,1,0;
+		skill 145,1,0;
+		skill 146,1,0;
+		skill 1001,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==14) || (Class==4015) || (Class==4037))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Crusader, Paladin or Baby Crusader. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 144,1,0;
+		skill 145,1,0;
+		skill 146,1,0;
+		skill 1002,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==2) || (Class==9) || (Class==4010) || (Class==4032))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Wizard, High wizard or Baby Wizard. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 157,1,0;
+		skill 1006,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==16) || (Class==4017) || (Class==4039))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Sage, Professor or Baby Sage. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 157,1,0;
+		skill 1007,1,0;
+		skill 1008,1,0;
+		skill 1017,1,0;
+		skill 1018,1,0;
+		skill 1019,1,0;
+		goto LskillsEND;
+}
+	if ((Class==3) || (Class==11) || (Class==4012) || (Class==4034))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Hunter, Sniper or Baby Hunter. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 147,1,0;
+		skill 148,1,0;
+		skill 1009,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==19) || (Class==4020) || (Class==4042))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Bard, Clown or Baby Bard. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 147,1,0;
+		skill 148,1,0;
+		skill 1010,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==20) || (Class==4021) || (Class==4043))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Dancer, Gypsy or Baby Dancer. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 147,1,0;
+		skill 148,1,0;
+		skill 1011,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==4) || (Class==8) || (Class==4009) || (Class==4031))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Priest, High Priest or Baby Priest. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 156,1,0;
+		skill 1014,1,0;
+		skill 363,10,0;
+		goto LskillsEND;
+	}
+	if ((Class==15) || (Class==4016) || (Class==4038))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Monk, Champion or Baby Monk. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 156,1,0;
+		skill 1015,1,0;
+		skill 1016,10,0;
+		goto LskillsEND;
+	}
+	if ((Class==5) || (Class==10) || (Class==4011) || (Class==4033))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ BlackSmith, White Smith or Baby BlackSmith. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 153,1,0;
+		skill 154,1,0;
+		skill 155,1,0;
+		skill 1012,1,0;
+		skill 1013,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==18) || (Class==4019) || (Class==4041))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Alchemist, Creator or Baby Alchemist. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 153,1,0;
+		skill 154,1,0;
+		skill 155,1,0;
+		skill 238,1,0;
+		goto LskillsEND;
+}
+	if ((Class==6) || (Class==12) || (Class==4013) || (Class==4035))
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Assasin, Assasin Cross or Baby Assasin. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 149,1,0;
+		skill 150,1,0;
+		skill 151,1,0;
+		skill 152,1,0;
+		skill 1003,1,0;
+		skill 1004,1,0;
+		goto LskillsEND;
+	}
+	if ((Class==17) || (Class==4018) || (Class==4040)) 
+	{
+		mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+		mes "คุณต้องเรียนสกิลพิเศษของสายอาชีพ Rogue, Stalker or Baby Rogue. และฉันจะสอนให้คุณเดี๋ยวนี้";
+		skill 142,1,0;
+		skill 149,1,0;
+		skill 150,1,0;
+		skill 151,1,0;
+		skill 152,1,0;
+		skill 1005,1,0;
+		goto LskillsEND;
+	}
+
+	LskillsEND:
+	next;
+	mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+	mes "เอาล่ะ จบคลอสแล้วล่ะ";
+	close;
+
+	LCancel:
+	mes "[ ^738C5Aเช่าเป็ด/นก/รถเข็น^000000 ]";
+	mes "แล้วเจอกันใหม่...";
+	close;
+
+Skill_homun:
+cutin "", 255;
+	if(BaseJob != Job_Alchem) goto L_noalche;
+	if(JobLevel<40) goto L_nojob;
+
+	mes "[ ^738C5Aรับสกิล Homunculus^000000 ]";
+	mes "ยินดีให้บริการค่ะ";
+	getitem 7142,1;
+	next;
+
+	mes "[ ^738C5Aรับสกิล Homunculus^000000 ]";
+	mes "ยินดีให้บริการค่ะ";
+	skill 238,1,0;
+	skill 239,1,0;
+	skill 240,1,0;
+	skill 241,1,0;
+	skill 242,1,0;
+	skill 245,1,0;
+	skill 246,1,0;
+	close;
+
+L_nojob:
+	mes "[ ^738C5Aรับสกิล Homunculus^000000 ]";
+	mes "Job คุณต่ำกว่า 40";
+	close;
+
+L_noalche:
+	mes "[ ^738C5Aรับสกิล Homunculus^000000 ]";
+	mes "เฉพาะ Alchemit เท่านั้นค่ะ";
+	close;
+
+Resetss:
+cutin "", 255;
+mes "[ ^738C5AReset Status/Skill^000000 ]";
+mes "คุณต้องการรีเซ็ตอะไร";
+mes "- 1.Status";
+mes "- 2.Skill";
+mes "- 3.Status & Skill";
+next;
+menu 
+"^738C5A•^000000 Reset Stats",L_Status,
+"^738C5A•^000000 Reset Skill",L_Skill,
+"^738C5A•^000000 Reset Stats & Skill",L_StatusSkill,
+"^738C5A•^000000 ยกเลิก",Lcancel;
+
+L_Status:
+mes "[ ^738C5AReset Status/Skill^000000 ]";
+mes "ทำการ Reset เรียบร้อย";
+resetstatus;
+close;
+
+L_Skill:
+mes "[ ^738C5AReset Status/Skill^000000 ]";
+mes "ทำการ Reset เรียบร้อย";
+resetskill;
+close;
+
+L_StatusSkill:
+mes "[ ^738C5AReset Status/Skill^000000 ]";
+mes "ทำการ Reset เรียบร้อย";
+resetstatus;
+resetskill;
+close;
+
+Lkcancel:
+mes "แล้วพบกันใหม่...";
+close;
+}
+
+prontera,154,186,5	duplicate(KFSV)	Kafra Express#01	113

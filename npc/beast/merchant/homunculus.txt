@@ -1,0 +1,81 @@
+prontera,211,183,3	script	Homunculus	740,{
+	mes "^738C5A[ Homunculus ]^000000";
+	mes "เลือกสิ่งที่เจ้าต้องการมาสิ";
+	next;
+menu
+"^738C5A•^000000 รับ Skill Homun",h1,
+"^738C5A•^000000 อัพ Lv. Homun",h2,
+"^738C5A•^000000 กลายร่าง Homun",h4;
+
+
+
+h1:
+mes"^738C5A[ Homunculus ]^000000";
+mes"กรุณารอสักครู่.";
+mes"ฉันกำลังตรวจสอบอาชีพของคุณ.";
+next;
+if(BaseJob != Job_Alchem) goto noalchem;
+if(JobLevel<40) goto nojob;
+mes"^738C5A[ Homunculus ]^000000";
+mes"คุณได้รับสกิลโฮมุนแล้ว";
+getitem 7142,1;
+skill 238,1,0;
+skill 239,1,0;
+skill 240,1,0;
+skill 241,1,0;
+skill 242,1,0;
+skill 245,1,0;
+skill 246,1,0;
+close;
+
+h2:
+mes"^738C5A[ Homunculus ]^000000";
+mes"กรุณารอสักครู่.";
+mes"ฉันกำลังตรวจสอบอาชีพของคุณ.";
+next;
+if(BaseJob != Job_Alchem) goto noalchem;
+if(JobLevel<40) goto nojob;
+mes"^738C5A[ Homunculus ]^000000";
+mes"Homunculus อัพเลเวลเสร็จแล้ว ; Successful";
+atcommand strcharinfo(0)+ "@homlvup 99";
+close;
+
+h4:
+mes"^738C5A[ Homunculus ]^000000";
+mes"กรุณารอสักครู่.";
+mes"ฉันกำลังตรวจสอบอาชีพของคุณ.";
+next;
+if(BaseJob != Job_Alchem) goto noalchem;
+if(JobLevel<40) goto nojob;
+mes"^738C5A[ Homunculus ]^000000";
+mes"Homunculus กลายร่างเรียบร้อย.";
+atcommand strcharinfo(0)+ "@homevolution";
+close;
+
+
+noalchem:
+mes"^738C5A[ Homunculus ]^000000";
+mes"คุณไม่ใช่อาชีพ Biochemist หรือ Alchemist";
+close;
+
+
+
+nojob:
+mes"^738C5A[ Homunculus ]^000000";
+mes"ขอโทษ ; เลเวลจ็อบของคุณต่ำกว่า 40";
+mes"ไม่สามารถรับสกิลได้";
+close;
+
+
+
+Cancel:
+mes"^738C5A[ Homunculus ]^000000";
+mes"แล้วเจอกัน";
+close;
+
+
+
+OnInit:
+waitingroom "  บริการโฮมุนครุส",0;
+end;
+}

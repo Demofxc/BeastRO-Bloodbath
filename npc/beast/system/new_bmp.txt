@@ -1,0 +1,35 @@
+morocc,143,85,5	script	ข่าวสารอัพเดต	933,{
+mes "^738C5A[ อัพเดต ]^000000";
+mes "คุณต้องการดูภาพ BMP ไหม?";
+cutin "tutorial02",3;
+menu "ปิด", L_Close;
+
+L_Close:
+        cutin "",255;
+        mes "^738C5A[ BMP Display NPC ]^000000";
+        mes "ปิดการแสดงภาพแล้วในวันนี้";
+        close;
+
+OnInit:
+    // กำหนดพื้นที่การเดินของ NPC
+    .min_x = 147;   // มุมซ้ายบน x
+    .min_y = 85;    // มุมซ้ายบน y
+    .max_x = 170;   // มุมขวาล่าง x
+    .max_y = 110;   // มุมขวาล่าง y
+    initnpctimer; // เริ่มต้นตัวจับเวลา
+    end;
+
+OnTimer5000:
+    // ทุกๆ 5 วินาที NPC จะเดินไปยังตำแหน่งใหม่แบบสุ่มในพื้นที่ที่กำหนด
+    .move_x = rand(.min_x, .max_x);
+    .move_y = rand(.min_y, .max_y);
+    npcwalkto(.move_x, .move_y, "ข่าวสารอัพเดต"); 
+    initnpctimer; // เริ่มต้นตัวจับเวลาใหม่
+    end;
+        
+OnPCLoadMapEvent:
+	showevent QTYPE_CLICKME,QMARK_NONE;
+end;
+}
+
+morocc	mapflag	loadevent

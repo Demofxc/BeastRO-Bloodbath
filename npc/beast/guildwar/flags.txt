@@ -1,0 +1,48 @@
+/*
+=================== TERMS OF SERVICES. ===================
+1. ALL RIGHT RESERVED RE-SELLER OR SHARE SCRIPT TO PUBLISH.
+2. BUT YOU RE-SELLER OR SHARE SCRIPT WITH OUT UNAUTHORIZRD
+   I WILL ALL CANCEL MY SUPPORT FOR YOU.
+3. MAINTENANCE SCRIPTS WILL BE FREE SERVICES.
+4. I WILL NOT KEEP ANY INFORMATIONS FROMS YOU SERVER THAT
+   YOU SEND FOR ME.
+5. I HOPE YOU WILL ALL ACCEPT TERMS OF SERVICES.
+==========================================================
+Script. Flags All Castle																		 
+Create By. [Eddga-Studio]
+Translator By. Eddga Studio
+Bug Report. Dollaporn Naraphan [ FB ]																					 
+Contact Us. Dollaporn Naraphan [ FB ]																				 
+==========================================================
+*/
+
+// Aldebaran
+prontera,150,233,4	duplicate(OutsideFlagsA1)	Neuschwanstein#m1	GUILD_FLAG
+prontera,150,236,4	duplicate(OutsideFlagsA2)	Hohenschwangau#m1	GUILD_FLAG
+prontera,150,239,4	duplicate(OutsideFlagsA3)	Nuernberg#m1	GUILD_FLAG
+prontera,150,242,4	duplicate(OutsideFlagsA4)	Wuerzburg#m1	GUILD_FLAG
+prontera,150,245,4	duplicate(OutsideFlagsA5)	Rothenburg#m1	GUILD_FLAG
+
+// Geffen
+prontera,162,233,4	duplicate(OutsideFlagsG1)	Repherion#m1	GUILD_FLAG
+prontera,162,236,4	duplicate(OutsideFlagsG2)	Eeyorbriggar#m1	GUILD_FLAG
+prontera,162,239,4	duplicate(OutsideFlagsG3)	Yesnelph#m1	GUILD_FLAG
+prontera,162,242,4	duplicate(OutsideFlagsG4)	Bergel#m1	GUILD_FLAG
+prontera,162,245,4	duplicate(OutsideFlagsG5)	Mersetzdeitz#m1	GUILD_FLAG
+
+// Payon
+prontera,150,248,4	duplicate(OutsideFlagsPA1)	Bright Arbor#m1	GUILD_FLAG
+prontera,150,251,4	duplicate(OutsideFlagsPA2)	Scarlet Palace#m1	GUILD_FLAG
+prontera,150,254,4	duplicate(OutsideFlagsPA3)	Holy Shadow#m1	GUILD_FLAG
+prontera,150,257,4	duplicate(OutsideFlagsPA4)	Sacred Altar#m1	GUILD_FLAG
+prontera,150,260,4	duplicate(OutsideFlagsPA5)	Bamboo Grove Hill#m1	GUILD_FLAG
+
+// Prontera
+prontera,162,248,4	duplicate(OutsideFlagsPR1)	Kriemhild#m1	GUILD_FLAG
+prontera,162,251,4	duplicate(OutsideFlagsPR2)	Swanhild#m1	GUILD_FLAG
+prontera,162,254,4	duplicate(OutsideFlagsPR3)	Fadhgridh#m1	GUILD_FLAG
+prontera,162,257,4	duplicate(OutsideFlagsPR4)	Skoegul#m1	GUILD_FLAG
+prontera,162,260,4	duplicate(OutsideFlagsPR5)	Gondul#m1	GUILD_FLAG
+
+//Horn
+prontera,156,267,4	duplicate(OutsideFlagsH1)	Horn#m1	GUILD_FLAG

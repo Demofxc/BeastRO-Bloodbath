@@ -1,0 +1,42 @@
+prontera,147,173,5	script	รับเซ็ตบอสฟรี	790,{
+
+	mes .n$;
+	mes "ต้องมี ^FF0000LV.99^000000 เท่านั้นถึงรับได้";
+	mes "1ไอดี / 1ครั้ง ใช้ได้เพียง ^FF00007^000000 วัน^000000";
+	mes "- สิ่งที่คุณจะได้รับ";
+	mes "^i[30255] ^i[30256] ^i[30257] ^i[30258] ^i[30259]";
+	next;
+//	if (Class != 4012 && Class != 4016) {
+//		mes .n$;
+//		mes "อาชีพคุณไม่สามารถรับเซ็ตบอสได้";
+//		close;
+//	}
+	if(BaseLevel < 99) {
+	mes .n$;
+	mes "เสียใจด้วย, คุณจะต้องมี Base Levels ถึง 99 เสียก่อน";
+	close;
+	}
+	if(#setboss){
+	mes .n$;
+	mes "คุณรับไปแล้ว";
+	close;
+	}
+	getitem 30260,1;
+	set #setboss,1;
+	mes .n$;
+	mes "คุณรับไอเทมไปแล้ว";
+	mes "ขอให้โชคดี";
+	close;
+
+
+OnInit:
+set .n$,"^738C5A[ รับเซ็ตบอสฟรี ]^000000"; // ชื่อ NPC
+waitingroom "รับเซ็ตบอสฟรี",0; 
+end;
+
+OnPCLoadMapEvent:
+	showevent QTYPE_QUEST,QMARK_GREEN;
+end;
+}
+
+morocc	mapflag	loadevent

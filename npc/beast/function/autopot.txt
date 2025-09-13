@@ -1,0 +1,226 @@
+//63556,AutoPot Box,AutoPot Box,11,100,,10,,,,,0xFFFFFFFF,7,2,,,,,,{ callfunc("autopot"); },{},{}
+
+-	script	autopot_init	-1,{
+
+Oninit:
+	//รายการไอเทมเพิ่ม hp
+	//setarray $@AUTOPOT_HP[0],501,502,503,504,547,526,521,518,607,608;
+	
+	//รายการไอเทมเพิ่ม sp
+	//setarray $@AUTOPOT_SP[0],505,533,518,526,578,607,608;
+	
+	//delay for each use, 300 ประมาณ วิละ3 ที , 500 วิละ 2ที
+	set $@AUTOPOT_DELAY,100;
+end;
+
+OnPCLoginEvent:
+if (@autopotion_on == 0){
+	message strcharinfo(0),"Auto Potion ปิดใช้งานอยู่";
+}
+end;
+
+}
+
+
+function	script	autopot	{
+	while(1){
+		mes " [ ปั้มยาอัตโนมัติ ]";
+		mes (@autopotion_on)?"สถานะระบบ : ^00FF00เปิด^000000":"สถานะระบบ : ^738C5Aปิด^000000";
+		mes (AP_HP_RATE)?"^000000ปั้มเมื่อ HP ต่ำกว่า : ^0000FF"+AP_HP_RATE+"% - 100%^000000":"ปั้มเมื่อ HP ต่ำกว่า : ^738C5Aยังไม่ได้ตั้งค่า^000000";
+		mes (AP_SP_RATE)?"^000000ปั้มเมื่อ SP ต่ำกว่า : ^0000FF"+AP_SP_RATE+"% - 100%^000000":"ปั้มเมื่อ SP ต่ำกว่า : ^738C5Aยังไม่ได้ตั้งค่า^000000";
+		
+		if(AP_HP_ITEMID)
+			mes "^000000HP ใช้ : ^0000FF"+getitemname(AP_HP_ITEMID)+" ^000000["+countitem(AP_HP_ITEMID)+"]";
+		else
+			mes "^000000HP ใช้ : ^738C5Aยังไม่ได้ตั้งค่า";
+			
+		if(AP_SP_ITEMID)
+			mes "^000000SP ใช้ : ^0000FF"+getitemname(AP_SP_ITEMID)+" ^000000["+countitem(AP_SP_ITEMID)+"]";
+		else
+			mes "^000000SP ใช้ : ^738C5Aยังไม่ได้ตั้งค่า";
+		
+		switch(select("- เปิด/ปิด การใช้งาน","- เลือก HP","- เลือก SP","- ตั้งค่า % การปั้ม HP","- ตั้งค่า % การปั้ม SP","- เสร็จสิ้น !")){
+			case 1:
+				if(!@autopotion_on){
+					//validate
+					if(!AP_HP_ITEMID || !AP_SP_ITEMID || !AP_HP_RATE || !AP_SP_RATE){
+						next;
+						mes "[ ปั้มยาอัตโนมัติ ]";
+						message strcharinfo(0),"ไม่พบการตั้งค่า !";
+					}else{
+						next;
+						mes "[ ปั้มยาอัตโนมัติ ]";
+						set @autopotion_on,1;
+						message strcharinfo(0),"ใช้งาน Auto Pot";
+						deltimer "start_autopot::OnStart";
+						addtimer $@AUTOPOT_DELAY,"start_autopot::OnStart";
+					}
+				}else{
+					set @autopotion_on,0;
+					mes "ปิดเรียบร้อย";
+					deltimer "start_autopot::OnStart";
+				}
+				
+				next;
+				break;
+			case 4:
+				next;
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "กรุณาใส่ HP % ที่ต้องการให้ทำงาน";
+				mes "";
+				input .@rate,0,100;
+				set AP_HP_RATE,.@rate;
+				if(.@rate < 1 || .@rate > 99){
+					set .@rate,90; //default;
+				}
+				next;
+				break;
+			case 5:
+				next;
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "กรุณาใส่ SP % ที่ต้องการให้ทำงาน";
+				mes "";
+				input .@rate,0,100;
+				set AP_SP_RATE,.@rate;
+				if(.@rate < 1 || .@rate > 99){
+					set .@rate,90; //default;
+				}
+				next;
+				break;
+			case 2: // ตั้งไอเทม HP
+			    next;
+			    mes "[ ปั้มยาอัตโนมัติ ]";
+			    menu "Mastela Fruit", Potion1,
+			         "White Potion", Potion2,
+			         "White Slim Potion", Potion3,
+			         "Royal Jelly", Potion4;
+			    goto EXIT;
+			    break;
+
+			case 3: // ตั้งไอเทม SP
+			    next;
+			    mes "[ ปั้มยาอัตโนมัติ ]";
+			    menu "Blue Potion", SP_Item1,
+			         "Royal Jelly", SP_Item2;
+			    goto EXIT;
+			    break;
+				
+			// ส่วนของการตั้งค่าไอเทมในแต่ละเมนู
+			Potion1:
+				set AP_HP_ITEMID, 522; // แทนที่ด้วยไอดีจริง
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "คุณได้เลือก Mastela Fruit";
+				mes "ในการปั้ม HP";
+				next;
+				callfunc "autopot";
+				break;
+			
+			Potion2:
+				set AP_HP_ITEMID, 504; // แทนที่ด้วยไอดีจริง
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "คุณได้เลือก White Potion";
+				mes "ในการปั้ม HP";
+				next;
+				callfunc "autopot";
+				break;
+
+			Potion3:
+				set AP_HP_ITEMID, 547; // แทนที่ด้วยไอดีจริง
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "คุณได้เลือก White Slim Potion";
+				mes "ในการปั้ม HP";
+				next;
+				callfunc "autopot";
+				break;
+
+			Potion4:
+				set AP_HP_ITEMID, 526; // แทนที่ด้วยไอดีจริง
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "Royal Jelly";
+				mes "ในการปั้ม HP";
+				next;
+				callfunc "autopot";
+				break;
+
+			SP_Item1:
+				set AP_SP_ITEMID, 505; // แทนที่ด้วยไอดีจริง
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "คุณได้เลือก Blue Potion";
+				mes "ในการปั้ม SP";
+				next;
+				callfunc "autopot";
+				break;
+
+			SP_Item2:
+				set AP_SP_ITEMID, 526; // แทนที่ด้วยไอดีจริง
+				mes "[ ปั้มยาอัตโนมัติ ]";
+				mes "คุณได้เลือก Royal Jelly";
+				mes "ในการปั้ม SP";
+				next;
+				callfunc "autopot";
+				break;
+
+			default:
+				goto EXIT;
+				break;		
+		}
+	}
+
+EXIT:
+	close2;
+	return;
+}
+
+-	script	start_autopot	-1,{
+
+OnStart:
+	//if(Hp < 1){
+	//	@autopotion_on = 0;
+	//	end;
+	//}
+	
+	if (getstatus(SC_BERSERK) || getstatus(SC_SATURDAYNIGHTFEVER) || getstatus(SC_GRAVITATION) ||
+		getstatus(SC_TRICKDEAD) || getstatus(SC_HIDING) || getstatus(SC__SHADOWFORM) || getstatus(SC__INVISIBILITY) ||
+		getstatus(SC__MANHOLE) || getstatus(SC_KAGEHUMI) || getstatus(SC_HEAT_BARREL_AFTER) ||
+		getstatus(SC_STONE) || getstatus(SC_FREEZE) || getstatus(SC_STUN) || getstatus(SC_SLEEP) ||
+		getstatus(SC_CRYSTALIZE) || getstatus(SC_DEEPSLEEP) || getstatus(SC_HANDICAPSTATE_CRYSTALLIZATION) ||
+		getstatus(SC_HANDICAPSTATE_LIGHTNINGSTRIKE) || getstatus(SC_HANDICAPSTATE_FROSTBITE) || getstatus(SC_KINGS_GRACE) || getstatus(SC_SUHIDE) || getstatus(HANDICAPSTATE_SWOONING))
+			goto RESTART;
+			
+	if ( @autopotion_on && ((Hp && Hp * 100 / MaxHp < AP_HP_RATE) || ( Sp * 100 / MaxSP < AP_SP_RATE))) {
+		set .@need_eff,0;
+			
+		if(Hp && ((Hp * 100 / MaxHp) < AP_HP_RATE)){
+			if (!countitem(AP_HP_ITEMID)) {
+				if (@autopot_hp_none <= gettimetick(2)) {
+					@autopot_hp_none = gettimetick(2) + 5;
+					dispbottom "[ ปั้มยาอัตโนมัติ ] HP:ไม่พบ '" + getitemname(AP_HP_ITEMID) + "' ในตัวคุณ";
+				}
+			}else{
+				if(!getiteminfo(AP_HP_ITEMID,2))
+					delitem AP_HP_ITEMID,1;
+				consumeitem AP_HP_ITEMID;
+				set .@need_eff,1;
+			}
+		}
+		
+		if((Sp * 100 / MaxSp) < AP_SP_RATE){
+			if (!countitem(AP_SP_ITEMID)) {
+				if (@autopot_sp_none <= gettimetick(2)) {
+					@autopot_sp_none = gettimetick(2) + 5;
+					dispbottom "[ ปั้มยาอัตโนมัติ ] SP:ไม่พบ '" + getitemname(AP_SP_ITEMID) + "' ในตัวคุณ";
+				}
+			}else{
+				if(!getiteminfo(AP_SP_ITEMID,2))
+					delitem AP_SP_ITEMID,1;
+				consumeitem AP_SP_ITEMID;
+				set .@need_eff,1;	
+			}
+		}
+		if(.@need_eff)	specialeffect2 EF_POTION1;
+	}
+RESTART:
+	addtimer $@AUTOPOT_DELAY,"start_autopot::OnStart";
+	end;
+	
+}

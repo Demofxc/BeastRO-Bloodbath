@@ -1,0 +1,182 @@
+-	script	Sprakki#newbe01::NvSprakkiA	-1,{
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "สวัสดี! ยินดีต้อนรับสู่โลกแห่ง ^738C5ADryad Ragnarok^000000 ฉันชื่อ Sprakki มีหน้าที่ให้คำแนะนำการเล่นเกมขั้นพื้นฐานแก่คุณ.";
+		mes "คลิกที่ปุ่ม ^ff0000 [ต่อไป] ^000000หรือกด ^ff0000[Enter]^000000 เพื่อดำเนินการต่อ.";
+		next;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "ก่อนอื่นคุณต้องเรียนรู้พื้นฐานในการควบคุมตัวละครของคุณก่อน.";
+		mes "การ ^4d4dffเคลื่อนไหวพื้นฐาน การเลือกไอเท็ม และการโจมตี ^000000ทั้งหมดใช้การคลิกซ้ายของเมาส์.";
+		next;
+		cutin "tutorial01",3;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "คลิกบนพื้นเพื่อย้ายตัวละคร.";
+		mes "การโจมตี มอนสเตอร์ และการสนทนากับ NPC สามารถทำได้โดยคลิกที่พวกมัน.";
+		next;
+		cutin "",255;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "ก่อนอื่นให้ลองขยับไปรอบๆ.";
+		mes "คุณเห็นสะพานไม้ทางขวามือไหม?";
+		next;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "เดินข้ามสะพานนั้นไปก็จะมีปราสาทที่ใช้เป็นศูนย์ฝึก.";
+		mes "ฉันจะรอคุณอยู่ในปราสาทนั้น กรุณามาที่ปราสาทด้วยตัวเอง.";
+		mes "หรือคุณจะข้ามการฝึกโดยคุยกับ NPC ^ff0000วาปไปสถานที่ต่างๆ^000000.";
+		next;
+		cutin "tutorial02",3;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "คุณได้รับภารกิจจาก Sprakki.";
+		mes "คุณสามารถตรวจสอบเนื้อหาของภารกิจได้ในหน้าต่างข้อมูลภารกิจ.";
+		next;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "ฉันจะรออยู่ในศูนย์ฝึกอบรมฝั่งตรงข้ามสะพาน.";
+		next;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "คุณสามารถเปิดหน้าต่างข้อมูลภารกิจได้โดยกดปุ่ม ^ff0000Alt + U^000000 พร้อมกัน.";
+		next;
+		cutin "",255;
+		mes "^738C5A[ ยินดีต้อนรับ ]^000000";
+		mes "คุณได้ตรวจสอบหน้าต่างข้อมูลภารกิจแล้ว?";
+		mes "ฉันจะรออยู่ที่ปราสาทฝั่งตรงข้ามสะพาน.";
+		close2;
+		cutin "",255;
+		end;
+}
+new_1-1,53,114,3	duplicate(NvSprakkiA)	Sprakki#nv1a	90
+
+new_1-1,61,116,4	script	Newbie Gift	15007,{
+    // เช็คว่าผู้เล่นได้รับไอเทมแล้วหรือยัง
+    if (#newbie_gift_received) {
+        mes "^738C5A[ Newbie Gift ]^000000";
+        mes "คุณได้รับไอเทมไปแล้ว ไม่สามารถรับอีกได้";
+        close;
+    }
+    mes "^738C5A[ Newbie Gift ]^000000";
+    mes "Welcome To ^738C5ADryad Ragnarok^000000";
+    mes "เราจะมอบ ^i[30261] และ ^i[30262]";
+    mes "ให้กับเหล่านักผจญภัยทุกคน";
+    next;
+    mes "^738C5A[ Newbie Gift ]^000000";
+    mes "ขอให้โชคดี";
+    getitem 30261,1;
+    getitem 30262,1; 
+    // ตั้งค่าว่าผู้เล่นได้รับไอเทมแล้ว
+    set #newbie_gift_received,1;
+    close;
+
+OnPCLoadMapEvent:
+	showevent QTYPE_CLICKME,QMARK_GREEN;
+end;
+}
+
+new_1-1	mapflag	loadevent
+
+
+
+new_1-1,144,116,2	script	Guard#nv1	105,{
+	mes "^738C5A[Training Grounds Guard]^000000";
+	mes "ยินดีต้อนรับเข้าสู่ ^0000FFTraining Grounds^000000.";
+	mes "ขณะนี้คุณอยู่ในสนามนอกปราสาท. กรุณาเข้าไปในปราสาทเพิ่อเรื่มต้นการฝึกอบรมของคุณ.";
+	close;
+}
+
+new_1-1,144,107,2	script	Guard#nv2	105,{
+	mes "^738C5A[Training Grounds Guard]^000000";
+	if(rand(2)) {
+		mes "เข้ามา!";
+		mes "ฉันต้องการ";
+		mes "ที่จะต้อนรับคุณ";
+		mes "เข้าสู่ Training Grounds!";
+		next;
+		mes "[Training Grounds Guard]";
+		mes "ในที่นี้, คุณสามารถเตรียมความพร้อม";
+		mes "ด้วยตัวคุณเองสำหรับอนาคตของคุณ";
+		mes "การผจญภัยของโลก";
+		mes "^738C5ADryad Ragnarok!^000000";
+	}
+	else {
+		mes "ไป, Novice, ไป!";
+		mes "ต่อสู้ และ การเติบโตที่แข็งแกร่ง! มองไปในวันพรุ่งนี้ที่สดใส!";
+	}
+	close;
+}
+
+new_1-2,100,29,4	script	วาปไปยังสนามฝึก	105,{
+	mes "^738C5A[Training Grounds Guard]^000000";
+	mes "ยินดีต้อนรับเข้าสู่ ^0000FFTraining Grounds^000000.";
+	mes "ขณะนี้คุณอยู่ในปราสาท. กรุณาเข้าไปยังสนามฝึกเพิ่อเรื่มต้นการฝึกอบรมของคุณ.";
+	next;
+    mes "^738C5A[Training Grounds Guard]^000000";
+	mes "ขอให้พวกท่านโชคดี";
+	next;
+	savepoint "new_1-3",98,28;
+	warp "new_1-3",98,28;
+	close;
+}
+
+// Receptionist
+new_1-3,99,43,4	script	Receptionist#nv1	113,{
+	
+	mes "^738C5A[ Training Grounds Receptionist ]^000000";
+	mes "สวัสดี นายท่าน,";
+	mes "คงเป็นนักผจญภัยหน้าใหม่สิน่ะ";
+	mes "แล้วท่านมีชื่อว่าอะไรหรอ ?";
+	next;
+	mes "^738C5A[ Training Grounds Receptionist ]^000000";
+	mes "นี่หรอ ชื่อท่าน,^ff0000 "+strcharinfo(0)+" ^000000";
+	next;
+	switch(select("^738C5A•^000000 ใช่ นี่ล่ะชื่อของฉันเอง")) {
+		case 1:
+			mes "^738C5A[ Training Grounds Receptionist ]^000000";
+			mes "ยินดีต้อนรับท่านเข้าสู่";
+			mes "^0000ffTraining Grounds^000000";
+			next;
+			mes "^738C5A[ Training Grounds Receptionist ]^000000";
+			mes "ท่านกำลังเข้าสู่การผจญภัยครั้งใหม่";
+			mes "ในโลกแห่ง ^ff0000Dryad Ragnarok^000000";
+			mes "โปรดฟังคำแนะนำสำหรับ ^0000ffTraining Grounds^000000";
+			mes "เพื่อเป็นข้อมูลเพิ่มเติมของท่าน !";
+			next;
+			switch(select("^738C5A•^000000 เข้า ^ff0000Dryad Ragnarok^000000 ทันที..")) {
+				case 1:
+					mes "^738C5A[ Training Grounds Receptionist ]^000000";
+					mes "ฉันเข้าใจท่านแล้ว !";
+					mes "ขอให้ท่านจะตั้งใจทำมันให้ดีที่สุด";
+					mes "โชคดีล่ะ บ๊ะบาย !!";
+					next;
+					if(getskilllv("NV_BASIC")< 9)
+					{
+						mes "^738C5A[ Training Grounds Receptionist ]^000000";
+						mes "เจ้ายังไม่มีคุณสมบัติพอ!";
+						mes "Basic Skill เลเวล 9";
+						mes "นั่นคือสิ่งที่ฉันต้องการ";
+						mes "อัพสกิลแล้ว ลองใหม่อีกครั้ง..";
+						
+					}
+					mes "^738C5A[ Training Grounds Receptionist ]^000000";
+					mes "โชคดีล่ะ นายท่าน !";
+					mes "ขอให้ท่านเดินทางอย่างปลอดภัย";
+					close2;
+					savepoint "morocc",158,95;
+					warp "morocc",158,95;
+					break;
+			}	
+	}
+//OnInit:
+//	// ป้ายหน้าร้าน
+//	waitingroom "วาปไปเมืองหลวง",0;
+//	end;	
+}
+
+// Training Ground Mobs
+new_1-3,0,0,0,0	monster	Novice Poring	1002,20,0,0,0
+new_1-3,0,0,0,0	monster	Novice Drops	1113,3,0,0,0
+new_1-3,0,0,0,0	monster	Novice Lunatic	1063,3,0,0,0
+new_1-3,0,0,0,0	monster	Novice ChonChon	1011,5,0,0,0
+new_1-3,0,0,0,0	monster	Novice Condor	1009,5,0,0,0
+new_1-3,0,0,0,0	monster	Novice Picky	1050,3,0,0,0
+new_1-3,0,0,0,0	monster	Novice Willow	1010,5,0,0,0
+new_1-3,0,0,0,0	monster	Novice Roda Frog	1012,3,0,0,0
+new_1-3,0,0,0,0	monster	Novice Rocker	1052,3,0,0,0
+new_1-3,0,0,0,0	monster	Novice Thief Bug	1051,3,0,0,0
+new_1-3,0,0,0,0	monster	Novice Spore	1014,3,0,0,0
+new_1-3,0,0,0,0	monster	Novice Fabre	1184,3,0,0,0

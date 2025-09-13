@@ -1,0 +1,86 @@
+/*
+=================== TERMS OF SERVICES. ===================
+1. ALL RIGHT RESERVED RE-SELLER OR SHARE SCRIPT TO PUBLISH.
+2. BUT YOU RE-SELLER OR SHARE SCRIPT WITH OUT UNAUTHORIZRD
+   I WILL ALL CANCEL MY SUPPORT FOR YOU.
+3. MAINTENANCE SCRIPTS WILL BE FREE SERVICES.
+4. I WILL NOT KEEP ANY INFORMATIONS FROMS YOU SERVER THAT
+   YOU SEND FOR ME.
+5. I HOPE YOU WILL ALL ACCEPT TERMS OF SERVICES.
+==========================================================
+Script. Warp Guild War																				 
+Create By. [Eddga-Studio]
+Translator By. Eddga Studio
+Bug Report. Dollaporn Naraphan [ FB ]																					 
+Contact Us. Dollaporn Naraphan [ FB ]																					 																				 
+==========================================================
+*/
+function	script	Warp_GuildWar_old	{
+	if (getgmlevel() >= 99) {
+		mes "[ Guild Dashboard ]";
+		mes "สวัสดี,ผู้ดูแลเซิร์ฟเวอร์";
+		mes "ระบบฟังชั่นของกิลด์";
+		mes "- จัดการวาร์ปกิลด์วอร์";
+		mes "- ปิด เปิด บ้านกิลด์";
+		switch(select("~ เมนูสำหรับผู้เล่น:~ จัดการวาร์ปผู้เล่น")){
+		case 1:
+			break;
+				
+		case 2:
+			doevent "NpcWarpGuild::OnGameMaster";
+			end;
+			
+		}		
+	}
+		
+ 	switch(select("~ วาปเข้าปราสาทเพื่อไปกิลด์วอร์")){
+	case 1:
+		doevent "NpcWarpGuild::OnWarp";
+		end;
+	}
+}
+
+-	script	guild_main	FAKE_NPC,{		
+	mes "^738C5A[ Guild War ]^000000";
+	mes "สวัสดีคุณ^738C5A "+strcharinfo(0)+" ^000000"; 
+	mes "ต้องการเข้าสู่กิลด์วอร์ไหม";
+	mes "วาร์ปชั้นที่ 2 เปิดนาทีที่ 45";
+	mes "^738C5A# ^000000ต้องใส่รูปกิลด์ก่อนเข้าแมพกิลด์วอร์ทุกครั้ง";
+	next;
+	switch(select("^738C5A•^000000 ["+(getmapusers("guild_vs2"))+"] คน สงคราม GvG:^738C5A•^000000 เรียกรวมปาร์ตี้:^738C5A•^000000 เรียกรวมกิลด์:^738C5A•^000000 ออก")){
+	case 1:
+		sc_end SC_ASSUMPTIO;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_APPLEIDUN;
+		sc_end SC_ASSNCROS;
+		sc_end SC_SKE;
+		sc_end SC_KAITE;
+		sc_end SC_SWOO;
+		sc_end SC_SKA;
+		sc_end SC_BATTLEORDERS;
+		sc_end SC_SERVICE4U;
+		warp "guild_vs2", 50, 47;
+		end;
+	case 2:
+		atcommand "@partyrecall "+getcharid(1);
+		end;
+	case 3:
+		atcommand "@guildrecall "+getcharid(2);
+		end;
+
+	case 4:
+	close;
+	}
+OnInit:
+    while(1){
+		delwaitingroom;
+		waitingroom " เข้าสู่ GVG ["+(getmapusers("guild_vs2"))+"] คน",0;
+		//showscript "เข้าสู่ GVG ["+(getmapusers("guild_vs2"))+"] คน", getnpcid(0);
+		sleep 500;
+	}
+end;
+}
+
+//====================================================
+//morocc,152,81,5	duplicate(guild_main)	วาร์ปกิลด์วอร์#00	461 
+prontera,162,189,5	duplicate(guild_main)	วาร์ปกิลด์วอร์#101	966 

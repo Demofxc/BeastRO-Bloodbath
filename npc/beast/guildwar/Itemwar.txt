@@ -1,0 +1,395 @@
+-	script	guildwarwinner	-1,{
+end;
+
+//OnInit:
+//disablenpc "G1";
+//disablenpc "G2";
+//disablenpc "G3";
+//disablenpc "G4";
+//disablenpc "G5";
+//disablenpc "G6";
+//disablenpc "G7";
+//disablenpc "G8";
+//disablenpc "G9";
+//disablenpc "G10";
+//disablenpc "G11";
+//disablenpc "G12";
+//disablenpc "G13";
+//disablenpc "G14";
+//disablenpc "G15";
+//disablenpc "G16";
+//disablenpc "G17";
+//disablenpc "G18";
+//disablenpc "G19";
+//disablenpc "G20";
+//disablenpc "G21";
+//end;
+
+OnAgitEnd:
+enablenpc "G1";
+enablenpc "G2";
+enablenpc "G3";
+enablenpc "G4";
+enablenpc "G5";
+enablenpc "G6";
+enablenpc "G7";
+enablenpc "G8";
+enablenpc "G9";
+enablenpc "G10";
+enablenpc "G11";
+enablenpc "G12";
+enablenpc "G13";
+enablenpc "G14";
+enablenpc "G15";
+enablenpc "G16";
+enablenpc "G17";
+enablenpc "G18";
+enablenpc "G19";
+enablenpc "G20";
+enablenpc "G21";
+end;
+
+OnAgitStart:
+disablenpc "G1";
+disablenpc "G2";
+disablenpc "G3";
+disablenpc "G4";
+disablenpc "G5";
+disablenpc "G6";
+disablenpc "G7";
+disablenpc "G8";
+disablenpc "G9";
+disablenpc "G10";
+disablenpc "G11";
+disablenpc "G12";
+disablenpc "G13";
+disablenpc "G14";
+disablenpc "G15";
+disablenpc "G16";
+disablenpc "G17";
+disablenpc "G18";
+disablenpc "G19";
+disablenpc "G20";
+disablenpc "G21";
+
+end;
+}
+
+// ‰Õ‡∑Á¡·®°°‘≈¥Ï«Õ√Ï
+function	script	FunGuildPoint	{
+.@weight = 100 * Weight / MaxWeight;
+.@GID = getcharid(2);
+    if (50 <= .@weight) {
+		mes "[ ^3333FF√—∫√“ß«—≈°‘≈¥Ï«Õ√Ï^000000 ]";
+		mes " «— ¥’∑Ë“π : ^738C5A "+strcharinfo(0)+" ^000000"; 
+		mes " ¡“™‘§°‘≈¥Ï : ^738C5A "+ getguildName(.@GID) +" ^000000"; 
+        mes "^738C5A§ÿ≥·∫°πÈ”Àπ—°¡“°∂÷ß " + .@weight + " % ‰ª≈¥πÈ”Àπ—°·≈È«¡“√—∫¢Õß¿“¬À≈—ß^000000";
+
+        close;
+
+    }
+	set Zeny,Zeny+20000000;
+	getitem 678,30;
+return 0;
+}
+
+// ‰Õ‡∑Á¡·®°°‘≈¥Ï«Õ√Ï
+function	script	FunGuildPoint1	{
+.@weight = 100 * Weight / MaxWeight;
+.@GID = getcharid(2);
+    if (50 <= .@weight) {
+		mes "[ ^3333FF√—∫√“ß«—≈°‘≈¥Ï«Õ√Ï^000000 ]";
+		mes " «— ¥’∑Ë“π : ^738C5A "+strcharinfo(0)+" ^000000"; 
+		mes " ¡“™‘§°‘≈¥Ï : ^738C5A "+ getguildName(.@GID) +" ^000000"; 
+        mes "^738C5A§ÿ≥·∫°πÈ”Àπ—°¡“°∂÷ß " + .@weight + " % ‰ª≈¥πÈ”Àπ—°·≈È«¡“√—∫¢Õß¿“¬À≈—ß^000000";
+
+        close;
+
+    }
+	set Zeny,Zeny+35000000;
+	getitem 678,60;
+return 0;
+}
+
+/////////////////////////////////////////////////////
+
+// Hohenschwangau
+guild_vs2,38,71,5	script	Hohenschwangau::G1	117,{
+set @GID,getcastledata("aldeg_cas02",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G1";
+end;
+OnInit:		
+	waitingroom "[#] Hohenschwangau",0;
+	end;
+}
+
+// Nuenberg
+guild_vs2,26,59,5	script	Nuenberg::G2	117,{
+set @GID,getcastledata("aldeg_cas03",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G2";
+end;
+OnInit:		
+	waitingroom "[#] Nuenberg",0;
+	end;
+}
+
+// Wuerzburg
+guild_vs2,30,63,5	script	Wuerzburg::G3	117,{
+set @GID,getcastledata("aldeg_cas04",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G3";
+end;
+OnInit:		
+	waitingroom "[#] Wuerzburg",0;
+	end;
+}
+
+// Neuschwanstein
+guild_vs2,34,67,5	script	Neuschwanstein::G4	117,{
+set @GID,getcastledata("aldeg_cas01",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G4";
+end;
+OnInit:		
+	waitingroom "[#] Neuschwanstein",0;
+	end;
+}
+
+// Rothenburg
+guild_vs2,47,74,5	script	Rothenburg::G5	117,{
+set @GID,getcastledata("aldeg_cas05",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G5";
+end;
+OnInit:		
+	waitingroom "[#] Rothenburg",0;
+	end;
+}
+
+/////////////////////////////////////////////////////
+
+// Repherion
+guild_vs2,61,71,4	script	Repherion::G6	117,{
+set @GID,getcastledata("gefg_cas01",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G6";
+end;
+OnInit:		
+	waitingroom "[#] Repherion",0;
+	end;
+}
+
+// Eeyolbriggar
+guild_vs2,74,52,4	script	Eeyolbriggar::G7	117,{
+set @GID,getcastledata("gefg_cas02",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G7";
+end;
+OnInit:		
+	waitingroom "[#] Eeyolbriggar",0;
+	end;
+}
+
+// Yesnelph
+guild_vs2,69,63,4	script	Yesnelph::G8	117,{
+set @GID,getcastledata("gefg_cas03",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G8";
+end;
+OnInit:		
+	waitingroom "[#] Yesnelph",0;
+	end;
+}
+
+// Bergel
+guild_vs2,73,59,4	script	Bergel::G9	117,{
+set @GID,getcastledata("gefg_cas04",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G9";
+end;
+OnInit:		
+	waitingroom "[#] Bergel",0;
+	end;
+}
+
+// Mersetzdeitz
+guild_vs2,65,67,4	script	Mersetzdeitz::G10	117,{
+set @GID,getcastledata("gefg_cas05",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G10";
+end;
+OnInit:		
+	waitingroom "[#] Mersetzdeitz",0;
+	end;
+}
+
+/////////////////////////////////////////////////////
+
+// Bright Arbor
+guild_vs2,65,32,2	script	Bright Arbor::G11	117,{
+set @GID,getcastledata("payg_cas01",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G11";
+end;
+OnInit:		
+	waitingroom "[#] Bright Arbor",0;
+	end;
+}
+
+// Holy Shadow
+guild_vs2,73,40,2	script	Holy Shadow::G12	117,{
+set @GID,getcastledata("payg_cas03",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G12";
+end;
+OnInit:		
+	waitingroom "[#] Holy Shadow",0;
+	end;
+}
+
+// Sacred Altar
+guild_vs2,61,28,2	script	Sacred Altar::G13	117,{
+set @GID,getcastledata("payg_cas04",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G13";
+end;
+OnInit:		
+	waitingroom "[#] Sacred Altar",0;
+	end;
+}
+
+// Bamboo Grove Hill
+guild_vs2,52,26,2	script	Bamboo Grove Hill::G14	117,{
+set @GID,getcastledata("payg_cas05",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G14";
+end;
+OnInit:		
+	waitingroom "[#] Bamboo Grove Hill",0;
+	end;
+}
+
+// Scarlet Palace
+guild_vs2,69,36,2	script	Scarlet Palace::G15	117,{
+set @GID,getcastledata("payg_cas02",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G15";
+end;
+OnInit:		
+	waitingroom "[#] Scarlet Palace",0;
+	end;
+}
+
+/////////////////////////////////////////////////////
+
+// Kriemhild
+guild_vs2,25,53,5	script	Kriemhild::G16	117,{
+set @GID,getcastledata("prtg_cas01",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G16";
+end;
+OnInit:		
+	waitingroom "[#] Kriemhild",0;
+	end;
+}
+
+// Swanhild
+guild_vs2,30,36,0	script	Swanhild::G17	117,{
+set @GID,getcastledata("prtg_cas02",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G17";
+end;
+OnInit:		
+	waitingroom "[#] Swanhild",0;
+	end;
+}
+
+// Skoegul
+guild_vs2,26,40,0	script	Skoegul::G18	117,{
+set @GID,getcastledata("prtg_cas04",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G18";
+end;
+OnInit:		
+	waitingroom "[#] Skoegul",0;
+	end;
+}
+
+// Gondul
+guild_vs2,38,28,5	script	Gondul::G19	117,{
+set @GID,getcastledata("prtg_cas05",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G19";
+end;
+OnInit:		
+	waitingroom "[#] Gondul",0;
+	end;
+}
+
+// Fadhgridh
+guild_vs2,34,32,5	script	Fadhgridh::G20	117,{
+set @GID,getcastledata("prtg_cas03",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint";
+disablenpc "G20";
+end;
+OnInit:		
+	waitingroom "[#] Fadhgridh",0;
+	end;
+}
+
+/////////////////////////////////////////////////////
+
+// ∫È“π°≈“ß
+guild_vs2,55,61,3	script	Horn::G21	117,{
+set @GID,getcastledata("arug_cas03",1);
+if(getguildmaster(@GID) == "null") end;
+if (strcharinfo(0) != getguildmaster(@GID)) end;
+callfunc "FunGuildPoint1";
+disablenpc "G21";
+end;
+OnInit:		
+	waitingroom "[#] ∫È“π°≈“ß",0;
+	end;
+}

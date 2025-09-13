@@ -1,0 +1,58 @@
+function	script	BuffsSoulLinker	{
+
+	set .@time, 3;	// เวลาบัพ
+	
+	switch ( BaseJob ) {
+		case Job_Alchemist:	
+			set .@skill_id, 445;	break;
+		case Job_Monk: 	
+			set .@skill_id, 447;	break;
+		case Job_Star_Gladiator:
+		case Job_Star_Gladiator2:	
+			set .@skill_id, 448;	break;
+		case Job_Sage:	
+			set .@skill_id, 449;	break;
+		case Job_Crusader:
+		case Job_Crusader2:	
+			set .@skill_id, 450;	break;
+		case Job_SuperNovice:	
+			set .@skill_id, 451;	break;
+		case Job_Knight:
+		case Job_Knight2: 
+			set .@skill_id, 452;	break;
+		case Job_Wizard: 
+			set .@skill_id, 453;	break;
+		case Job_Priest: 
+			set .@skill_id, 454;	break;
+		case Job_Bard:
+		case Job_Dancer: 
+			set .@skill_id, 455;	break;
+		case Job_Rogue: 
+			dispbottom "[ระบบ] ขออภัย คุณไม่ใช่คลาสที่สามารถใช้งานได้";
+            getitem 30021,1;
+			break;
+		case Job_Assassin: 
+			dispbottom "[ระบบ] ขออภัย คุณไม่ใช่คลาสที่สามารถใช้งานได้";
+            getitem 30021,1;
+			break;
+		case Job_Blacksmith: 
+			set .@skill_id, 458;	break;
+		case Job_Hunter: 
+			set .@skill_id, 460;	break;
+		case Job_Soul_Linker:
+			set .@skill_id, 461;	break;
+		default:
+			if ( Upper == 1 ) 
+				set .@skill_id, 494;
+			else
+			dispbottom "[ระบบ] ขออภัย คุณไม่ใช่คลาสที่สามารถใช้งานได้";
+            getitem 30021,1;
+			break;
+	}
+	if ( .@skill_id ) {
+		sc_start4 SC_SPIRIT, .@time*60*1000, 5, .@skill_id, 0, 0;
+		skilleffect .@skill_id, 0;
+		dispbottom "[ระบบ] คุณ ได้รับ บัพเสริม Soul Linker เรียบร้อยแล้ว";
+		}
+		end;
+}

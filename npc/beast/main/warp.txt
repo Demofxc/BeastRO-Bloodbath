@@ -1,0 +1,31 @@
+mainlounge,11,201,0	warp	floor1to0	0,0,mainlounge,3,278
+mainlounge,3,280,0	warp	floor0to1	0,0,mainlounge,11,197
+
+mainlounge,36,172,4	script	West Warper	45,2,2,{
+end;
+OnTouch: // behave like a warp portal
+    mes "[ ^3333FFสนามประลอง^000000 ]";
+	mes "สวัสดีท่าน : ^738C5A "+strcharinfo(0)+" ^000000"; 
+	mes "ต้องการเข้าสู่สนามประลอง"; 
+	mes "เพื่อทดสอบฝีมือของคุณไหม?"; 
+	next;
+	switch (select(
+		"^738C5A•^000000 Izlude  [ "+getmapusers("pvp_y_1-2")+" ] คน."))
+	{
+	case 1:
+		sc_end SC_ASSUMPTIO;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_APPLEIDUN;
+		sc_end SC_ASSNCROS;
+		sc_end SC_SKE;
+		sc_end SC_KAITE;
+		sc_end SC_SWOO;
+		sc_end SC_SKA;
+		sc_end SC_BATTLEORDERS;
+		sc_end SC_SERVICE4U;
+			warp "pvp_y_1-2",0,0;
+			announce "ขณะนี้ คุณ [ "+strcharinfo(0)+" ] เข้าสู่ PVP Izlude ขณะนี้มีผู้เล่นทั้งหมด [ "+getmapusers("pvp_y_1-2")+" ] คน",0,0x33FF77;
+			break;
+	end;
+    }
+}

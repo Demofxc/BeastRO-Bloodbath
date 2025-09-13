@@ -1,0 +1,242 @@
+-	script	BuffsSupports	-1,{
+	
+	set .@delay, 3;	// ดีเลย์การใช้งาน (วินาที)
+	set .@cast, 0;	// ระยะเวลาร่าย (วินาที)
+	
+	if ( gettimetick(2)-@delay_heal < .@delay )
+		dispbottom "[ระบบ] โปรดรออีก "+(.@delay-(gettimetick(2)-@delay_heal))+" วินาทีถึงจะใช้งานได้อีกครั้งนะค่ะ";
+	else
+	{
+		progressbar "0x007000", .@cast;
+		soundeffect "buff.wav",0;
+		
+		set @delay_heal, gettimetick(2);
+
+		//ข้อความที่ต้องการให้NPCพูด
+		//npctalk "ท่านได้รับพลังพิเศษจากเทพอาธีน่าแล้ว";
+		//เช็คไอเทมที่เสียหายถ้ามีซ่อมให้ทันที
+		if (getbrokenid(1) > 0) 
+		{ 
+			atcommand "@repairall";
+		}
+		
+		//แก้สถานะต่างๆ
+		sc_end SC_POISON;
+		sc_end SC_FREEZE;
+		sc_end SC_SLEEP;
+		sc_end SC_STAN;
+		sc_end SC_STUN;
+		sc_end SC_STONE;
+		sc_end SC_SILENCE;
+		sc_end SC_BLIND;
+		sc_end SC_Bleeding;
+		sc_end SC_CONFUSION;
+		sc_end SC_CURSE;
+		sc_end SC_HALLUCINATION;
+		sc_end SC_ORCISH;
+		
+		//บัพค่าอาหาร 30นาที Support rAthena
+		sc_start SC_STRFood, 1800000,5;
+		sc_start SC_AGIFood, 1800000,5;
+		sc_start SC_VITFood, 1800000,5;
+		sc_start SC_INTFood, 1800000,5;
+		sc_start SC_DEXFood, 1800000,5;
+		sc_start SC_LUKFood, 1800000,5;
+		
+		//บัพสกิลต่างๆ
+		sc_start SC_BLESSING,1800000,10;
+		sc_start SC_INCREASEAGI,1800000,10;
+		sc_start 41,1800000,10; //กอเรีย
+		sc_start 40,1800000,10; // MAGNIFICAT เร่ง
+		sc_start4 SC_POEMBRAGI,300000,10,80,90,40;
+		sc_start4 SC_SERVICE4U,300000,10,80,40,1;
+
+		//เพิ่มHPและSP 100%
+		percentheal 100,100; 
+		
+		//==============================================
+		//เอฟเฟกเพิ่มความสวยงาม
+		specialeffect2 509;
+		specialeffect 509;
+		//==============================================
+		dispbottom "คุณได้อยู่ในสถานะ ( A Poem of Bragi & Service for You ) เป็นเวลา 5 นาที ไม่สามารถใช้ใน PvP ได้ ";
+		//==============================================
+		
+		//ส่องไอเทมปริศนาที่มีในตัวทั้งหมด
+		getinventorylist;
+		for(set @i, 0; @i < @inventorylist_count; set @i, @i + 1) 
+		{
+			if (@inventorylist_identify[@i] == 1) 
+				continue;
+			delitem2 @inventorylist_id[@i],1,0,0,0,0,0,0,0;
+			getitem @inventorylist_id[@i],1;
+		}
+		end;
+	}
+}
+
+//==============================================
+//ที่ตั้งNPC
+//==============================================
+prontera,160,186,3	duplicate(BuffsSupports)	Heal#01	952
+new_1-3,90,34,5	duplicate(BuffsSupports)	Healer#02	909
+
+//==============================================
+//Training Chanel 1
+//==============================================
+2012rwc_01,18,69,4	duplicate(BuffsSupports)	Healer#3	909
+2012rwc_01,322,134,4	duplicate(BuffsSupports)	Healer#4	909
+2012rwc_02,42,154,4	duplicate(BuffsSupports)	Healer#5	909
+2012rwc_02,300,129,5	duplicate(BuffsSupports)	Healer#6	909
+2012rwc_03,25,126,4	duplicate(BuffsSupports)	Healer#7	909
+2012rwc_03,186,39,4	duplicate(BuffsSupports)	Healer#8	909
+2012rwc_04,233,39,4	duplicate(BuffsSupports)	Healer#9	909
+2012rwc_04,34,39,4	duplicate(BuffsSupports)	Healer#10	909
+2012rwc_05,18,69,4	duplicate(BuffsSupports)	Healer#11	909
+2012rwc_05,322,134,4	duplicate(BuffsSupports)	Healer#12	909
+2012rwc_06,42,154,4	duplicate(BuffsSupports)	Healer#13	909
+2012rwc_06,300,129,5	duplicate(BuffsSupports)	Healer#14	909
+2012rwc_07,25,126,4	duplicate(BuffsSupports)	Healer#15	909
+2012rwc_07,186,39,4	duplicate(BuffsSupports)	Healer#16	909
+2012rwc_08,233,39,4	duplicate(BuffsSupports)	Healer#17	909
+2012rwc_08,34,39,4	duplicate(BuffsSupports)	Healer#18	909
+
+//==============================================
+//Training Chanel 2
+//==============================================
+ch2_train01,18,69,4	duplicate(BuffsSupports)	Healer#19	909
+ch2_train01,322,134,4	duplicate(BuffsSupports)	Healer#20	909
+ch2_train02,42,154,4	duplicate(BuffsSupports)	Healer#21	909
+ch2_train02,300,129,5	duplicate(BuffsSupports)	Healer#22	909
+ch2_train03,25,126,4	duplicate(BuffsSupports)	Healer#23	909
+ch2_train03,186,39,4	duplicate(BuffsSupports)	Healer#24	909
+ch2_train04,233,39,4	duplicate(BuffsSupports)	Healer#25	909
+ch2_train04,34,39,4	duplicate(BuffsSupports)	Healer#26	909
+ch2_train05,18,69,4	duplicate(BuffsSupports)	Healer#27	909
+ch2_train05,322,134,4	duplicate(BuffsSupports)	Healer#28	909
+ch2_train06,42,154,4	duplicate(BuffsSupports)	Healer#29	909
+ch2_train06,300,129,5	duplicate(BuffsSupports)	Healer#30	909
+ch2_train07,25,126,4	duplicate(BuffsSupports)	Healer#31	909
+ch2_train07,186,39,4	duplicate(BuffsSupports)	Healer#32	909
+ch2_train08,233,39,4	duplicate(BuffsSupports)	Healer#33	909
+ch2_train08,34,39,4	duplicate(BuffsSupports)	Healer#34	909
+
+//==============================================
+//Training Chanel 3
+//==============================================
+ch3_train01,18,69,4	duplicate(BuffsSupports)	Healer#35	909
+ch3_train01,322,134,4	duplicate(BuffsSupports)	Healer#36	909
+ch3_train02,42,154,4	duplicate(BuffsSupports)	Healer#37	909
+ch3_train02,300,129,5	duplicate(BuffsSupports)	Healer#38	909
+ch3_train03,25,126,4	duplicate(BuffsSupports)	Healer#39	909
+ch3_train03,186,39,4	duplicate(BuffsSupports)	Healer#40	909
+ch3_train04,233,39,4	duplicate(BuffsSupports)	Healer#41	909
+ch3_train04,34,39,4	duplicate(BuffsSupports)	Healer#42	909
+ch3_train05,18,69,4	duplicate(BuffsSupports)	Healer#43	909
+ch3_train05,322,134,4	duplicate(BuffsSupports)	Healer#44	909
+ch3_train06,42,154,4	duplicate(BuffsSupports)	Healer#45	909
+ch3_train06,300,129,5	duplicate(BuffsSupports)	Healer#46	909
+ch3_train07,25,126,4	duplicate(BuffsSupports)	Healer#47	909
+ch3_train07,186,39,4	duplicate(BuffsSupports)	Healer#48	909
+ch3_train08,233,39,4	duplicate(BuffsSupports)	Healer#49	909
+ch3_train08,34,39,4	duplicate(BuffsSupports)	Healer#50	909
+
+//==============================================
+//Training Chanel 4
+//==============================================
+ch4_train01,18,69,4	duplicate(BuffsSupports)	Healer#51	909
+ch4_train01,322,134,4	duplicate(BuffsSupports)	Healer#52	909
+ch4_train02,42,154,4	duplicate(BuffsSupports)	Healer#53	909
+ch4_train02,300,129,5	duplicate(BuffsSupports)	Healer#54	909
+ch4_train03,25,126,4	duplicate(BuffsSupports)	Healer#55	909
+ch4_train03,186,39,4	duplicate(BuffsSupports)	Healer#56	909
+ch4_train04,233,39,4	duplicate(BuffsSupports)	Healer#57	909
+ch4_train04,34,39,4	duplicate(BuffsSupports)	Healer#58	909
+ch4_train05,18,69,4	duplicate(BuffsSupports)	Healer#59	909
+ch4_train05,322,134,4	duplicate(BuffsSupports)	Healer#60	909
+ch4_train06,42,154,4	duplicate(BuffsSupports)	Healer#61	909
+ch4_train06,300,129,5	duplicate(BuffsSupports)	Healer#62	909
+ch4_train07,25,126,4	duplicate(BuffsSupports)	Healer#63	909
+ch4_train07,186,39,4	duplicate(BuffsSupports)	Healer#64	909
+ch4_train08,233,39,4	duplicate(BuffsSupports)	Healer#65	909
+ch4_train08,34,39,4	duplicate(BuffsSupports)	Healer#66	909
+
+//==============================================
+//Training Chanel 5 (12-12)
+//==============================================
+ch5_train01,18,69,4	duplicate(BuffsSupports)	Healer#67	909
+ch5_train01,322,134,4	duplicate(BuffsSupports)	Healer#68	909
+ch5_train02,42,154,4	duplicate(BuffsSupports)	Healer#69	909
+ch5_train02,300,129,5	duplicate(BuffsSupports)	Healer#70	909
+ch5_train03,25,126,4	duplicate(BuffsSupports)	Healer#71	909
+ch5_train03,186,39,4	duplicate(BuffsSupports)	Healer#72	909
+ch5_train04,233,39,4	duplicate(BuffsSupports)	Healer#73	909
+ch5_train04,34,39,4	duplicate(BuffsSupports)	Healer#74	909
+ch5_train05,18,69,4	duplicate(BuffsSupports)	Healer#75	909
+ch5_train05,322,134,4	duplicate(BuffsSupports)	Healer#76	909
+ch5_train06,42,154,4	duplicate(BuffsSupports)	Healer#77	909
+ch5_train06,300,129,5	duplicate(BuffsSupports)	Healer#78	909
+ch5_train07,25,126,4	duplicate(BuffsSupports)	Healer#79	909
+ch5_train07,186,39,4	duplicate(BuffsSupports)	Healer#80	909
+ch5_train08,233,39,4	duplicate(BuffsSupports)	Healer#81	909
+ch5_train08,34,39,4	duplicate(BuffsSupports)	Healer#82	909
+
+//==============================================
+//Training Chanel 6 (12-12)
+//==============================================
+ch6_train01,18,69,4	duplicate(BuffsSupports)	Healer#83	909
+ch6_train01,322,134,4	duplicate(BuffsSupports)	Healer#84	909
+ch6_train02,42,154,4	duplicate(BuffsSupports)	Healer#85	909
+ch6_train02,300,129,5	duplicate(BuffsSupports)	Healer#86	909
+ch6_train03,25,126,4	duplicate(BuffsSupports)	Healer#87	909
+ch6_train03,186,39,4	duplicate(BuffsSupports)	Healer#88	909
+ch6_train04,233,39,4	duplicate(BuffsSupports)	Healer#89	909
+ch6_train04,34,39,4	duplicate(BuffsSupports)	Healer#90	909
+ch6_train05,18,69,4	duplicate(BuffsSupports)	Healer#91	909
+ch6_train05,322,134,4	duplicate(BuffsSupports)	Healer#92	909
+ch6_train06,42,154,4	duplicate(BuffsSupports)	Healer#93	909
+ch6_train06,300,129,5	duplicate(BuffsSupports)	Healer#94	909
+ch6_train07,25,126,4	duplicate(BuffsSupports)	Healer#95	909
+ch6_train07,186,39,4	duplicate(BuffsSupports)	Healer#96	909
+ch6_train08,233,39,4	duplicate(BuffsSupports)	Healer#97	909
+ch6_train08,34,39,4	duplicate(BuffsSupports)	Healer#98	909
+
+//==============================================
+//Training Chanel 7 (12-12)
+//==============================================
+ch7_train01,18,69,4	duplicate(BuffsSupports)	Healer#99	909
+ch7_train01,322,134,4	duplicate(BuffsSupports)	Healer#100	909
+ch7_train02,42,154,4	duplicate(BuffsSupports)	Healer#101	909
+ch7_train02,300,129,5	duplicate(BuffsSupports)	Healer#102	909
+ch7_train03,25,126,4	duplicate(BuffsSupports)	Healer#103	909
+ch7_train03,186,39,4	duplicate(BuffsSupports)	Healer#104	909
+ch7_train04,233,39,4	duplicate(BuffsSupports)	Healer#105	909
+ch7_train04,34,39,4	duplicate(BuffsSupports)	Healer#106	909
+ch7_train05,18,69,4	duplicate(BuffsSupports)	Healer#107	909
+ch7_train05,322,134,4	duplicate(BuffsSupports)	Healer#108	909
+ch7_train06,42,154,4	duplicate(BuffsSupports)	Healer#109	909
+ch7_train06,300,129,5	duplicate(BuffsSupports)	Healer#110	909
+ch7_train07,25,126,4	duplicate(BuffsSupports)	Healer#111	909
+ch7_train07,186,39,4	duplicate(BuffsSupports)	Healer#112	909
+ch7_train08,233,39,4	duplicate(BuffsSupports)	Healer#113	909
+ch7_train08,34,39,4	duplicate(BuffsSupports)	Healer#114	909
+
+//==============================================
+//Training Chanel 8 (12-12)
+//==============================================
+ch8_train01,18,69,4	duplicate(BuffsSupports)	Healer#115	909
+ch8_train01,322,134,4	duplicate(BuffsSupports)	Healer#116	909
+ch8_train02,42,154,4	duplicate(BuffsSupports)	Healer#117	909
+ch8_train02,300,129,5	duplicate(BuffsSupports)	Healer#118	909
+ch8_train03,25,126,4	duplicate(BuffsSupports)	Healer#119	909
+ch8_train03,186,39,4	duplicate(BuffsSupports)	Healer#120	909
+ch8_train04,233,39,4	duplicate(BuffsSupports)	Healer#121	909
+ch8_train04,34,39,4	duplicate(BuffsSupports)	Healer#122	909
+ch8_train05,18,69,4	duplicate(BuffsSupports)	Healer#123	909
+ch8_train05,322,134,4	duplicate(BuffsSupports)	Healer#124	909
+ch8_train06,42,154,4	duplicate(BuffsSupports)	Healer#125	909
+ch8_train06,300,129,5	duplicate(BuffsSupports)	Healer#126	909
+ch8_train07,25,126,4	duplicate(BuffsSupports)	Healer#127	909
+ch8_train07,186,39,4	duplicate(BuffsSupports)	Healer#128	909
+ch8_train08,233,39,4	duplicate(BuffsSupports)	Healer#129	909
+ch8_train08,34,39,4	duplicate(BuffsSupports)	Healer#130	909

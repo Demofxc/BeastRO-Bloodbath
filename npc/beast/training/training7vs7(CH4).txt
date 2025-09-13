@@ -1,0 +1,1659 @@
+/*
+DROP TABLE IF EXISTS `party_queueCH4`;
+CREATE TABLE `party_queueCH4` (
+  `party_id` INT(11) UNSIGNED NOT NULL,
+  `name` VARCHAR(24) NOT NULL DEFAULT '',
+  `leader_id` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  `guild_rating` INT NOT NULL DEFAULT '0',
+  `active` TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `challenge_party` VARCHAR(24) NOT NULL DEFAULT '',
+  PRIMARY KEY (`party_id`),
+  UNIQUE INDEX `party_id_UNIQUE` (`party_id` ASC))
+ENGINE = MyISAM;
+
+DROP TABLE IF EXISTS `guild_stats`;
+CREATE TABLE `guild_stats` (
+  `guild_id` INT(11) UNSIGNED NOT NULL,
+  `char_id` INT(11) UNSIGNED NOT NULL,
+  `name` VARCHAR(24) NOT NULL DEFAULT '',
+  `rating` INT NOT NULL DEFAULT '0',
+  `wins` INT UNSIGNED NOT NULL DEFAULT '0',
+  `loses` INT UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guild_id`))
+ENGINE = MyISAM;
+
+//Only run this command if you're using ramod or have some way of getting mac-address.
+//Or if you have .mac_address variable enabled. This is needed for IP addresses.
+ALTER TABLE `ramod`.`party_queueCH4` 
+ADD COLUMN `party_mac` VARCHAR(255) NOT NULL DEFAULT '' AFTER `challenge_party`;
+*/
+	
+function	script	delete_queuefour	{
+	query_sql( "DELETE FROM `party_queueCH4` WHERE `party_id` = "+getarg(0)+";" );
+	if( getargcount() > 1 )
+		query_sql( "DELETE FROM `party_queueCH4` WHERE `party_id` = "+getarg(1)+";" );
+	return;
+}
+
+//Input: "<map>", <x>, <y>, <range>;
+//Output: "x|y"; Walkable x, y;
+function	script	loc_finDfour	{
+	setarray .@dx, 1, 1, 0, -1, -1, -1,  0,  1;
+	setarray .@dy, 0, 1, 1,  1,  0, -1, -1, -1;
+	.@dlen = getarraysize(.@dx);
+	.@rlen = getarg(3);
+	.@map$ = getarg(0);
+	.@x = getarg(1);
+	.@y = getarg(2);
+	freeloop(1);
+	for( .@r = 1; .@r <= .@rlen; .@r++ ) {
+		while( .@d < .@dlen ) {
+			.@tx = .@x+(.@dx[.@d]*.@r);
+			.@ty = .@y+(.@dy[.@d]*.@r);
+			if(checkcell(.@map$,.@tx,.@ty,cell_chkwall)
+			|| checkcell(.@map$,.@tx,.@ty,cell_chkcliff)
+			|| checkcell(.@map$,.@tx,.@ty,cell_chknopass)
+			|| checkcell(.@map$,.@tx,.@ty,cell_chknoreach)) {}
+			else {
+				.@size = getarraysize(.@ary_x);
+				.@ary_x[.@size] = .@tx;
+				.@ary_y[.@size] = .@ty;
+			}
+			.@d++;
+		}
+		.@d = 0;
+	}
+	.@v = rand(getarraysize(.@ary_x));
+	return .@ary_x[.@v]+"|"+.@ary_y[.@v];
+}
+
+//Input: "<npc_namefour>", <party_id>;
+function	script	party_warpfour	{
+	getmapxy( .@map_namefour$, .@x, .@y, BL_NPC, getarg(0) );
+	disablenpc getarg(0);
+	explode( .@loc$, loc_finDfour( .@map_namefour$, .@x, .@y, 5 ), "|" );
+	removemapflag .@map_namefour$, mf_nowarp;
+	warpparty .@map_namefour$, atoi(.@loc$), atoi(.@loc$[1]), getarg(1);
+	setmapflag .@map_namefour$, mf_nowarp;
+	return;
+}
+
+/***************************
+           MAIN NPC
+ ***************************/
+ // By Skorm v6.3.1
+morocc,189,77,4	script	Training Battle(CH4)	15008,{
+
+	if( getgmlevel() >= .gmallowed )
+		menu "Main Settings",L_Main,"Player Menu",-;
+
+	mes .npc_nm$;
+	mes "สวัสดีท่าน : ^738C5A "+strcharinfo(0)+" ^000000";
+	mes "คุณต้องการเข้าสนามฝึกซ้อมทีม ? ";
+	mes "หรือ คุณสามารถนำ ^3399FF"+$@BGR_Point$[1]+"^000000 เพื่อแลกเปลี่ยนไอเทม?";
+	next;
+	menu "^738C5A•^000000 ข้อมูลการแข่งขัน",OnInfo,"^738C5A•^000000 ลงทะเบียน",OnRegister,"^738C5A•^000000 ตรวจสอบอันดับ",OnViewRank,"^738C5A•^000000 ไอเทมห้ามใช้",OnRestrict;
+	close;
+
+	OnInfo:
+		next;
+		mes .npc_nm$;
+		mes "เป็นการซ้อมในรูปแบบ, GVG จำนวนผู้เล่น ^FF0000"+$RWCPartyMemfour+" vs "+$RWCPartyMemfour+"^000000. และผู้เล่นต้องอยู่ปาร์ตี้เดียวกัน"+( .guild_r ? " และกิลด์เดียวกัน":"")+".";
+		next;
+		mes .npc_nm$;
+		mes "ในแต่ละรอบใช้เวลา ^fe20206 นาที^000000.";
+    mes "และมีทั้งหมด ^fe2020"+$RWC_MaxRoundfour+" รอบ^000000";
+		mes "ผู้ชนะจะได้รับ ^fe2020"+$@BGR_Point0+" "+$@BGR_Point$[1]+"^000000 เป็น";
+		mes "รางวัลที่คุณสามารถใช้จ่ายใน";
+		mes "ร้านค้าเพื่อรับรางวัล.";
+		close;
+
+	OnJoin:
+		.@join = 1;
+	OnRegister:
+		set .@partyid, getcharid(1);
+		if(!.@join)
+			mes .npc_nm$;
+		if( !.@partyid ) {
+			if(.@join) {
+				dispbottom "ดูเหมือนคุณไม่มีปาร์ตี้ ฉันขอลองเพิ่มคุณเข้าคิวปาร์ตี้.";
+				
+				if( BaseLevel < .level_r ) {
+					dispbottom "เลเวลของคุณต้องมีอย่างน้อย "+.level_r+" ก่อนจึงจะสามารถเข้าร่วมได้.";
+					end;
+				}
+				
+				if( Zeny < .tm_zeny ) {
+					dispbottom "ต้องมี "+.tm_zeny+" Zeny สำหรับการเข้าร่วม.";
+					end;
+				}
+				
+				.@lenfour = getarraysize(.tm_requirments);
+				for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+					if( countitem( .tm_requirments[.@a] ) < .tm_requirments[.@a+1] ) {
+						dispbottom "คุณต้องมีไอเทมเหล่านี้ก่อนจึงจะสามารถเข้าร่วมได้: "+.items2_m$;
+						end;
+					}
+					
+				if( RWC_bg_delay > gettimetick(2) && .delay ) {
+					dispbottom "คุณติดดีเลย์ในการเข้าร่วมกรุณาลองใหม่ภายหลัง.";
+					end;
+				}
+				
+				.@players = getarraysize(.que_players);
+				dispbottom "คุณถูกเพิ่มเข้าไปในคิวของผู้เล่น "+.@players+" การ Logout จะนำคุณออกจากคิว.";
+				.que_players[.@players] = getcharid(0);
+				
+			} else {
+				mes "ดูเหมือนคุณไม่มีปาร์ตี้.";
+				mes "คุณอยากให้ฉันลองเพิ่มคุณเข้างานปาร์ตี้ไหม?";
+				next;
+				if( select( "ไม่:ตกลง" ) == 1 ) {
+					mes .npc_nm$;
+					mes "ไม่เป็นไร คุณสามารถจัดปาร์ตี้ของคุณเองได้เสมอ แล้วพบกันใหม่!";
+					close;
+				}
+				
+				mes .npc_nm$;
+				if( BaseLevel < .level_r ) {
+					mes "เลเวลของคุณต้องมีอย่างน้อย "+.level_r+" ก่อนจึงจะสามารถเข้าร่วมได้.";
+					close;
+				}
+				
+				if( Zeny < .tm_zeny ) {
+					mes "ต้องมี "+.tm_zeny+" Zeny สำหรับการเข้าร่วม.";
+					close;
+				}
+				
+				.@lenfour = getarraysize(.tm_requirments);
+				for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+					if( countitem( .tm_requirments[.@a] ) < .tm_requirments[.@a+1] ) {
+						mes "คุณต้องมีไอเทมเหล่านี้ก่อนจึงจะสามารถเข้าร่วมได้: "+.items2_m$;
+						close;
+					}
+					
+				if( RWC_bg_delay > gettimetick(2) && .delay ) {
+					mes "คุณติดดีเลย์ในการเข้าร่วมกรุณาลองใหม่ภายหลัง.";
+					close;
+				}
+				
+				.@players = getarraysize(.que_players);
+				mes "คุณถูกเพิ่มเข้าไปในคิวของผู้เล่น "+.@players+" การ Logout จะนำคุณออกจากคิว.";
+				.que_players[.@players] = getcharid(0);
+			}
+			
+			if( Zeny > .tm_zeny )
+				Zeny = Zeny - .tm_zeny;
+			.@lenfour = getarraysize(.tm_requirments);
+			for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+				if( countitem( .tm_requirments[.@a] ) >= .tm_requirments[.@a+1] )
+					delitem( .tm_requirments[.@a], .tm_requirments[.@a+1] );
+			RWC_bg_delay = gettimetick(2) + .delay;
+			
+			@rwcreg = 1;
+			
+			if(getarraysize(.que_players) >= $RWCPartyMemfour) {
+				callsub Sub_PartyMake;
+				callsub Sub_InsertParty;
+			}
+			if(.@join)
+				end;
+			close;
+		}
+
+		function sf {
+			function s;
+			.@a = getarg(2);
+			.@lenfour = getarg(3);
+			return (
+					sprintf( getarg(0),
+						s(.@a++, .@lenfour, getarg(1)), s(.@a++, .@lenfour, getarg(1)),
+						s(.@a++, .@lenfour, getarg(1)), s(.@a++, .@lenfour, getarg(1)),
+						s(.@a++, .@lenfour, getarg(1)), s(.@a++, .@lenfour, getarg(1)),
+						s(.@a++, .@lenfour, getarg(1)), s(.@a++, .@lenfour, getarg(1)),
+						s(.@a++, .@lenfour, getarg(1)), s(.@a++, .@lenfour, getarg(1))
+					)
+				+(( .@a+1 < .@lenfour )?":หน้าถัดไป":":")
+				+(( .@a-11 > 0 )?":กลับ":":")
+				+":ยกเลิก"
+			);
+			function s {
+				if( getarg(0) >= getarg(1) ) return "";
+				else {
+					.@name$ = getpartyname(getelementofarray(getarg(2),getarg(0)));
+					return .@name$=="ไม่พบข้อมูล"?"":"Party [^0054ff"+.@name$+"^000000]";
+				}
+			};
+		};
+
+		function nex { return((getarg(0)+10)<getarg(1)?getarg(0)+10:getarg(1)-(getarg(1)%10)); };
+		function bac { return((getarg(0)-10)>=0?getarg(0)-10:0); };
+
+		.@exist = query_sql( "SELECT `party_id`, `name`, `leader_id`, `guild_rating`, `active`, `challenge_party` FROM `party_queueCH4` WHERE `party_id` = "+.@partyid+";", .@pid, .@name, .@lid, .@rating, .@active, .@c_pname$ );
+		.@c_list = query_sql( "SELECT `party_id` FROM `party_queueCH4` WHERE `challenge_party` LIKE '%"+getpartyname(.@partyid)+"%' AND `party_id` <> "+.@partyid+";", .@c_pid );
+
+		if( .@exist ) {
+			if(!.@join) {
+				mes "ปาร์ตี้ของคุณได้เข้าร่วม Traning Battle แล้ว!";
+				next;
+				mes .npc_nm$;
+				if( getcharid(0)==getpartyleader(.@partyid,2) ) {
+					if( !.@active ) {
+						mes "คุณต้องการลบปาร์ตี้ของคุณออกจากคิวหรือไม่?";
+						next;
+						if( select("ตกลง:ไม่")==1 ) {
+							@challenge = 0;
+							delete_queuefour( .@partyid );
+							deltimer strnpcinfo(1)+"::OnMatchmaking";
+							mes .npc_nm$;
+							mes "^fe2020ปาร์ตี้ของคุณถูกลบออกจากคิวแล้ว!";
+						}
+					} else mes "การแข่งขันกำลังจะเริ่มต้น กรุณารอสักครู่...";
+				} else mes "เรากำลังค้นหาคู่ต่อสู้อยู่ โปรดรอสักครู่...";
+				close;
+			} else {
+				dispbottom "ปาร์ตี้ของคุณลงทะเบียนแล้ว ใช้ @deletequeue เพื่อลบปาร์ตี้ของคุณ.";
+				end;
+			}
+		}
+		
+		if(!.@join) {
+			mes "ที่นี่คุณสามารถแข่งขันกับฝ่าย";
+			mes "อื่นเพื่อและเพิ่มอันดับกิลด์ของคุณได้ แต่ละรอบใช้เวลานานถึง ^fe20206 นาที^000000 และมีทั้งหมด ^fe2020"+$RWC_MaxRoundfour+" รอบ^000000.";
+			next;
+			mes .npc_nm$;
+		}
+		
+		if( getcharid(0) != getpartyleader(.@partyid,2) ) {
+			if(.@join) {
+				dispbottom "ฉันขอโทษ คุณต้องเป็นหัวหน้าปาร์ตี้จึงจะลงทะเบียนปาร์ตี้ได้!";
+				end;
+			} else
+				mes "ฉันขอโทษ คุณต้องเป็นหัวหน้าปาร์ตี้จึงจะลงทะเบียนปาร์ตี้ได้!";
+				close;
+		} else if( !getcharid(2) ) {
+			if(.@join) {
+				dispbottom "ฉันขอโทษ คุณต้องมีกิลด์ก่อนจึงจะสามารถเข้าร่วมได้!";
+				end;
+			} else
+				mes "ฉันขอโทษ คุณต้องมีกิลด์ก่อนจึงจะสามารถเข้าร่วมได้!";
+				close;
+		}
+		mes "คุณต้องการเพิ่มปาร์ตี้ของคุณเข้าคิว Training Battle(CH4) หรือท้าทายปาร์ตี้ของเพื่อนหรือไม่?"+(.@c_list?" โอ้ ดูเหมือนว่าคุณจะมีผู้ท้าชิง!":"");
+		if(!.@join) next;
+		switch( select("ลงทะเบียน:ท้าทายปาร์ตี้!:"+(.@c_list?"ตอบรับคำท้าทาย!":"")+":ยกเลิก") ) {
+			case 2:
+				mes .npc_nm$;
+				mes "กรอกชื่อปาร์ตี้ที่คุณต้องการท้าทาย.";
+				if(!.@join)
+					next;
+				if( input( .@challenge_party$, 1, 24 )!=0 ) {
+					mes .npc_nm$;
+					mes "ชื่อปาร์ตี้ต้องมีความยาวไม่เกิน 1 ถึง 24 อักษร.";
+					close;
+				}
+				break;
+
+			case 3:
+				mes .npc_nm$;
+				mes "เลือกปาร์ตี้ที่คุณต้องการท้าทาย!";
+				.@format$ = "%s:%s:%s:%s:%s:%s:%s:%s:%s:%s";
+				if(!.@join)
+					next;
+				while( 1 ) {
+					select( sf( .@format$, .@c_pid, .@a, .@c_list ) );
+					switch( @menu ) {
+						case 11: .@a = nex( .@a, .@a_len ); break;
+						case 12: .@a = bac( .@a ); break;
+						case 13: end;
+
+						default:
+							.@select = .@a+@menu-1;
+							mes .npc_nm$;
+							mes "คุณเลือกปาร์ตี้ ^0000FF["+getpartyname(.@c_pid[.@select])+"]^000000 คุณต้องการที่จะท้าทายพวกเขาหรือไม่?";
+							next;
+							if( select("ตกลง:ไม่") == 1 ) {
+								@c_accept = 1;
+								callsub OnMatchmaking, .@c_pid[.@select];
+							}
+							close;
+					}
+				}
+			case 4:
+				mes .npc_nm$;
+				mes "แย่จังเลย แล้วคุณจะกลับมาใหม่อีกครั้งไหม?";
+				close;
+			default:
+		}
+		if(!.@join)
+			next;
+
+		mes .npc_nm$;
+		.@plen = callsub( Sub_PartyCount, .@partyid );
+		if( .s != .@plen ) {
+			mes "สมาชิกปาร์ตี้ทุกคนจะต้องออนไลน์เพื่อลงทะเบียนปาร์ตี้ของคุณ!";
+			close;
+		}
+
+		.@message$ = callsub( Sub_PartyCheck, .@partyid );
+		explode( .@message$, .@message$, "|" );
+		
+		switch ( callsub( Sub_Requirements, .@partyid ) ) {
+			case 1:
+				mes "สมาชิกปาร์ตี้ทุกคนจะต้องอยู่กิลด์เดียวกัน!";
+				close;
+				break;
+				
+			case 2:
+				mes "สมาชิกปาร์ตี้ทุกคนต้องมีเลเวลอย่างน้อย "+.level_r+".";
+				close;
+				break;
+				
+			case 3:
+				mes "คุณต้องมี "+.pl_zeny+"zeny เพื่อเข้าร่วม.";
+				close;
+				break;
+				
+			case 4:
+				mes "ผู้เล่นในปาร์ตี้ทุกคนต้องมี "+.tm_zeny+"zeny เพื่อเข้าร่วม.";
+				close;
+				break;
+				
+			case 5:
+				mes "คุณต้องมีไอเทมเหล่านี้ก่อนจึงจะเข้าได้: "+.items_m$;
+				close;
+				break;
+				
+			case 6:
+				mes "คุณและผู้เล่นในปาร์ตี้ต้องมีไอเทมเหล่านี้ก่อนจึงจะเข้าได้: "+.items2_m$;
+				close;
+				break;
+				
+			case 7:
+				mes "คุณหรือสมาชิกปาร์ตี้คนใดคนหนึ่งของคุณได้ทำกิจกรรมนี้แล้วและยังคงล่าช้าอยู่.";
+				mes "กรุณา Logout หรือ สร้างปาร์ตี้ใหม่.";
+				close;
+				break;
+				
+			default:
+		}
+		
+		callsub( Sub_RequirementsTake, .@partyid );
+
+		if( .@plen == $RWCPartyMemfour && !getarraysize( .@message$ ) ) {
+		
+	Sub_InsertParty:
+			set .@partyid, getcharid(1);
+			query_sql( "INSERT INTO `party_queueCH4` VALUES ( "+.@partyid+", '"+escape_sql(getpartyname(.@partyid))+"', "+getcharid(0)+", 0, 0, "+( getstrlen(.@challenge_party$) ? "'"+escape_sql(.@challenge_party$)+"'" : "''" )+""+( .mac_address ? ", '"+callsub( Sub_SetMac, .@partyid )+"'" : "")+" );" );
+			if( getstrlen(.@challenge_party$) ) {
+				@challenge = 1;
+				mes "^30ad23การท้าทายของคุณถูกส่งแล้ว!";
+				query_sql( "SELECT `leader_id`, `leader_char` FROM `party` WHERE `name` = '"+escape_sql(.@challenge_party$)+"';", .@o_aid, .@o_cid );
+				if( isloggedin( .@o_aid, .@o_cid ) )
+					if( getpartyname( getcharid( 1, rid2name( .@o_aid ) ) ) == .@challenge_party$ )
+						message rid2name( .@o_aid ), "คุณและผู้เล่นในปาร์ตี้ได้รับการท้าทายใน Training Battle(CH4) "+strcharinfo(0)+".";
+			} else mes "^30ad23ปาร์ตี้ของคุณถูกเพิ่มเข้าไปในคิวแล้ว!";
+			announce "[ Training Battle(CH4) ] ปาร์ตี้ ( "+getpartyname(.@partyid)+" ) ได้ลงทะเบียนแล้ว ลงทะเบียนเพื่อเข้าร่วมการต่อสู้!.",bc_all,0xff0000;
+			@pvp_range = 0;
+			callsub OnMatchmaking;
+		} else {
+			mes "คุณต้องมีสมาชิกปาร์ตี้ "+$RWCPartyMemfour+" จึงจะเข้าร่วมได้! ทีมของคุณต้องประกอบด้วย ^0000ffPaladin, Professor, High Wizard, Champion, High Priest, Clown, หรือ Sniper, Lord Knight, Stalker, Creator, Assassin Cross, และ Whitesmith.";
+			if( getstrlen(.@message$[0]) > 0 ) {
+				next;
+				mes .npc_nm$;
+				mes "อาชีพที่ขาดหายไปคือ ^0000ff"+.@message$+".";
+				close;
+			} else if( getstrlen(.@message$[1]) > 0 ) {
+				next;
+				mes .npc_nm$;
+				mes .@message$[1];
+				close;
+			}
+		}
+		close2;
+		end;
+		
+	Sub_PartyMake:
+		copyarray .@auto_party, .que_players, $RWCPartyMemfour;
+		deletearray .que_players, $RWCPartyMemfour;
+		do {
+			.@party_name$ = "training"+substr(md5(""+gettimetick(0)),0,20);
+			dispbottom "ปาร์ตี้..."+.@party_name$;
+		} while( query_sql("SELECT `name` FROM `party` WHERE `name` = '"+.@party_name$+"';", .@str$ ) > 0 );
+		switch( party_create(.@party_name$) ) {
+			case 0:
+				debugmes "Training Battle(CH4): ไม่ได้สร้างปาร์ตี้ข้อผิดพลาดที่ไม่รู้จัก!";
+				return;
+			case -1:
+				debugmes "Training Battle(CH4): ไม่พบผู้เล่น!";
+				return;
+			case -2:
+				debugmes "Training Battle(CH4): ผู้เล่นคนสุดท้ายที่เข้าคิวมีปาร์ตี้แล้ว...";
+				return;
+			case -3:
+				debugmes "Training Battle(CH4): ชื่อปาร์ตี้มีอยู่แล้ว";
+				return;
+		}
+		.@partyid = $@party_create_id;
+		sleep2(100);
+		for( .@a = 0; .@a <  $RWCPartyMemfour; .@a++ ) {
+			set @rwcreg, 0, .@auto_party[.@a];
+			if(.@auto_party[.@a] != getcharid(0)) {
+				.@pid = getcharid( 1, strcharinfo( 0, .@auto_party[.@a] ) );
+				if( .@pid ) {
+					party_delmember( .@auto_party[.@a], .@pid );
+					sleep2(1);
+				}
+				party_addmember(.@partyid, .@auto_party[.@a]);
+			}
+		}
+		return .@partyid;
+
+	OnViewRank:
+		function sf2 {
+			function s2;
+			.@a = getarg(2);
+			.@lenfour = getarg(3);
+			return (
+					sprintf( getarg(0),
+						s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@lenfour, getarg(1), getarg(4), getarg(5))
+					)
+				+(( .@a+1 < .@lenfour )?":หน้าถัดไป":":")
+				+(( .@a-11 > 0 )?":กลับ":":")
+				+":ยกเลิก"
+			);
+			function s2 {
+				if( getarg(0) >= getarg(1) ) return "";
+				else {
+					.@name$ = getguildname(getelementofarray(getarg(2),getarg(0)));
+					return .@name$=="ไม่พบข้อมูล"?"":(getarg(0)+1)+". Guild [^0054ff"+.@name$+"^000000] ชนะ "+getelementofarray(getarg(3),getarg(0))+" แพ้ "+getelementofarray(getarg(4),getarg(0))+" ";
+				}
+			};
+		};
+		function nex1 { return((getarg(0)+10)<getarg(1)?getarg(0)+10:getarg(1)-(getarg(1)%10)); };
+		function bac2 { return((getarg(0)-10)>=0?getarg(0)-10:0); };
+
+		.@g_list = query_sql( "SELECT DISTINCT `guild_id`,`wins`,`loses` FROM `guild_stats` WHERE `wins` > 0 ORDER BY `wins` / `loses` DESC LIMIT 100;", .@gid, .@wins, .@loses );
+		next;
+		mes .npc_nm$;
+		mes "การจัดอันดับจะรีเซ็ตทุกเดือน";
+		.@format$ = "%s:%s:%s:%s:%s:%s:%s:%s:%s:%s";
+		next;
+		while( 1 ) {
+			select( sf2( .@format$, .@gid, .@a, .@g_list, .@wins, .@loses ) );
+			switch( @menu ) {
+				case 11: .@a = nex1( .@a, .@a_len ); break;
+				case 12: .@a = bac2( .@a ); break;
+				case 13: end;
+				default:
+			}
+		}
+		close;
+
+	OnMatchmaking:
+		@pvp_range++;
+		.@partyid = getcharid(1);
+		.@plen = callsub( Sub_PartyCount, .@partyid );
+		.@mlen = getarraysize(.maps$);
+		if( .@plen > $RWCPartyMemfour ) {
+			delete_queuefour( .@partyid );
+			message strcharinfo(0),.npc_$+": ปาร์ตี้ของคุณมีผู้เล่นมากเกินไปการจับคู่ถูกยกเลิก...";
+			end;
+		} else if( .@plen < $RWCPartyMemfour ) {
+			delete_queuefour( .@partyid );
+			message strcharinfo(0),.npc_$+": ปาร์ตี้ของคุณมีผู้เล่นน้อยเกินไปการจับคู่ถูกยกเลิก...";
+			end;
+		} else if( .s != .@plen ) {
+			delete_queuefour( .@partyid );
+			message strcharinfo(0),.npc_$+": ผู้เล่นบางคนในปาร์ตี้ยังอยู่ในคิวกรุณา Logout หรือสร้างปาร์ตี้ใหม่...";
+			end;
+		}
+
+		if( !@challenge ) {
+			if(.mac_address)
+				.@lenfour = query_sql(
+					"SELECT * "+
+					"FROM `party_queueCH4` "+
+					"WHERE `active` <> 1 "+
+					"AND `party_id` <> "+.@partyid+" "+
+					"AND `challenge_party` = '' "+
+					"AND `party_mac` NOT LIKE '%"+callsub( Sub_GetMac, .@partyid )+"%';",
+					.@pid, .@name$, .@lid, .@rating, .@active, .@cp$, .@mac$
+				);
+			else
+				.@lenfour = query_sql(
+					"SELECT * "+
+					"FROM `party_queueCH4` "+
+					"WHERE `active` <> 1 "+
+					"AND `party_id` <> "+.@partyid+" "+
+					"AND `challenge_party` = '';",
+					.@pid, .@name$, .@lid, .@rating, .@active, .@cp$
+				);
+			.@enemy = .@pid;
+		}
+
+		for( .@a = 0; .@a < .@mlen; .@a++ )
+			if( !getmapusers(.maps$[.@a]) )
+				.@tmp_maps$[getarraysize(.@tmp_maps$)] = ""+.@a;
+		.@tmp_mlen = getarraysize(.@tmp_maps$);
+
+		if( !.@tmp_mlen ) {
+			.@mes$ = .@lenfour?" เจอคู่ต่อสู้แล้ว แต่แมพยังไม่พร้อมใช้งาน... กำลังค้นหา...":" ไม่มีแมพที่พร้อมใช้งาน... กำลังค้นหา...";
+			.@lenfour = 0;
+			if( @c_accept )
+				if( getargcount() ) {
+					sleep2(30000);
+					if( playerattached() )
+						callsub OnMatchmaking, getarg(0);
+				}
+		}
+		if( @c_accept ) {
+			if( getargcount() ) {
+				.@lenfour = 1;
+				.@enemy = getarg(0);
+			}
+		}
+
+		if( !.@lenfour ) {
+			deltimer strnpcinfo(1)+"::OnMatchmaking";
+			addtimer 3000,strnpcinfo(1)+"::OnMatchmaking";
+			addrid(2,0,getcharid(1));
+			message strcharinfo(0), "[ระบบ] :"+( .@mes$!="" ? .@mes$ : ( @challenge ? " รอให้ฝ่ายตรงข้ามยอมรับ...":" กำลังมองหาปาร์ตี้..." ) );
+		} else {
+			query_sql(
+				"UPDATE `party_queueCH4` "+
+				"SET `active` = 1 "+
+				"WHERE `party_id` = "+.@partyid+" "+
+				"OR `party_id` = "+.@enemy+";"
+			);
+			callsub OnRWCStart, atoi(.@tmp_maps$[rand(.@tmp_mlen)]), .@partyid, .@enemy, .@total, .@rating;
+		}
+		end;
+
+	OnRestrict:
+		next;
+		mes .npc_nm$;
+		mes "นี้คือไอเทมที่ ^FF0000ไม่สามารถใช้งานได้^000000.";
+		for (.@i = 0; .@i < getarraysize(.restricted); .@i++) {
+			mes "- "+getitemname(.restricted[.@i])+"";
+		}
+		close;
+
+	OnPCLogoutEvent:
+		if( @rwcreg ) {
+			.@lenfour = getarraysize(.que_players);
+			for( .@a = 0; .@a <  .@lenfour; .@a++ ) {
+				if(.que_players[.@a] == getcharid(0)) {
+					deletearray .que_players[.@a], 1;
+					end;
+				}
+			}
+		}
+		.@partyid = getcharid(1);
+		if( @pvp_range ) {
+			delete_queuefour( .@partyid );
+			addrid( 2,0,.@partyid );
+			if( playerattached() )
+				message strcharinfo(0),.npc_$+": ยกเลิกการจับคู่...";
+		}
+		end;
+
+	OnRWCStart:
+		@pvp_range = 0;
+		.@event = getarg(0)+1;
+		callsub Sub_PartyFound, getarg(1), .@instance_id, getarg(0)+1, 0, getarg(2);
+		callsub Sub_PartyFound, getarg(2), .@instance_id, getarg(0)+1, 1, getarg(1);
+		sleep2(4000);
+
+		party_warpfour( "Team Warperfour#"+.@event+"|1", getarg(1) );
+		party_warpfour( "Team Warperfour#"+.@event+"|2", getarg(2) );
+
+		sleep(2000);
+		setarray .teamsfour, getarg(1), getarg(2);
+		donpcevent( "Dfour#"+.@event+"::On" );
+		end;
+
+
+	OnPartyCount:
+		.s = 0;
+		getpartymember(.piDfour);
+		addrid(2,0,.piDfour);
+		.s++;
+		end;
+
+	Sub_PartyCount:
+		.piDfour = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnPartyCount";
+		return $@partymembercount;
+
+	OnPartyCheck:
+		deletearray .jobs$;
+		addrid( 2, 0, .piDfour );
+		.jobs$[getarraysize(.jobs$)] = "|"+eaclass()+"|";
+		end;
+
+	Sub_PartyCheck:
+		.piDfour = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnPartyCheck";
+		.@jobsf$ = implode( .jobs$, "" );
+		copyarray .@jobs$[0], .jobs$[0], getarraysize(.jobs$);
+		.@lenfour = getarraysize( .@jobs$ );
+		if( .class_r ) {
+			if( !compare(.@jobsf$,"|4609|") ) .@message$[ getarraysize(.@message$) ] = " Paladin";
+			if( !compare(.@jobsf$,"|4612|") ) .@message$[ getarraysize(.@message$) ] = " Champion";
+			if( !compare(.@jobsf$,"|4610|") ) .@message$[ getarraysize(.@message$) ] = " Professor";
+			if( !compare(.@jobsf$,"|4611|") ) .@message$[ getarraysize(.@message$) ] = " Clown/Gypsy";
+			if( !compare(.@jobsf$,"|4356|") ) .@message$[ getarraysize(.@message$) ] = " High Priest";
+			if( !compare(.@jobsf$,"|4354|") ) .@message$[ getarraysize(.@message$) ] = " High Wizard";
+			if(	 compare(.@jobsf$,"|4355|")
+			||   compare(.@jobsf$,"|4353|")
+			||   compare(.@jobsf$,"|4613|")
+			||   compare(.@jobsf$,"|4358|")
+			||   compare(.@jobsf$,"|4357|")
+			||   compare(.@jobsf$,"|4614|") ) {}
+			else .@message$[ getarraysize(.@message$) ] = " Sniper/Lord Knight/Stalker/Creator/Assassin Cross/Whitesmith";
+			if( getarraysize(.@message$) > 1 ) .@message$ = implode(.@message$,",");
+		}
+		if( .dup_class_r ) {
+			for( .@a = 0; .@a < .@lenfour; .@a++ ) {
+				if( countstr( .@jobsf$, .@jobs$[.@a], 0 ) > 1 ) {
+					.@message$ = .@message$+"|คุณไม่ได้รับอนุญาตให้มีอาชีพเดียวกันมากกว่า 1 อาชีพ.";
+				}
+			}
+		}
+		return .@message$;
+
+	Sub_PartyFound:
+		setarray .piDfour, getarg(0), getarg(1), getarg(2), getarg(3), getarg(4);
+		donpcevent strnpcinfo(1)+"::OnPartyFound";
+		return;
+
+	OnPartyFound:
+		addrid( 2,0,.piDfour );
+		if( playerattached() ) {
+			copyarray @pid, .piDfour, 5;
+			@pvp_range = 0;
+			@challenge = 0;
+			@c_accept = 0;
+			bg_leave;
+			message strcharinfo(0), .npc_$+": จับคู่สำเร็จ!!! กำลังพาคุณเข้าสนาม...";
+			if(getcharid(0)==getpartyleader(.piDfour,2))
+				deltimer strnpcinfo(1)+"::OnMatchmaking";
+		}
+		end;
+		
+	OnRequirementCheck:
+		.warning = 0;
+		addrid( 2, 0, .piDfour );
+		if( .guild_r )
+			if( getguildname( getcharid( 2, getpartyleader(.piDfour) ) ) != getguildname( getcharid(2) ) )
+				.warning = 1;
+		if( BaseLevel < .level_r )
+			.warning = 2;
+		if( getpartyleader( .piDfour, 2 ) == getcharid(0) ) {
+			if( Zeny < .pl_zeny )
+				.warning = 3;
+			.@lenfour = getarraysize(.pl_requirments);
+			for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+				if( countitem( .pl_requirments[.@a] ) < .pl_requirments[.@a+1] )
+					.warning = 5;
+		}
+		if( Zeny < .tm_zeny )
+			.warning = 4;
+		.@lenfour = getarraysize(.tm_requirments);
+		for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+			if( countitem( .tm_requirments[.@a] ) < .tm_requirments[.@a+1] )
+				.warning = 6;
+		if( RWC_bg_delay > gettimetick(2) && .delay )
+			.warning = 7;
+		end;
+
+	Sub_Requirements:
+		.piDfour = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnRequirementCheck";
+		return .warning;
+		
+	OnRequirementTake:
+		addrid( 2, 0, .piDfour );
+		if( getpartyleader( .piDfour, 2 ) == getcharid(0) ) {
+			if( Zeny > .pl_zeny )
+				Zeny = Zeny - .pl_zeny;
+			.@lenfour = getarraysize(.pl_requirments);
+			for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+				if( countitem( .pl_requirments[.@a] ) >= .pl_requirments[.@a+1] )
+					delitem( .pl_requirments[.@a], .pl_requirments[.@a+1] );
+		}
+		if( Zeny > .tm_zeny )
+			Zeny = Zeny - .tm_zeny;
+		.@lenfour = getarraysize(.tm_requirments);
+		for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+			if( countitem( .tm_requirments[.@a] ) >= .tm_requirments[.@a+1] )
+				delitem( .tm_requirments[.@a], .tm_requirments[.@a+1] );
+		RWC_bg_delay = gettimetick(2) + .delay;
+		end;
+
+	Sub_RequirementsTake:
+		.piDfour = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnRequirementTake";
+		return;
+		
+	OnSetMac:
+		addrid( 2, 0, .piDfour );
+		query_sql( "SELECT `last_"+.abuse_protect$+"` FROM `login` WHERE `account_id` = "+getcharid(3)+";", .@mac$ );
+		.mac$[getarraysize(.mac$)] = .@mac$;
+		end;
+
+	Sub_SetMac:
+		.piDfour = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnSetMac";
+		copyarray .@mac$[0], .mac$[0], getarraysize(.mac$);
+		deletearray( .mac$ );
+		.@mac$ = implode( .@mac$, "|" );
+		return .@mac$;
+
+	OnGetMac:
+		addrid( 2, 0, .piDfour );
+		query_sql( "SELECT `last_"+.abuse_protect$+"` FROM `login` WHERE `account_id` = "+getcharid(3)+";", .@mac$ );
+		.mac[ getarraysize(.mac) ] = .@mac;
+		end;
+
+	Sub_GetMac:
+		.piDfour = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnSetMac";
+		copyarray .@mac$[0], .mac$[0], getarraysize(.mac$);
+		deletearray( .mac$ );
+		.@mac$ = implode( .@mac$, "%' AND `party_mac` NOT LIKE '%" );
+		return .@mac$;
+		
+	OnTimer180000:
+		.@lenfour = query_sql( "SELECT `party_id` FROM `party_queueCH4` WHERE `active` <> 1;", .@pid );
+		if( .@lenfour > 0 )
+			announce "[ Training Battle(CH4) ] มี "+.@lenfour+" ปาร์ตี้กำลังรอ ลงทะเบียนเพื่อเข้าร่วมการต่อสู้!.",bc_all,0xe67e22;
+		initnpctimer;
+		end;
+		
+	L_Main:
+		.@menu = 0;
+		mes "เลือกตัวเลือกที่คุณต้องการแก้ไข.";
+		while( 1 ) {
+			switch(
+				.@menu ? .@menu : .@menu = select(
+					"ขนาดปาร์ตี้:"+
+					"จำนวนรอบ:"+
+					"Draw Times:"+
+					"รูปแบบ"
+				) ) {
+					case 1:
+						setarray .@r, 1, 8;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWCPartyMemfour+" )";
+						next;
+						mes "Size of party members.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWCPartyMemfour = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+						
+					case 2:
+						setarray .@r, 0, 100;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWC_MaxRoundfour+" )";
+						next;
+						mes "Required wins to win the match.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWC_MaxRoundfour = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+
+					case 3:
+						setarray .@r, 1, 100;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWC_DrawOutfour+" )";
+						next;
+						mes "If the four teams have this x draw times the match will end.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWC_DrawOutfour = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+						
+					case 4:
+						setarray .@r, 0, 1;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWC_GMfour+" )";
+						next;
+						mes "This changes the game mode... 1 = Best of Max round while 0 = First to max round.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWC_GMfour = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+			}
+			break;
+		}
+		end;
+		
+	OnLeave:
+		.@partyid = getcharid(1);
+
+		if( getcharid(0) != getpartyleader(.@partyid,2) ) {
+			dispbottom "เฉพาะหัวหน้าปาร์ตี้เท่านั้นที่สามารถใช้คำสั่งนี้ได้!";
+			end;
+		} else if( @rwcreg ) {
+			@rwcreg = 0;
+			.@lenfour = getarraysize(.que_players);
+			for( .@a = 0; .@a <  .@lenfour; .@a++ ) {
+				if(.que_players[.@a] == getcharid(0)) {
+					deletearray .que_players[.@a], 1;
+					end;
+				}
+			}
+			dispbottom "คุณถูกลบออกจากคิวปาร์ตี้แล้ว.";
+			end;
+		}
+		
+		.@exist = query_sql( "SELECT `party_id`, `name`, `leader_id`, `guild_rating`, `active`, `challenge_party` FROM `party_queueCH4` WHERE `party_id` = "+.@partyid+";", .@pid, .@name, .@lid, .@rating, .@active, .@c_pname$ );
+		
+		if( .@exist && !.@active ) {
+			@challenge = 0;
+			delete_queuefour( .@partyid );
+			deltimer strnpcinfo(1)+"::OnMatchmaking";
+			dispbottom "ปาร์ตี้ของคุณถูกลบออกจากคิวแล้ว!";
+		}
+		end;
+	
+	OnCommandEvent:
+		if ( !compare( .c_maps$, "|"+strcharinfo(3)+"|" ) || getgmlevel() >= 99 )
+			atcommand .@atcmd_command$+" "+ implode( .@atcmd_parameters$," " );
+		else message strcharinfo(0), "คุณไม่ได้รับอนุญาตให้ใช้คำสั่งนั้นที่นี่!";
+		end;
+
+	OnInit:
+		initnpctimer;
+		
+		//=================Default Settings=================
+		.npc_nm$ = "^738C5A[ Training Battle(CH4) ]^000000";
+		.@pty_countfour = 1;									//How many party members allowed?
+		.@max_roundfour = 1;									//How many rounds per game?
+		.@draw_coutfour = 3;									//Max amount of draw matches before exit?
+		.@game_modefour = 1;									//1 = Best of max round; 0 = First to max round.
+		.@npc_namefour$ = "Training Battle(CH4) "+.@pty_countfour+"v"+.@pty_countfour;	//What would you like the npc to be called?
+		.@mgm_menufour$ = "99";									//What is the minimum GM level you allow to use GM Menu?
+		setarray .usableblock, 14601;						//Blocked usable items list.
+		.@permanent_ingame_changesfour = 0;						//If this is enabled in-game settings will override script settings, and persist even after reload.
+		
+		setarray .maps$,	"ch4_train01", "ch4_train02", "ch4_train03", "ch4_train04", "ch4_train05", "ch4_train06", "ch4_train07", "ch4_train08"; //Maps Allowed.
+		setarray .party,	2           , 2           , 2           , 2           , 2           , 2           , 2           , 2           ; //Max Parties Allowed.
+		setarray .nwall,	2           , 2           , 2           , 2           , 2           , 2           , 2           , 2           ; //Number of walls.
+		//             |             |             |             |             |             |             |             |             |
+		setarray .mtm1x,	99          , 121         , 46          , 63          , 99          , 121         , 46          , 63          ; //Team #1 x cords
+		setarray .mtm1y,	112         , 159         , 80          , 92          , 112         , 159         , 80          , 92          ; //Team #1 y cords
+		//             |             |             |             |             |             |             |             |             |
+		setarray .mtm2x,	242         , 232         , 153         , 195         , 242         , 232         , 153         , 195         ; //Team #2 x cords
+		setarray .mtm2y,	111         , 158         , 80          , 92          , 111         , 158         , 80          , 92          ; //Team #2 y cords
+
+		//Walls:::      	#1| 	#2|
+		setarray .xwal1,	110,	230; //Wall x cord       |
+		setarray .ywal1,	113,	113; //Wall y cord       | Room
+		setarray .dwal1,	4  ,	4  ; //Wall direction.   |      1x
+		setarray .lwal1,	8  ,	8  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal2,	135,	217; //Wall x cord       |
+		setarray .ywal2,	161,	158; //Wall y cord       | Room
+		setarray .dwal2,	4  ,	4  ; //Wall direction.   |      2x
+		setarray .lwal2,	9  ,	7 ; //Wall length        |
+		//::::::::      	#1| 	#2|
+		setarray .xwal3,	57, 	144; //Wall x cord       |
+		setarray .ywal3,	81, 	81 ; //Wall y cord       | Room
+		setarray .dwal3,	4 , 	4  ; //Wall direction.   |      3x
+		setarray .lwal3,	4 , 	4  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal4,	72, 	185; //Wall x cord       |
+		setarray .ywal4,	95, 	95 ; //Wall y cord       | Room
+		setarray .dwal4,	4 , 	4  ; //Wall direction.   |      4x
+		setarray .lwal4,	8 , 	8  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal5,	110,	230; //Wall x cord       |
+		setarray .ywal5,	113,	113; //Wall y cord       | Room
+		setarray .dwal5,	4  ,	4  ; //Wall direction.   |      5x
+		setarray .lwal5,	8  ,	8  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal6,	135,	217; //Wall x cord       |
+		setarray .ywal6,	161,	158; //Wall y cord       | Room
+		setarray .dwal6,	4  ,	4  ; //Wall direction.   |      6x
+		setarray .lwal6,	9  ,	7 ; //Wall length        |
+		//::::::::      	#1| 	#2|
+		setarray .xwal7,	57, 	144; //Wall x cord       |
+		setarray .ywal7,	81, 	81 ; //Wall y cord       | Room
+		setarray .dwal7,	4 , 	4  ; //Wall direction.   |      7x
+		setarray .lwal7,	4 , 	4  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal8,	72, 	185; //Wall x cord       |
+		setarray .ywal8,	95, 	95 ; //Wall y cord       | Room
+		setarray .dwal8,	4 , 	4  ; //Wall direction.   |      8x
+		setarray .lwal8,	8 , 	8  ; //Wall length       |
+
+		//::Directional Key:::
+		//NW:::::::N::::::::NE
+		//1::::::::0:::::::::7
+		//2::::::::::::::::::6
+		//3::::::::4:::::::::5
+		
+		//Rewards
+		$@BGR_Point$[0] = "#TNPOINTS";
+		$@BGR_Point$[1] = "Training Point";
+
+		//Rewards Points Winner
+		$@BGR_Point0 = 1;
+		//setarray $@l_0_team_rewards, 0; //Wining leader rewards.
+		//setarray $@t_0_team_rewards, 0; //Wining all members including leader rewards.
+
+		//Rewards Points Loser
+		$@BGR_Point1 = 0;
+		//setarray $@l_1_team_rewards, 0; //Losing leader rewards.
+		//setarray $@t_1_team_rewards, 0; //Losing all members including leader rewards.
+
+		//Rewards Points Draw
+		$@BGR_Point2 = 0;
+		//setarray $@l_2_team_rewards, 0; //Draw leaders rewards.
+		//setarray $@t_2_team_rewards, 0; //Draw all members including leader rewards.
+		
+		//Requirements
+		
+		//Zeny
+		.pl_zeny = 1000; //Party leader required zeny. 0 = disabled
+		//.tm_zeny = 1000; //Amount of zeny taken from every member of the party to join. 0 = disabled
+		
+		//Mac Address
+		//Enable this if using Mac or IP restriction.
+		.mac_address = 0; //Restrict same mac address? Only works for harmony clients. If .abuse_protect$ is set to ip can be used with other clients.
+		.abuse_protect$ = "ip";	//Set this to mac or ip.
+		
+		//Items
+		//setarray .pl_requirments, 607, 5, 7227, 10; //Party leader required items. Comment out to disable.
+		//setarray .tm_requirments, 607, 5, 7227, 10; //Amount of item taken from every member of the party to join. Comment out to disable.
+		
+		//Cooldown
+		//.delay = 300; //Delay in seconds before re-entering the event.
+		
+		//Class Restrictions
+		//.class_r = 1; //Restricted classes? ( 1 = Yes | 0 = No ) Note: Find Sub_PartyCheck to modify the restricted classes.
+		//.dup_class_r = 1; //Restrict duplicate classes? ( 1 = Yes | 0 = No )
+		
+		//Disabled commands. ( Remove comments to disable the respective commands. )
+		//bindatcmd  "storage",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "warp",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "savepoint",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "useskill",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "skillon",strnpcinfo(3)+"::OnCommandEvent";
+		bindatcmd  "rwcjoin",strnpcinfo(3)+"::OnJoin";
+		bindatcmd  "deletequeue",strnpcinfo(3)+"::OnLeave";
+		
+		//Base level restriction.
+		//.level_r = 99; //Base level should be at least this restriction. 0 = disabled.
+		
+		//Guild restriction.
+		//.guild_r = 1; //All members must be within the same guild. 1 = On | 0 = Off.
+		
+		//Setting Mapflags
+		.@mps_len = getarraysize(.maps$);
+		for( .@a = 0; .@a < .@mps_len; .@a++ ) {
+			setmapflag .maps$[.@a], mf_loadevent;
+			setmapflag .maps$[.@a], mf_restricted, 8;
+			setmapflag .maps$[.@a], mf_nosave;
+			setmapflag .maps$[.@a], mf_nomemo;
+			setmapflag .maps$[.@a], mf_noteleport;
+			setmapflag .maps$[.@a], mf_nowarp;
+			setmapflag .maps$[.@a], mf_nogo;
+			setmapflag .maps$[.@a], mf_nobranch;
+			setmapflag .maps$[.@a], mf_nopenalty;
+			setmapflag .maps$[.@a], mf_nozenypenalty;
+			setmapflag .maps$[.@a], mf_noicewall;
+			setmapflag .maps$[.@a], mf_partylock;
+			setmapflag .maps$[.@a], mf_guildlock;
+			setmapflag .maps$[.@a], mf_nocommand, 80;
+			setmapflag .maps$[.@a], mf_battleground;
+		}
+		
+		//Event type mapflag.
+		.mapflag = 0; // 0 = pvp | 1 = gvg
+
+		.@ub_len = getarraysize(.usableblock);
+		for( .@a = 0; .@a < .@ub_len; .@a++ ) {
+			query_sql(
+				"(SELECT `script` "+
+				"FROM `item_db"+(checkre(0)?"_re":"")+"` "+
+				"WHERE `id` = "+.usableblock[.@a]+") "+
+				"UNION ALL ("+
+					"SELECT `script` "+
+					"FROM `item_db2` "+
+					"WHERE `id` = "+.usableblock[.@a]+" "+
+					"LIMIT 1"+
+				");",.@a$
+			);
+			setitemscript( .usableblock[.@a],
+				"{ "+
+					"set(.@a$,strcharinfo(3)); "+
+					"if(\""+implode(.maps$,"\"==.@a$||\"")+"\"==.@a$)"+
+						" end; "+
+					.@a$+" "+
+				"}", 0
+			);
+		}
+		
+		query_sql( "DELETE FROM `party_queueCH4`;" );
+		if(.@permanent_ingame_changesfour) {
+			$RWCPartyMemfour	= $RWCPartyMemfour ? $RWCPartyMemfour : .@pty_countfour;
+			$RWC_MaxRoundfour	= $RWC_MaxRoundfour ? $RWC_MaxRoundfour : .@max_roundfour;
+			$RWC_DrawOutfour	= $RWC_DrawOutfour ? $RWC_DrawOutfour : .@draw_coutfour;
+			$RWC_GMfour			= $RWC_GMfour ? $RWC_GMfour : .@game_modefour;
+			$RWC_Savefour$		= getstrlen($RWC_Savefour$) ? $RWC_Savefour$ : .@npc_namefour$;
+			$RWC_Savefour$[1]	= getstrlen($RWC_Savefour$[1]) ? $RWC_Savefour$[1] : .@mgm_menufour$;
+		} else {
+			$RWCPartyMemfour	= .@pty_countfour;
+			$RWC_MaxRoundfour	= .@max_roundfour;
+			$RWC_DrawOutfour	= .@draw_coutfour;
+			$RWC_GMfour			= .@game_modefour;
+			$RWC_Savefour$		= .@npc_namefour$;
+			$RWC_Savefour$[1]	= .@mgm_menufour$;
+		}
+		.gmallowed		= atoi($RWC_Savefour$[1]);
+		.npc_$			= $RWC_Savefour$;
+		.c_maps$ = "|"+ implode( .maps$, "|" ) +"|";
+		
+		.@lenfour = getarraysize(.pl_requirments);
+		for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+			.items_m$ = .items_m$ +""+getitemname( .pl_requirments[.@a] )+" x"+.pl_requirments[.@a+1]+( (.@a+2) < .@lenfour ? ", " : "." );
+			
+		.@lenfour = getarraysize(.tm_requirments);
+		for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+			.items2_m$ = .items2_m$ +""+getitemname( .tm_requirments[.@a] )+" x"+.tm_requirments[.@a+1]+( (.@a+2) < .@lenfour ? ", " : "." );
+
+		/**************************************
+				 Restricted Item Info
+				   Put the item ID
+		 **************************************/
+
+		.restricted[0] = 2410;
+		.restricted[1] = 5135;
+		.restricted[2] = 1599;
+		.restricted[3] = 2199;
+		//.restricted[4] = etc;
+		
+}
+
+ch4_train01,0,0,0	script	Dfour#1	1905,{
+	On:
+		deletearray getd(".teamsfour"+strnpcinfo(2));
+		copyarray getd(".teamsfour"+strnpcinfo(2)), getvariableofnpc(.teamsfour, "Training Battle(CH4)"), 2;
+		donpcevent("Team Warperfour#"+strnpcinfo(2)+"|1::OnReset");
+		setd( ".score"+getd(".teamsfour"+strnpcinfo(2)), 0 );
+		setd( ".score"+getd(".teamsfour"+strnpcinfo(2)+"[1]"), 0 );
+		bg_updatescore strnpcinfo(4),0,0;
+		setd( ".round"+strnpcinfo(2), 0 );
+
+	OnRound:
+		.@iDfour$ = strnpcinfo(2);
+		.@map_namefour$ = strnpcinfo(4);
+		initnpctimer;
+		callsub Sub_ShowDigit, (60*5);
+		setd( ".round"+.@iDfour$, getd(".round"+.@iDfour$)+1 );
+		donpcevent("Team Warperfour#"+.@iDfour$+"|1::OnEnable");
+		donpcevent("Team Warperfour#"+.@iDfour$+"|2::OnEnable");
+		.@lenfour = getvariableofnpc( .nwall[atoi(.@iDfour$)-1], "Training Battle(CH4)" );
+		copyarray .@xwal, getvariableofnpc( getd(".xwal"+.@iDfour$), "Training Battle(CH4)"), .@lenfour;
+		copyarray .@ywal, getvariableofnpc( getd(".ywal"+.@iDfour$), "Training Battle(CH4)"), .@lenfour;
+		copyarray .@lwal, getvariableofnpc( getd(".lwal"+.@iDfour$), "Training Battle(CH4)"), .@lenfour;
+		copyarray .@dwal, getvariableofnpc( getd(".dwal"+.@iDfour$), "Training Battle(CH4)"), .@lenfour;
+		for( .@a = 0; .@a < .@lenfour; .@a++ )
+			setwall .@map_namefour$, .@xwal[.@a], .@ywal[.@a], .@lwal[.@a], .@dwal[.@a], 0, .@map_namefour$+"|"+.@a;
+		end;
+
+	Sub_GiveReward:
+		if (getarg(0) < 0 || getarg(0) > 2)
+			return;
+		.piDfour = getarg(1);
+		.point = getd("$@BGR_Point"+getarg(0));
+		.rewards$ = getarg(0)+"_team_rewards";
+		getpartymember .piDfour,2,.@party_aid;
+		for(.@g = 0; .@g < getarraysize(.@party_aid); .@g++) {
+			attachrid(.@party_aid[.@g],1);
+			if(playerattached()) {
+				setd $@BGR_Point$[0], getd($@BGR_Point$[0])+.point;
+				message strcharinfo(0),"คุณได้รับ "+.point+" "+$@BGR_Point$[1]+".";
+				//copyarray .@rewards[0], getd( "$@t_"+.rewards$ ), getarraysize( getd("$@t_"+.rewards$) );
+				//.@lenfour = getarraysize(.@rewards);
+				//for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+				//	getitem .@rewards[.@a], .@rewards[.@a+1];
+				//if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) {
+				//	copyarray .@l_rewards[0], getd( "$@l_"+.rewards$ ), getarraysize( getd( "$@l_"+.rewards$ ) );
+				//	.@lenfour = getarraysize(.@l_rewards);
+				//	for( .@a = 0; .@a < .@lenfour; .@a = .@a + 2 )
+				//		getitem .@l_rewards[.@a], .@l_rewards[.@a+1];
+				//}
+			}
+		}
+		return;
+		
+	OnEnd:
+		.@winnerfour = getarg(0);
+		.@loser = getarg(1);
+		.@iDfour$ = strnpcinfo(2);
+		if( getargcount() < 3 ) {
+			announce "[ Training Battle(CH4) ] ประกาศผล ปาร์ตี้ ( "+getpartyname(.@winnerfour)+" ) ชนะปาร์ตี้ ( "+getpartyname(.@loser)+" ) !",bc_all|bc_red;
+			setmapflag strnpcinfo(4), mf_fireworks;
+			
+			query_sql( "SELECT `guild_id` FROM `char` WHERE `name` = '"+escape_sql(getpartyleader(.@loser))+"';", .@gid );
+			.@gm_cid = getguildmasterid( .@gid );
+			.@gname$ = getguildname( .@gid );
+			.@stats = query_sql( 
+				"SELECT `loses` "+
+				"FROM `guild_stats` "+
+				"WHERE `guild_id` = "+.@gid+";",
+				.@loses
+			);
+			.@loses++;
+			if( .@stats ) {
+				query_sql(
+					"UPDATE `guild_stats` "+
+					"SET `loses` = "+.@loses+" "+
+					"WHERE `guild_id` = "+.@gid+";"
+				);
+			}
+			else {
+				query_sql(
+					"INSERT INTO `guild_stats` "+
+					"VALUES ( "+.@gid+", "+.@gm_cid+", '"+escape_sql(.@gname$)+"', 0, 0, "+.@loses+" );"
+				);
+			}
+			
+			query_sql( "SELECT `guild_id` FROM `char` WHERE `name` = '"+escape_sql(getpartyleader(.@winnerfour))+"';", .@gid );
+			.@gm_cid = getguildmasterid( .@gid );
+			.@gname$ = getguildname( .@gid );
+			.@stats = query_sql( 
+				"SELECT `rating`, `wins` "+
+				"FROM `guild_stats` "+
+				"WHERE `guild_id` = "+.@gid+";",
+				.@rating, .@wins
+			);
+			.@wins++;
+			.@rating++;
+			if( .@stats ) {
+				query_sql(
+					"UPDATE `guild_stats` "+
+					"SET `wins` = "+.@wins+", `rating` = "+.@rating+" "+
+					"WHERE `guild_id` = "+.@gid+";"
+				);
+			}
+			else {
+				query_sql(
+					"INSERT INTO `guild_stats` "+
+					"VALUES ( "+.@gid+", "+.@gm_cid+", '"+escape_sql(.@gname$)+"', "+.@rating+", "+.@wins+", 0 );"
+				);
+			}
+			callsub(Sub_GiveReward,0,.@winnerfour);
+			callsub(Sub_GiveReward,1,.@loser);
+			callsub Sub_ShowMessage, "ระดับของคุณเพิ่มขึ้น ยินดีด้วย!!", .@winnerfour;
+		} else {
+			announce "[ Training Battle(CH4) ] ประกาศผล ปาร์ตี้ ( "+getpartyname(.@winnerfour)+" ) เสมอปาร์ตี้ ( "+getpartyname(.@loser)+" ) !",bc_all|bc_red;
+			setmapflag strnpcinfo(4), mf_fireworks;
+			callsub(Sub_GiveReward,2,.@winnerfour);
+			callsub(Sub_GiveReward,2,.@loser);
+		}
+		sleep(5000);
+		callsub Sub_LeaveBG;
+		bg_destroy getd(".teamsfour"+.@iDfour$+"[2]");
+		bg_destroy getd(".teamsfour"+.@iDfour$+"[3]");
+		delete_queuefour( .@loser, .@winnerfour );
+		stopnpctimer;
+		setd(".round"+.@iDfour$, 0);
+		setd( ".score"+.@loser, 0 );
+		setd( ".score"+.@winnerfour, 0 );
+		deletearray( getd(".usersfour"+.@iDfour$) );
+		deletearray( getd(".q_users"+.@iDfour$) );
+		deletearray( getd(".teamsfour"+.@iDfour$) );
+		mapwarp strnpcinfo(4),"prontera",156,191;
+		removemapflag strnpcinfo(4),mf_fireworks;
+		end;
+		
+	OnQuit: .a = 0; .in$ = "";
+		deletearray( .piDfour );
+		addrid(1);
+		.@iDfour$ = strnpcinfo(2);
+		.@map_namefour$ = strnpcinfo(4);
+		copyarray .@teamsfour, getd(".teamsfour"+.@iDfour$ ), 2;
+		if( Hp && getarraysize(@pid)
+		&&  !compare("|"+.in$, "|"+@pid+"|") ) {
+			.in$ = .in$ + @pid + "|";
+			.piDfour[ getarraysize( .piDfour ) ] = @pid;
+		} .a++;
+		if( getarraysize(.piDfour) == 1
+		&&  !getd(".win"+.@iDfour$)
+		&& .a == getmapusers(.@map_namefour$) ) {
+			.@winnerfour = .piDfour;
+			.@loser = ( .piDfour!=.@teamsfour ? .@teamsfour : .@teamsfour[1] );
+			callsub(Sub_GiveReward,0,.@winnerfour);
+			mapannounce .@map_namefour$,"ปาร์ตี้ "+getpartyname(.@winnerfour)+" ชนะในรอบ ที่ "+getd(".round"+.@iDfour$)+".",bc_map|bc_red;
+			setd( ".score"+.@winnerfour, getd(".score"+.@winnerfour)+1 );
+			if( .@winnerfour == .@teamsfour )
+				bg_updatescore .@map_namefour$, getd(".score"+.@winnerfour), getd(".score"+.@loser);
+			else bg_updatescore .@map_namefour$, getd(".score"+.@loser), getd(".score"+.@winnerfour);
+			if( getd(".round"+.@iDfour$) == $RWC_MaxRoundfour && !$RWC_GMfour
+			||  getd( ".round"+.@iDfour$ ) == ( $RWC_MaxRoundfour / 2 ) + 1 && $RWC_GMfour == 1 )
+				callsub Sub_CheckWinner, .@iDfour$, .@winnerfour, .@loser;
+			callsub Sub_RestartRound, .@map_namefour$, .@iDfour$;
+		}
+		end;
+
+	OnGo:
+		.@iDfour$ = strnpcinfo(2);
+		setd ".usersfour"+.@iDfour$, getvariableofnpc( getd(".usersfour"+.@iDfour$ ), "Team Warperfour#"+.@iDfour$+"|1" );
+		setd ".usersfour"+.@iDfour$+"[1]", getvariableofnpc( getd(".usersfour"+.@iDfour$+"[1]" ), "Team Warperfour#"+.@iDfour$+"|1" );
+		setd ".q_users"+.@iDfour$, getvariableofnpc( getd(".q_users"+.@iDfour$ ), "Team Warperfour#"+.@iDfour$+"|1" );
+		setd ".q_users"+.@iDfour$+"[1]", getvariableofnpc( getd(".q_users"+.@iDfour$+"[1]" ), "Team Warperfour#"+.@iDfour$+"|1" );
+		stopnpctimer("Dfour#"+.@iDfour$);
+		sleep(2000);
+		callsub Sub_ShowMessage, "You have 1 minute to buff and prepare for the onslaught!!";
+		callsub Sub_ShowDigit, 50;
+		sleep(10000);
+		callsub Sub_ShowMessage, "Each round will last 6 minutes.";
+		sleep(29000);
+		callsub Sub_ShowMessage, "Get Ready!";
+		sleep(10000);
+		callsub Sub_ShowDigit;
+		.@nwall = getelementofarray( getvariableofnpc(.nwall,"Training Battle(CH4)"), atoi(.@iDfour$)-1 );
+		.@map_namefour$ = strnpcinfo(4);
+		for( .@a = 0; .@a < .@nwall; .@a++ )
+			delwall .@map_namefour$+"|"+.@a;
+		mapannounce .@map_namefour$,"GO!!!!!!!!!!!",bc_map|bc_blue;
+		sleep(1000);
+		setnpctimer 300001, "Dfour#"+.@iDfour$;
+		startnpctimer("Dfour#"+.@iDfour$);
+		if( !.mapflag )
+			setmapflag .@map_namefour$, mf_pvp;
+		else
+			setmapflag .@map_namefour$, mf_gvg;
+		end;
+		
+	Sub_CheckWinner:
+		setd( ".win"+getarg(0), 1 );
+		if( getd(".score"+getarg(1)) > getd(".score"+getarg(2)) )
+			callsub OnEnd, getarg(1), getarg(2);
+		else if( getd(".score"+getarg(1)) < getd(".score"+getarg(2)) )
+			callsub OnEnd, getarg(2), getarg(1);
+		else callsub OnEnd, getarg(1), getarg(2), 1;
+		end;
+		
+	Sub_RestartRound:
+		.@map_namefour$ = getarg(0);
+		.@iDfour$ = getarg(1);
+		if( !.mapflag )
+			removemapflag .@map_namefour$, mf_pvp;
+		else
+			removemapflag .@map_namefour$, mf_gvg;
+		sleep(500);
+		party_warpfour( "Team Warperfour#"+.@iDfour$+"|1", getd(".teamsfour"+.@iDfour$ ) );
+		sleep(500);
+		party_warpfour( "Team Warperfour#"+.@iDfour$+"|2", getd(".teamsfour"+.@iDfour$+"[1]" ) );
+		donpcevent strnpcinfo(0)+"::OnHeal";
+		sleep(2000); //Wait for players to load.
+		goto OnRound;
+		
+	OnHeal:
+		atcommand "@heal";
+		end;
+		
+	Sub_ShowDigit:
+		.digit = getarg(0,0);
+		donpcevent strnpcinfo(0)+"::OnShowDigit";
+		return;
+	OnShowDigit:
+		if( .digit ) {
+			addrid(1);
+			showdigit -.digit,2;
+		} else {
+			addrid(1);
+			showdigit 0,0;
+		}
+		end;
+		
+	Sub_ShowMessage:
+		.message$ = getarg(0,"");
+		.target_party = getarg(1,0);
+		donpcevent strnpcinfo(0)+"::OnShowMessage";
+		return;
+	OnShowMessage:
+		if(.target_party) {
+			addrid(2,0,.target_party);
+			.target_party = 0;
+		} else
+			addrid(1);
+		message strcharinfo(0),.message$;
+		end;
+		
+	Sub_LeaveBG:
+		donpcevent strnpcinfo(0)+"::OnLeaveBG";
+		return;
+	OnLeaveBG:
+		addrid(1);
+		bg_leave;
+		end;
+		
+	OnPartyCount:
+		.s = 0;
+		addrid( 2, 0, .piDfour );
+		if( .pcnt ) {
+			if( Hp && strcharinfo(3) == strnpcinfo(4) )
+				.s++;
+		} else { .s++; }
+		end;
+
+	Sub_PartyCount:
+		.pcnt = 0;
+		.piDfour = getarg(0);
+		if( getargcount() > 1 )
+			.pcnt = 1;
+		donpcevent strnpcinfo(0)+"::OnPartyCount";
+		return .s;
+		
+	OnBGQuit1: bg_leave;
+		setd ".q_users"+.@iDfour$, getd( ".q_users"+.@iDfour$ )-1;
+		
+	OnBGDie1:
+		.@iDfour$ = strnpcinfo(2);
+		.@map_namefour$ = strnpcinfo(4);
+		copyarray .@teamsfour, getd(".teamsfour"+.@iDfour$ ), 2;
+		setd ".usersfour"+.@iDfour$, getd( ".usersfour"+.@iDfour$ )-1;
+		if( !getd( ".usersfour"+.@iDfour$ ) ) {
+			.@winnerfour = .@teamsfour[1];
+			.@loser = .@teamsfour;
+			callsub(Sub_GiveReward,0,.@winnerfour);
+      mapannounce .@map_namefour$,"ปาร์ตี้ "+getpartyname(.@winnerfour)+" ชนะในรอบ ที่ "+getd(".round"+.@iDfour$)+".",bc_map|bc_red;
+			setd( ".score"+.@winnerfour, getd(".score"+.@winnerfour)+1 );
+			if( .@winnerfour == .@teamsfour )
+				bg_updatescore .@map_namefour$, getd(".score"+.@winnerfour), getd(".score"+.@loser);
+			else bg_updatescore .@map_namefour$, getd(".score"+.@loser), getd(".score"+.@winnerfour);
+			if( getd(".round"+.@iDfour$ ) == $RWC_MaxRoundfour && !$RWC_GMfour
+			||  getd( ".round"+.@iDfour$ ) == ( $RWC_MaxRoundfour / 2 ) + 1 && $RWC_GMfour == 1
+			||  !getd( ".q_users"+.@iDfour$ ) )
+				callsub Sub_CheckWinner, .@iDfour$, .@winnerfour, .@loser;
+			callsub Sub_RestartRound, .@map_namefour$, .@iDfour$;
+		}
+		end;
+	
+	OnBGQuit2: bg_leave;
+		setd ".q_users"+.@iDfour$+"[1]", getd( ".q_users"+.@iDfour$+"[1]" )-1;
+		
+	OnBGDie2: 
+		.@iDfour$ = strnpcinfo(2);
+		.@map_namefour$ = strnpcinfo(4);
+		copyarray .@teamsfour, getd(".teamsfour"+.@iDfour$ ), 2;
+		setd ".usersfour"+.@iDfour$+"[1]", getd( ".usersfour"+.@iDfour$+"[1]" )-1;
+		if( !getd( ".usersfour"+.@iDfour$+"[1]" ) ) {
+			.@winnerfour = .@teamsfour;
+			.@loser = .@teamsfour[1];
+			callsub(Sub_GiveReward,0,.@winnerfour);
+			mapannounce .@map_namefour$,"ปาร์ตี้ "+getpartyname(.@winnerfour)+" ชนะในรอบ ที่ "+getd(".round"+.@iDfour$)+".",bc_map|bc_red;
+			setd( ".score"+.@winnerfour, getd(".score"+.@winnerfour)+1 );
+			if( .@winnerfour == .@teamsfour )
+				bg_updatescore .@map_namefour$, getd(".score"+.@winnerfour), getd(".score"+.@loser);
+			else bg_updatescore .@map_namefour$, getd(".score"+.@loser), getd(".score"+.@winnerfour);
+			if( getd(".round"+.@iDfour$ ) == $RWC_MaxRoundfour && !$RWC_GMfour
+			||  getd( ".round"+.@iDfour$ ) == ( $RWC_MaxRoundfour / 2 ) + 1 && $RWC_GMfour == 1
+			|| !getd( ".q_users"+.@iDfour$+"[1]" ) )
+				callsub Sub_CheckWinner, .@iDfour$, .@winnerfour, .@loser;
+			callsub Sub_RestartRound, .@map_namefour$, .@iDfour$;
+		}
+		end;
+		
+	OnTimer300000:
+		copyarray .@teamsfour, getd(".teamsfour"+strnpcinfo(2)), 2;
+		delete_queuefour( .@teamsfour, .@teamsfour[1] );
+		callsub Sub_ShowDigit;
+		setd( ".score"+.@teamsfour, 0 );
+		setd( ".score"+.@teamsfour[1], 0 );
+		mapwarp strnpcinfo(4),"morocc",158,95;
+		stopnpctimer;
+		end;
+		
+	OnTimer660000:
+		.@iDfour$ = strnpcinfo(2);
+		.@map_namefour$ = strnpcinfo(4);
+		copyarray .@teamsfour, getd(".teamsfour"+.@iDfour$ ), 2;
+		.@team1 = callsub(Sub_PartyCount, .@teamsfour, 1);
+		.@team2 = callsub(Sub_PartyCount, .@teamsfour[1], 1);
+		if( .@team1 > .@team2 ) {
+			setd( ".score"+.@teamsfour, getd(".score"+.@teamsfour)+1 );
+      mapannounce .@map_namefour$,"ปาร์ตี้ "+getpartyname(.@winnerfour)+" ชนะในรอบ ที่ "+getd(".round"+.@iDfour$)+".",bc_map|bc_red;
+		} else if( .@team1 < .@team2 ) {
+			setd( ".score"+.@teamsfour[1], getd(".score"+.@teamsfour[1])+1 );
+      mapannounce .@map_namefour$,"ปาร์ตี้ "+getpartyname(.@teamsfour[1])+" ชนะในรอบ ที่ "+getd(".round"+.@iDfour$)+".",bc_map|bc_red;
+		} else {
+			mapannounce .@map_namefour$,"Round "+getd(".round"+.@iDfour$)+" is a draw.",bc_map|bc_red;
+			.draw++;
+			if( .draw >= $RWC_DrawOutfour ) {
+				mapannounce .@map_namefour$,"เสมอกันมากเกินไป การต่อสู้สิ้นสุด",bc_map|bc_red;
+				callsub Sub_CheckWinner, .@iDfour$, .@teamsfour, .@teamsfour[1];
+			}
+		}
+		if( getd( ".round"+.@iDfour$ ) == $RWC_MaxRoundfour && !$RWC_GMfour
+		||  getd( ".round"+.@iDfour$ ) == ( $RWC_MaxRoundfour / 2 ) + 1 && $RWC_GMfour == 1 )
+			callsub Sub_CheckWinner, .@iDfour$, .@teamsfour, .@teamsfour[1];
+		stopnpctimer;
+		callsub Sub_RestartRound, .@map_namefour$, .@iDfour$;
+		end;
+}
+
+ch4_train01,15,71,4	script	Team Warperfour#1|1	973,{
+	explode( .@str$, strnpcinfo(2), "|" );
+	.@round = getvariableofnpc( getd(".round"+.@str$), "Dfour#"+.@str$)
+	.@x = getelementofarray( getvariableofnpc( getd(".mtm"+.@str$[1]+"x"), "Training Battle(CH4)" ), atoi(.@str$)-1 );
+	.@y = getelementofarray( getvariableofnpc( getd(".mtm"+.@str$[1]+"y"), "Training Battle(CH4)" ), atoi(.@str$)-1 );
+	.@pid = getcharid(1);
+	
+	if( getpartyleader( .@pid, 2 ) != getcharid(0)
+	&& isloggedin( getpartyleader( .@pid, 1 ), getpartyleader( .@pid, 2 ) )
+	&& getpartyleader( .@pid, 4 ) == strnpcinfo(4) ) {
+		mes "[ Team Warper ]";
+		mes "เข้าร่วมห้องพูดคุยเพื่อวาร์ปปาร์ตี้ของคุณ.";
+		close;
+	} else {
+		mes "[ Team Warper ]";
+		mes "คุณต้องการที่จะ "/*"be warped in or "*/+"ยกเลิกการแข่งขันหรือรีเฟรชห้อง?";
+		next;
+		getpartymember .@pid,0;
+		.@ptcnt = $@partymembercount;
+		.@on_ptcnt = callsub( Sub_PartyCount, .@pid );
+		.@on_offmap_ptcnt = callsub( Sub_PartyCount, .@pid, 1 );
+		switch(
+			select(/*"Warp"*/":"+
+				(( .@round > 1 ) ? "" : "ยกเลิกการแข่งขัน" )+":"+
+				(( !getwaitingroomstate(3) && .@on_offmap_ptcnt == .@on_ptcnt && .@on_ptcnt < .@ptcnt || !getwaitingroomstate(3) && .@ptcnt < $RWCPartyMemfour ) ? "รีเฟรชห้อง" : "" )+":"+
+				(( !getwaitingroomstate(3) && .@on_offmap_ptcnt < .@on_ptcnt && (.@on_ptcnt-.@on_offmap_ptcnt)+.@on_offmap_ptcnt <= $RWCPartyMemfour ) ? "เรียกสมาชิกปาร์ตี้" : "" )+":ยกเลิก"
+			) ) {
+				case 4:
+					getpartymember .@pid,0;
+					.@ptcnt2 = $@partymembercount;
+					if( callsub( Sub_PartyCount, .@pid ) != .@on_ptcnt
+					||  callsub( Sub_PartyCount, .@pid, 1 ) != .@on_offmap_ptcnt
+					||  .@ptcnt2 != .@ptcnt
+					|| getwaitingroomstate(3) ) {
+						mes "[ Team Warper ]";
+						mes "เกิดข้อผิดพลาด โปรดลองอีกครั้ง.";
+						close;
+					}
+					getmapxy( .@map$, .@x, .@y, BL_PC );
+					warpparty .@map$, .@x, .@y, .@pid;
+					close;
+					
+				case 3:
+					getpartymember .@pid,0;
+					.@ptcnt2 = $@partymembercount;
+					if( callsub( Sub_PartyCount, .@pid ) != .@on_ptcnt
+					||  callsub( Sub_PartyCount, .@pid, 1 ) != .@on_offmap_ptcnt
+					||  .@ptcnt2 != .@ptcnt
+					|| getwaitingroomstate(3) ) {
+						mes "[ Team Warper ]";
+						mes "เกิดข้อผิดพลาด โปรดลองอีกครั้ง.";
+						close;
+					}
+					donpcevent strnpcinfo(0)+"::OnEnable";
+					close;
+					
+				case 2: 
+					mes "[ Team Warper ]";
+					mes "คุณแน่ใจ?";
+					if( select("ตกลง:ไม่")==1 ) {
+						delete_queuefour( @pid, @pid[4] );
+						announce "[ Training Battle(CH4) ] ปาร์ตี้ ( "+getpartyname(.@pid)+" ) ยกเลิกการแข่งขันแล้ว!",bc_all|bc_red;
+						addrid(1);
+						showdigit 0,0;
+						mapwarp strnpcinfo(4),"morocc",158,95;
+					}
+					end;
+					
+				default:
+        end;
+			}
+	}
+	end;
+	
+OnReset:
+	explode( .@str$, strnpcinfo(2), "|" );
+	deletearray getd( ".teamsfour"+.@str$ );
+	end;
+
+OnPartyCount: .s = 0;
+	addrid( 2, 0, .piDfour );
+	if( playerattached() ) .s++;
+	if( playerattached() && .p_count && strcharinfo(3) != strnpcinfo(4) ) .s--;
+	end;
+Sub_PartyCount:
+	.piDfour = getarg(0);
+	.p_count = getarg(1,0);
+	donpcevent strnpcinfo(0)+"::OnPartyCount";
+	return .s;
+
+OnEnable:
+	disablenpc( strnpcinfo(0) );
+	delwaitingroom;
+	explode( .@str$, strnpcinfo(2), "|" );
+	.@round = getvariableofnpc( getd(".round"+.@str$), "Dfour#"+.@str$);
+	.@team = getvariableofnpc( getd(".teamsfour"+.@str$+"["+(atoi(.@str$[1])-1)+"]"), "Dfour#"+.@str$);
+	.@count = callsub( Sub_PartyCount, .@team );
+	.@score = getvariableofnpc( getd(".score"+.@team), "Dfour#"+.@str$);
+	enablenpc( strnpcinfo(0) ); //.@count+1
+	waitingroom "รอบที่ "+.@round+" | คะแนน "+.@score, 2, strnpcinfo(0)+"::OnQueueUp"+.@str$[1], 1;
+	end;
+
+OnQueueUp1: callsub Sub_QueueUp, 1, 2, 3, 2; end;
+	
+OnQueueUp2: callsub Sub_QueueUp, 2, 3, 2, 1; end;
+
+Sub_QueueUp:
+	explode( .@str$, strnpcinfo(2), "|" );
+	.@iDfour$ = .@str$;
+	.@map_namefour$ = strnpcinfo(4);
+	.@team = getvariableofnpc( getd(".teamsfour"+.@str$+"["+(atoi(.@str$[1])-1)+"]"), "Dfour#"+.@str$);
+	if( getd(".teamsfour"+.@iDfour$+"["+getarg(1)+"]") == 0 ) {
+		getmapxy( .@map_namefour$, .@x, .@y, BL_NPC, "Team Warperfour#"+.@iDfour$+"|"+getarg(0) );
+		explode( .@loc$, loc_finDfour( .@map_namefour$, .@x, .@y, 5 ), "|" );
+		.@bg_number = bg_create( .@map_namefour$, atoi(.@loc$), atoi(.@loc$[1]), "Dfour#"+.@str$+"::OnBGQuit"+getarg(0), "Dfour#"+.@str$+"::OnBGDie"+getarg(0)/*, "Team Warperfour#"+.@iDfour$+"|"+getarg(0)*/ );
+		if(!.@bg_number) {
+			removemapflag .@map_namefour$, mf_nowarp;
+			debugmes "Training Battle(CH4): [Fatal Error] Failed to create Battleground!";
+			deletearray getd(".usersfour"+.@iDfour$);
+			deletearray getd(".q_users"+.@iDfour$);
+			deletearray getd(".teamsfour"+.@iDfour$);
+			disablewaitingroomevent "Team Warperfour#"+.@iDfour$+"|"+getarg(0);
+			setd ".signed"+strnpcinfo(2), 0;
+			warpwaitingpc "prontera",156,191;
+			mapwarp .@map_namefour$,"prontera",156,191;
+			setmapflag .@map_namefour$, mf_nowarp;
+			end;
+		}
+		setd ".teamsfour"+.@iDfour$+"["+getarg(1)+"]", .@bg_number;
+	}
+	removemapflag .@map_namefour$, mf_nowarp;
+	.@x = getelementofarray( getvariableofnpc( getd(".mtm"+getarg(0)+"x"), "Training Battle(CH4)" ), atoi(.@iDfour$)-1 );
+	.@y = getelementofarray( getvariableofnpc( getd(".mtm"+getarg(0)+"y"), "Training Battle(CH4)" ), atoi(.@iDfour$)-1 );
+	waitingroom2bg_single(getd(".teamsfour"+.@iDfour$+"["+getarg(1)+"]"),.@map_namefour$,.@x,.@y,"Team Warperfour#"+.@iDfour$+"|"+getarg(0));
+	warpwaitingpc .@map_namefour$,.@x,.@y;
+	setd ".signed"+strnpcinfo(2), getd(".signed"+strnpcinfo(2)) + 1;
+	if( getd(".signed"+strnpcinfo(2)) == callsub( Sub_PartyCount, .@team, 1 )
+	||  getd(".signed"+strnpcinfo(2)) == $RWCPartyMemfour ) {
+		setd ".usersfour"+.@iDfour$+"["+(getarg(0)-1)+"]", getd(".signed"+strnpcinfo(2));
+		setd ".q_users"+.@iDfour$+"["+(getarg(0)-1)+"]", getd(".signed"+strnpcinfo(2));
+		disablewaitingroomevent "Team Warperfour#"+.@iDfour$+"|"+getarg(0);
+		setd ".signed"+strnpcinfo(2), 0;
+	}
+	setmapflag .@map_namefour$, mf_nowarp;
+	if( getwaitingroomstate(3,"Team Warperfour#"+.@iDfour$+"|"+getarg(0))
+	&&  getwaitingroomstate(3,"Team Warperfour#"+.@iDfour$+"|"+getarg(3)) )
+		donpcevent "Dfour#"+.@str$+"::OnGo";
+	return;
+
+  
+}
+
+ch4_train01,319,137,4	duplicate(Team Warperfour#1|1)	Team Warperfour#1|2	974
+
+ch4_train02,0,0,0	duplicate(Dfour#1)	Dfour#2	139
+ch4_train02,37,156,4	duplicate(Team Warperfour#1|1)	Team Warperfour#2|1	973
+ch4_train02,296,133,4	duplicate(Team Warperfour#1|1)	Team Warperfour#2|2	974
+
+
+ch4_train03,0,0,0	duplicate(Dfour#1)	Dfour#3	139
+ch4_train03,20,127,4	duplicate(Team Warperfour#1|1)	Team Warperfour#3|1	973
+ch4_train03,181,40,4	duplicate(Team Warperfour#1|1)	Team Warperfour#3|2	974
+
+
+
+ch4_train04,0,0,0	duplicate(Dfour#1)	Dfour#4	139
+ch4_train04,228,39,4	duplicate(Team Warperfour#1|1)	Team Warperfour#4|1	973
+ch4_train04,28,38,4	duplicate(Team Warperfour#1|1)	Team Warperfour#4|2	974
+
+
+ch4_train05,0,0,0	duplicate(Dfour#1)	Dfour#5	139
+ch4_train05,13,71,4	duplicate(Team Warperfour#1|1)	Team Warperfour#5|1	973
+ch4_train05,317,135,4	duplicate(Team Warperfour#1|1)	Team Warperfour#5|2	974
+
+
+
+ch4_train06,0,0,0	duplicate(Dfour#1)	Dfour#6	139
+ch4_train06,37,156,4	duplicate(Team Warperfour#1|1)	Team Warperfour#6|1	973
+ch4_train06,296,133,4	duplicate(Team Warperfour#1|1)	Team Warperfour#6|2	974
+
+
+
+ch4_train07,0,0,0	duplicate(Dfour#1)	Dfour#7	139
+ch4_train07,20,127,4	duplicate(Team Warperfour#1|1)	Team Warperfour#7|1	973
+ch4_train07,181,40,4	duplicate(Team Warperfour#1|1)	Team Warperfour#7|2	974
+
+
+
+ch4_train08,0,0,0	duplicate(Dfour#1)	Dfour#8	139
+ch4_train08,228,39,4	duplicate(Team Warperfour#1|1)	Team Warperfour#8|1	973
+ch4_train08,28,38,4	duplicate(Team Warperfour#1|1)	Team Warperfour#8|2	974

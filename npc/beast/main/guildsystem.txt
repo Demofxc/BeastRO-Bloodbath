@@ -1,0 +1,59 @@
+-	script	guildsystem_	-1,{
+if(agitcheck())goto wars;
+goto main;
+
+wars:
+set @GIDGUILD,getcharid(2);
+set .@name$, "^FF0000[ระบบจัดการกิลด์]^000000";
+
+menu 
+"^0000FF-^000000 สร้างกิลด์",guildsys_yes,
+"^0000FF-^000000 อัพเวลกิลด์",Ca,
+"^0000FF-^000000 ลบกิลด์",Ea;
+
+main:
+set @GIDGUILD,getcharid(2);
+set .@name$, "^FF0000[ระบบจัดการกิลด์]^000000";
+
+menu 
+"^0000FF-^000000 สร้างกิลด์",Yes,
+"^0000FF-^000000 อัพเวลกิลด์",Ca,
+"^0000FF-^000000 โอนหัวกิลด์",Da,
+"^0000FF-^000000 ลบกิลด์",Ea;
+
+guildsys_yes:
+if( getcharid(2) ){
+    mes .@name$;
+	mes "ท่านมีกิลด์อยู่แล้ว";
+    close; 
+    }
+mes .@name$;
+mes "กรอกชื่อกิลด์ครับ";
+input @nameguild$;
+atcommand "@guild "+@nameguild$;
+end;
+
+Ca:
+atcommand "@guildlvup 50";
+close;
+
+Da:
+mes .@name$;
+mes "กรอกชื่อตัวละครครับ";
+input @name$;
+next;
+atcommand "@changegm "+@name$+"";
+close;
+end;
+
+Ea:
+atcommand "@breakguild";
+close;
+end;
+
+OnInit:
+waitingroom " ระบบจัดการกิลด์ ", 0;
+end;
+}
+
+prontera,152,195,5	duplicate(guildsystem_)	Guild Manger#101	653 

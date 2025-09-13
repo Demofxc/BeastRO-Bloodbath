@@ -1,0 +1,69 @@
+/*
+=================== TERMS OF SERVICES. ===================
+1. ALL RIGHT RESERVED RE-SELLER OR SHARE SCRIPT TO PUBLISH.
+2. BUT YOU RE-SELLER OR SHARE SCRIPT WITH OUT UNAUTHORIZRD
+   I WILL ALL CANCEL MY SUPPORT FOR YOU.
+3. MAINTENANCE SCRIPTS WILL BE FREE SERVICES.
+4. I WILL NOT KEEP ANY INFORMATIONS FROMS YOU SERVER THAT
+   YOU SEND FOR ME.
+5. I HOPE YOU WILL ALL ACCEPT TERMS OF SERVICES.
+==========================================================
+Script. Function Warp Guild War																				 
+Create By. [Eddga-Studio]
+Translator By. Eddga Studio
+Bug Report. Dollaporn Naraphan [ FB ]																					 
+Contact Us. Dollaporn Naraphan [ FB ]																					 																				 
+==========================================================
+*/
+
+function	script	Warp_GuildWar	{
+	mes "[ System Warp ]";
+	mes " ";
+	mes " ";
+	mes " ";
+	mes "^738C5Aกรุณาเลือกรายการที่ต้องการ^000000";
+	switch(select("~ ^0000FFวาร์ปกิลด์วอร์ปกติ^000000:~ ^738C5Aวาร์ปกิลด์วอร์ 1-1^000000:~ ^FF66CCโซนกิจกรรมต่างๆ^000000:~ ^FF6600โซนโปลิ่ง Slot^000000:~ ^339900โซนตู้ Cash^000000:~ ยกเลิกการสนทนา")){
+		case 1:
+		sc_end SC_ASPDPOTION0;
+		sc_end SC_ASPDPOTION1;
+		sc_end SC_ASPDPOTION2;
+		sc_end SC_SPEEDUP0;
+		sc_end SC_SPEEDUP1;
+		sc_end SC_ATKPOTION;
+		sc_end SC_MATKPOTION;
+		sc_end SC_INCMHPRATE;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_SERVICE4U;
+		warp "guild_vs2",50,42;
+		end;
+		
+		case 2:
+		sc_end SC_ASPDPOTION0;
+		sc_end SC_ASPDPOTION1;
+		sc_end SC_ASPDPOTION2;
+		sc_end SC_SPEEDUP0;
+		sc_end SC_SPEEDUP1;
+		sc_end SC_ATKPOTION;
+		sc_end SC_MATKPOTION;
+		sc_end SC_INCMHPRATE;
+		sc_end SC_POEMBRAGI;
+		sc_end SC_SERVICE4U;
+		warp "war_all",49,48;
+		end;
+		
+		case 3:
+		warp "morocc",203,100;
+		end;
+		
+		case 4:
+		warp "morocc",211,42;
+		end;
+		
+		case 5:
+		warp "morocc",127,108;
+		end;
+
+		case 6:
+		end;
+	}		
+}

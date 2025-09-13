@@ -1,0 +1,10 @@
+-	script	Pack_Elu_Ori_Npc	-1,{
+callshop "Pack_Elu_Ori";
+end;
+
+OnInit:
+	waitingroom " แพคกล่อง Elu Ori",0;
+	end;
+}
+
+prontera,184,162,5	duplicate(Pack_Elu_Ori_Npc)	อัดกล่อง	804
