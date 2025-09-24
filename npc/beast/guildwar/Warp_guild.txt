@@ -72,6 +72,10 @@ function	script	Warp_GuildWar_old	{
 	close;
 	}
 OnInit:
+    setunitdata(getnpcid(0), UNPC_GROUP_ID, 107); 
+    setunittitle(getnpcid(0), "War of Emperium");
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
     while(1){
 		delwaitingroom;
 		waitingroom " เข้าสู่ GVG ["+(getmapusers("guild_vs2"))+"] คน",0;
@@ -83,4 +87,5 @@ end;
 
 //====================================================
 //morocc,152,81,5	duplicate(guild_main)	วาร์ปกิลด์วอร์#00	461 
-prontera,162,189,5	duplicate(guild_main)	วาร์ปกิลด์วอร์#101	966 
+prontera,162,189,5	duplicate(guild_main)	สงครามชิงปราสาท#101	966 
+ultia,205,155,3	duplicate(guild_main)	สงครามชิงปราสาท#102	966 

@@ -640,3 +640,4 @@ message( STATUS "Available targets:" )
 foreach( _TARGET IN ITEMS ${TARGET_LIST} )
 	message( STATUS "\t${_TARGET}" )
 endforeach()
+

@@ -1087,8 +1087,8 @@ void clif_item_repair_list( map_session_data& sd, map_session_data& dstsd, uint1
 void clif_item_repaireffect( map_session_data& sd, int32 idx, bool failure );
 void clif_item_damaged( map_session_data& sd, uint16 position );
 void clif_item_refine_list( map_session_data& sd );
-void clif_hat_effects( map_session_data& sd, block_list& bl, enum send_target target );
-void clif_hat_effect_single( map_session_data& sd, uint16 effectId, bool enable );
+void clif_hat_effects(struct block_list* src, struct block_list* bl, bool enable, enum send_target target);
+void clif_hat_effect_single(struct block_list* bl, uint16 effectId, bool enable);
 
 void clif_item_skill(map_session_data *sd,uint16 skill_id,uint16 skill_lv);
 
@@ -1555,5 +1555,8 @@ void clif_noask_sub( map_session_data& sd, map_session_data& tsd, int32 type );
 
 void clif_specialpopup(map_session_data& sd, int32 id);
 void clif_goldpc_info( map_session_data& sd );
+
+void clif_hit_frame(block_list&,int);
+void clif_parse_restore_animation(map_session_data* sd, block_list& target, uint16 skill_id, uint16 skill_lv);
 
 #endif /* CLIF_HPP */

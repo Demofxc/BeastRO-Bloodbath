@@ -146,8 +146,12 @@ set .@mccolor,10;			//กำหนดจำนวนสีชุด
 close;
 
 OnInit:
-waitingroom "    ช่างแต่งตัว  ", 0;
+//waitingroom "    ช่างแต่งตัว  ", 0;
+	setunitdata (getnpcid(0), UNPC_GROUP_ID, 110); 
+    setunittitle(getnpcid(0), "Stylist Service");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 end;
 }
 
-prontera,164,200,5	duplicate(designer)	ช่างแต่งตัว	10350
+ultia,173,143,5	duplicate(designer)	ช่างแต่งตัว	10586

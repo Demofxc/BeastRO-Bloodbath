@@ -1,0 +1,56 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"src/web/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 35,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_webserver",
+			"destination" : ".",
+			"paths" : 
+			[
+				"C:/Users/Awake/Desktop/Beast-HiClass/web-server.exe"
+			],
+			"targetId" : "web-server::@30cab77be7adbc5a5c26",
+			"targetIndex" : 13,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_webserver",
+			"cxxModuleBmiTarget" : 
+			{
+				"id" : "web-server::@30cab77be7adbc5a5c26",
+				"index" : 13
+			},
+			"destination" : ".",
+			"type" : "cxxModuleBmi"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "src/web",
+		"source" : "src/web"
+	}
+}

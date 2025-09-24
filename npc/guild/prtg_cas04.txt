@@ -23,17 +23,8 @@
 	set .@GID, GetCastleData("prtg_cas04",1);
 
 	if (.@GID == 0) {
-		mes "[ Edict of the Divine Rune-Midgarts Kingdom ]";
-		mes " ";
-		mes "1. Follow the ordinance of The Divine Rune-Midgarts Kingdom, ";
-		mes "We declare that";
-		mes "there is no formal master of this castle.";
-		mes " ";
-		mes "2. To the one who can ";
-		mes "overcome all trials";
-		mes "and destroy the Emperium,";
-		mes "the king will endow the one with";
-		mes "ownership of this castle.";
+		mes "ºéÒ¹ ^0000FF > Skoegul < ^000000 ";
+		mes "ÂÑ§äÁèÁÕ¼Ùéã´ÂÖ´¤ÃÍ§ ";
 		close;
 	}
 	if (getcharid(2) == .@GID) {
@@ -51,16 +42,10 @@
 		}
 		close;
 	}
-	mes "[ Edict of the Divine Rune-Midgarts Kingdom ]";
-	mes " ";
-	mes "1. Follow the ordinance of The Divine Rune-Midgarts Kingdom, ";
-	mes "we approve that this place is in";
-	mes "the private prossession of ^ff0000"+GetGuildName(.@GID)+"^000000 Guild.";
-	mes " ";
-	mes "2. The guild Master of ^ff0000"+GetGuildName(.@GID)+"^000000 Guild is";
-	mes "^ff0000"+GetGuildMaster(.@GID)+"^000000";
-	mes "If there is anyone who objects to this,";
-	mes "prove your strength and honor with a steel blade in your hand.";
+	mes "ºéÒ¹ ^0000FF > Skoegul < ^000000 ";
+	mes "¶Ù¡ÂÖ´¤ÃÍ§â´Â ";
+	mes "¡ÔÅ´ì ^ff0000"+GetGuildName(.@GID)+"^000000";
+	mes "ËÑÇË¹éÒ¡ÔÅ´ì ^ff0000"+GetGuildMaster(.@GID)+"^000000";
 	close;
 
 OnRecvCastlePt04:
@@ -71,7 +56,6 @@ OnRecvCastlePt04:
 prt_gld,120,243,6	duplicate(OutsideFlagsPR4)	Skoegul#1-2	722
 prt_gld,120,236,6	duplicate(OutsideFlagsPR4)	Skoegul#2	722
 prt_gld,122,243,6	duplicate(OutsideFlagsPR4)	Skoegul#3	722
-prt_gld,122,236,6	duplicate(OutsideFlagsPR4)	Skoegul#4	722
 
 // Guild Flags (Inside Castle)
 //============================================================
@@ -96,7 +80,7 @@ prtg_cas04,263,27,4	duplicate(InsideFlagsPR4)	Skoegul#14	722
 
 // Guild Flag (Town)
 //============================================================
-prontera,167,203,6	duplicate(InsideFlagsPR4)	Skoegul#15	722
+//prontera,167,203,6	duplicate(InsideFlagsPR4)	Skoegul#15	722
 
 // Kafra Employee
 //============================================================
@@ -104,7 +88,7 @@ prtg_cas04,258,247,4	duplicate(guildkafra)	Kafra Staff#prtg_cas04	117
 
 // Steward
 //============================================================
-prtg_cas04,259,265,4	duplicate(cm)	Van Dreth#prtg_cas04	55
+//prtg_cas04,259,265,4	duplicate(cm)	Van Dreth#prtg_cas04	55
 
 // Treasure Room Exit
 //============================================================
@@ -122,11 +106,11 @@ prtg_cas04,275,160,0	script	#Lever_PR04	111,{
 
 // Guild Dungeon Switch
 //============================================================
-prtg_cas04,56,283,0	duplicate(gdlever)	#prtg_cas04	111
+//prtg_cas04,56,283,0	duplicate(gdlever)	#prtg_cas04	111
 
 // Guild Treasure Spawns
 //============================================================
-prtg_cas04,271,162,0	duplicate(Gld_Trea_Spawn)	Treasure#prtg_cas04	-1
+//prtg_cas04,271,162,0	duplicate(Gld_Trea_Spawn)	Treasure#prtg_cas04	-1
 
 // AGIT Manager
 //============================================================

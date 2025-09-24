@@ -1,0 +1,453 @@
+// วาร์ปเข้าพื้นที่เลือกบ้าน
+sec_pri,41,35,4	script	สถานที่กิลด์วอ#1	751,{
+	mes "[ ทหาร ]";
+	mes "ท่านมีอะไรให้ข้าช่วยหรอ ?";
+	next;
+	if (select("- ส่งข้าไปสถานที่กิลด์วอ:- ยกเลิก") == 1)
+		warp "guild_vs2", 53, 53;
+	close;
+	OnInit:
+		waitingroom "สถานที่กิลด์วอ", 0;
+		end;
+}
+
+sec_pri,50,35,4	script	ควบคุมระบบกิลด์วอร์#1	871,{
+	if (getgmlevel() < 99)
+		end;
+	mes "[ Control Castle ]";
+	mes "เลือกปราสาทที่จะเปิดหรือปิด";
+	mes "^FF0000ใช้งานก่อนเวลากิลด์วอเปิด^000000";
+	next;
+	switch(select("- บ้านแจม ["+($WOEPLAY[0]?"ปิด":"^FF0000เปิด^000000")+"]:- Geffen บ้าน Eeyolbriggar ["+($WOEPLAY[1]?"ปิด":"^FF0000เปิด^000000")+"]:- Geffen บ้าน Bergel ["+($WOEPLAY[2]?"ปิด":"^FF0000เปิด^000000")+"]:- Geffen บ้าน Yesnelph ["+($WOEPLAY[3]?"ปิด":"^FF0000เปิด^000000")+"]:- Geffen บ้าน Mersetzdeitz ["+($WOEPLAY[4]?"ปิด":"^FF0000เปิด^000000")+"]:- Geffen บ้าน Repherion ["+($WOEPLAY[5]?"ปิด":"^FF0000เปิด^000000")+"]:	- Alde บ้าน Nuenberg ["+($WOEPLAY[6]?"ปิด":"^FF0000เปิด^000000")+"]:- Alde บ้าน Hohenschwangau ["+($WOEPLAY[7]?"ปิด":"^FF0000เปิด^000000")+"]:- Alde บ้าน Rothenburg ["+($WOEPLAY[8]?"ปิด":"^FF0000เปิด^000000")+"]:- Alde บ้าน Neuschwanstein ["+($WOEPLAY[9]?"ปิด":"^FF0000เปิด^000000")+"] :- Alde บ้าน Wuerzburg ["+($WOEPLAY[10]?"ปิด":"^FF0000เปิด^000000")+"] :- Payon บ้าน Holy Shadow ["+($WOEPLAY[11]?"ปิด":"^FF0000เปิด^000000")+"]  :- Payon บ้าน Sacred Altar ["+($WOEPLAY[12]?"ปิด":"^FF0000เปิด^000000")+"] :- Payon บ้าน Bright Arbor ["+($WOEPLAY[13]?"ปิด":"^FF0000เปิด^000000")+"] :- Payon บ้าน Scarlet Palace ["+($WOEPLAY[14]?"ปิด":"^FF0000เปิด^000000")+"] :- Payon บ้าน Bamboo Grove Hill ["+($WOEPLAY[15]?"ปิด":"^FF0000เปิด^000000")+"] :- Pron บ้าน Skoegul ["+($WOEPLAY[16]?"ปิด":"^FF0000เปิด^000000")+"] :- Pron บ้าน Swanhild ["+($WOEPLAY[17]?"ปิด":"^FF0000เปิด^000000")+"] :- Pron บ้าน Fadhgridh ["+($WOEPLAY[18]?"ปิด":"^FF0000เปิด^000000")+"] :- Pron บ้าน Gondul ["+($WOEPLAY[19]?"ปิด":"^FF0000เปิด^000000")+"] :- Pron บ้าน Kriemhild ["+($WOEPLAY[20]?"ปิด":"^FF0000เปิด^000000")+"] :- บ้านแจม ["+($WOEPLAY[21]?"ปิด":"^FF0000เปิด^000000")+"]:- ยกเลิก")) {
+		case 1:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[0]) {
+				mes "บ้านแจมถูกเปิด";
+				set $WOEPLAY[0], 0;
+			} else {
+				mes "บ้านแจมถูกปิด";
+				set $WOEPLAY[0], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 2:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[1]) {
+				mes "บ้าน Eeyolbriggar ถูกเปิด";
+				set $WOEPLAY[1], 0;
+			} else {
+				mes "บ้าน Eeyolbriggar ถูกปิด";
+				set $WOEPLAY[1], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 3:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[2]) {
+				mes "บ้าน Bergel ถูกเปิด";
+				set $WOEPLAY[2], 0;
+			} else {
+				mes "บ้าน Bergel ถูกปิด";
+				set $WOEPLAY[2], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 4:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[3]) {
+				mes "บ้าน Yesnelph ถูกเปิด";
+				set $WOEPLAY[3], 0;
+			} else {
+				mes "บ้าน Yesnelph ถูกปิด";
+				set $WOEPLAY[3], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 5:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[4]) {
+				mes "บ้าน Mersetzdeitz ถูกเปิด";
+				set $WOEPLAY[4], 0;
+			} else {
+				mes "บ้าน Mersetzdeitz ถูกปิด";
+				set $WOEPLAY[4], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 6:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[5]) {
+				mes "บ้าน Repherion ถูกเปิด";
+				set $WOEPLAY[5], 0;
+			} else {
+				mes "บ้าน Repherion ถูกปิด";
+				set $WOEPLAY[5], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 7:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[6]) {
+				mes "บ้าน Nuenberg ถูกเปิด";
+				set $WOEPLAY[6], 0;
+			} else {
+				mes "บ้าน Nuenberg ถูกปิด";
+				set $WOEPLAY[6], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 8:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[7]) {
+				mes "บ้าน Hohenschwangau ถูกเปิด";
+				set $WOEPLAY[7], 0;
+			} else {
+				mes "บ้าน Hohenschwangau ถูกปิด";
+				set $WOEPLAY[7], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 9:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[8]) {
+				mes "บ้าน Rothenburg ถูกเปิด";
+				set $WOEPLAY[8], 0;
+			} else {
+				mes "บ้าน Rothenburg	ถูกปิด";
+				set $WOEPLAY[8], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 10:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[9]) {
+				mes "บ้าน Neuschwanstein ถูกเปิด";
+				set $WOEPLAY[9], 0;
+			} else {
+				mes "บ้าน Neuschwanstein	ถูกปิด";
+				set $WOEPLAY[9], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;	
+		case 11:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[10]) {
+				mes "บ้าน Wuerzburg ถูกเปิด";
+				set $WOEPLAY[10], 0;
+			} else {
+				mes "บ้าน Wuerzburg	ถูกปิด";
+				set $WOEPLAY[10], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 12:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[11]) {
+				mes "บ้าน Holy Shadow ถูกเปิด";
+				set $WOEPLAY[11], 0;
+			} else {
+				mes "บ้าน Holy Shadow ถูกปิด";
+				set $WOEPLAY[11], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 13:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[12]) {
+				mes "บ้าน Sacred Altar ถูกเปิด";
+				set $WOEPLAY[12], 0;
+			} else {
+				mes "บ้าน Sacred Altar ถูกปิด";
+				set $WOEPLAY[12], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 14:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[13]) {
+				mes "บ้าน Bright Arbor ถูกเปิด";
+				set $WOEPLAY[13], 0;
+			} else {
+				mes "บ้าน Bright Arbor ถูกปิด";
+				set $WOEPLAY[13], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 15:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[14]) {
+				mes "บ้าน Scarlet Palace ถูกเปิด";
+				set $WOEPLAY[14], 0;
+			} else {
+				mes "บ้าน Scarlet Palace ถูกปิด";
+				set $WOEPLAY[14], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+	
+		case 16:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[15]) {
+				mes "บ้าน Bamboo Grove Hill ถูกเปิด";
+				set $WOEPLAY[15], 0;
+			} else {
+				mes "บ้าน Bamboo Grove Hill ถูกปิด";
+				set $WOEPLAY[15], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 17:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[16]) {
+				mes "บ้าน Skoegul ถูกเปิด";
+				set $WOEPLAY[16], 0;
+			} else {
+				mes "บ้าน Skoegul ถูกปิด";
+				set $WOEPLAY[16], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 18:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[17]) {
+				mes "บ้าน Swanhild ถูกเปิด";
+				set $WOEPLAY[17], 0;
+			} else {
+				mes "บ้าน Swanhild ถูกปิด";
+				set $WOEPLAY[17], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 19:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[18]) {
+				mes "บ้าน Fadhgridh ถูกเปิด";
+				set $WOEPLAY[18], 0;
+			} else {
+				mes "บ้าน Fadhgridh ถูกปิด";
+				set $WOEPLAY[18], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 20:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[19]) {
+				mes "บ้าน Gondul ถูกเปิด";
+				set $WOEPLAY[19], 0;
+			} else {
+				mes "บ้าน Gondul ถูกปิด";
+				set $WOEPLAY[19], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 21:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[20]) {
+				mes "บ้าน Kriemhild ถูกเปิด";
+				set $WOEPLAY[20], 0;
+			} else {
+				mes "บ้าน Kriemhild ถูกปิด";
+				set $WOEPLAY[20], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;
+		case 22:
+			mes "[ Control Castle ]";
+			if ($WOEPLAY[21]) {
+				mes "บ้านแจม ถูกเปิด";
+				set $WOEPLAY[21], 0;
+			} else {
+				mes "บ้านแจม ถูกปิด";
+				set $WOEPLAY[21], 1;
+			}
+			mes "เรียบร้อยแล้ว";
+			break;	
+		case 23:
+			close;
+	}
+	close;
+	OnInit:
+		waitingroom "ควบคุมปราสาท", 0;
+		callfunc("CWWR_SYS", 2);
+		end;
+}
+
+function	script	CWWR_SYS	{
+	for (set .@i, 0; .@i < 22; set .@i, .@i + 1) {
+		if (getarg(0) == 2)
+			disablenpc "WOEW_"+.@i;
+		else if (getarg(0) == 1 && !$WOEPLAY[.@i])
+			enablenpc "WOEW_"+.@i;
+		else if (getarg(0) == 0)
+			disablenpc "WOEW_"+.@i;
+		else if (getarg(0) == 3 && .@i > 0)
+			disablenpc "WOEW_"+.@i;
+	}
+	return;
+}
+
+function	script	CWON_SYS	{
+	if ($WOEPLAY[0] && getarg(0) == "arug_cas03")
+		return 1;
+	else if ($WOEPLAY[1] && getarg(0) == "gefg_cas02")
+		return 1;
+	else if ($WOEPLAY[2] && getarg(0) == "gefg_cas04")
+		return 1;
+	else if ($WOEPLAY[3] && getarg(0) == "gefg_cas03")
+		return 1;
+	else if ($WOEPLAY[4] && getarg(0) == "gefg_cas05")
+		return 1;
+	else if ($WOEPLAY[5] && getarg(0) == "gefg_cas01")
+		return 1;
+	else if ($WOEPLAY[6] && getarg(0) == "aldeg_cas03")
+		return 1;
+	else if ($WOEPLAY[7] && getarg(0) == "aldeg_cas02")
+		return 1;
+	else if ($WOEPLAY[8] && getarg(0) == "aldeg_cas05")
+		return 1;
+	else if ($WOEPLAY[9] && getarg(0) == "aldeg_cas01")
+		return 1;
+	else if ($WOEPLAY[10] && getarg(0) == "aldeg_cas04")
+		return 1;
+	else if ($WOEPLAY[11] && getarg(0) == "payg_cas03")
+		return 1;
+	else if ($WOEPLAY[12] && getarg(0) == "payg_cas04")
+		return 1;
+	else if ($WOEPLAY[13] && getarg(0) == "payg_cas01")
+		return 1;
+	else if ($WOEPLAY[14] && getarg(0) == "payg_cas02")
+		return 1;
+	else if ($WOEPLAY[15] && getarg(0) == "payg_cas05")
+		return 1;
+	else if ($WOEPLAY[16] && getarg(0) == "prtg_cas04")
+		return 1;
+	else if ($WOEPLAY[17] && getarg(0) == "prtg_cas02")
+		return 1;
+	else if ($WOEPLAY[18] && getarg(0) == "prtg_cas03")
+		return 1;
+	else if ($WOEPLAY[19] && getarg(0) == "prtg_cas05")
+		return 1;
+	else if ($WOEPLAY[20] && getarg(0) == "prtg_cas01")
+		return 1;
+	else if ($WOEPLAY[21] && getarg(0) == "arug_cas03")
+		return 1;	
+	return 0;
+}
+
+// บ้านแจม
+guild_vs2,50,58,4	duplicate(Ar03_Flag)	บ้านแจม#flag_Ar03_3	722
+guild_vs2,50,54,0	warp	WOEW_0	1,1,arug_cas03,141,230
+guild_vs2,46,54,0	warp	WOEW_21	1,1,arug_cas03,136,227
+// aru_gld,68,155
+//morocc,188,111,4	duplicate(Ar03_Flag)	Horn#flag_Ar03_4	722
+
+
+/////////////////////////////////////////////////////
+
+// บ้าน Eeyolbriggar
+guild_vs2,75,49,2	duplicate(OutsideFlagsG2)	Eeyorbriggar#5	722
+//morocc,192,111,4	duplicate(OutsideFlagsG2)	Eeyorbriggar#4	722
+guild_vs2,72,49,0	warp	WOEW_1	1,1,gefg_cas02,70,144
+
+// บ้าน Bergel
+guild_vs2,71,59,3	duplicate(OutsideFlagsG4)	Bergel#3	722
+//morocc,196,111,4	duplicate(OutsideFlagsG4)	Bergel#4	722
+guild_vs2,69,57,0	warp	WOEW_2	1,1,gefg_cas04,24,148
+
+// บ้าน Yesnelph
+guild_vs2,67,63,3	duplicate(OutsideFlagsG3)	Yesnelph#5	722
+//morocc,200,111,4	duplicate(OutsideFlagsG3)	Yesnelph#4	722
+guild_vs2,65,61,0	warp	WOEW_3	1,1,gefg_cas03,103,280
+
+// บ้าน Mersetzdeitz
+guild_vs2,63,67,3	duplicate(OutsideFlagsG5)	Mersetzdeitz#5	722
+//morocc,204,111,4	duplicate(OutsideFlagsG5)	Mersetzdeitz#4	722
+guild_vs2,61,65,0	warp	WOEW_4	1,1,gefg_cas05,9,136
+
+// บ้าน Repherion
+guild_vs2,59,71,3	duplicate(OutsideFlagsG1)	Repherion#5	722
+//morocc,208,111,4	duplicate(OutsideFlagsG1)	Repherion#4	722
+guild_vs2,57,69,0	warp	WOEW_5	1,1,gefg_cas01,34,139
+
+/////////////////////////////////////////////////////
+
+// บ้าน Nuenberg
+guild_vs2,28,59,5	duplicate(OutsideFlagsA3)	Nuernberg#3	722
+//morocc,212,111,4	duplicate(OutsideFlagsA3)	Nuernberg#2	722
+guild_vs2,30,57,0	warp	WOEW_6	1,1,aldeg_cas03,114,287
+
+// บ้าน Hohenschwangau
+guild_vs2,40,71,5	duplicate(OutsideFlagsA2)	Hohenschwangau#3	722
+//morocc,216,111,4	duplicate(OutsideFlagsA2)	Hohenschwangau#2	722
+guild_vs2,42,69,0	warp	WOEW_7	1,1,aldeg_cas02,88,162
+
+//บ้าน Rothenburg
+guild_vs2,50,75,4	duplicate(OutsideFlagsA5)	Rothenburg#3	722
+//morocc,190,106,4	duplicate(OutsideFlagsA5)	Rothenburg#2	722
+guild_vs2,50,72,0	warp	WOEW_8	1,1,aldeg_cas05,216,103
+
+//บ้าน Neuschwanstein
+guild_vs2,36,67,5	duplicate(OutsideFlagsA1)	Neuschwanstein#3	722
+//morocc,194,106,4	duplicate(OutsideFlagsA1)	Neuschwanstein#2	722
+guild_vs2,38,65,0	warp	WOEW_9	1,1,aldeg_cas01,34,249
+
+//บ้าน Wuerzburg
+guild_vs2,32,63,5	duplicate(OutsideFlagsA4)	Wuerzburg#3	722
+//morocc,198,106,4	duplicate(OutsideFlagsA4)	Wuerzburg#2	722
+guild_vs2,34,61,0	warp	WOEW_10	1,1,aldeg_cas04,147,17
+
+/////////////////////////////////////////////////////
+
+// บ้าน Holy Shadow
+guild_vs2,71,40,1	duplicate(OutsideFlagsPA3)	Holy Shadow#5	722
+//morocc,202,106,4	duplicate(OutsideFlagsPA3)	Holy Shadow#4	722
+guild_vs2,69,42,0	warp	WOEW_11	1,1,payg_cas03,226,25
+
+// บ้าน Sacred Altar
+guild_vs2,59,28,1	duplicate(OutsideFlagsPA4)	Sacred Altar#5	722
+//morocc,206,106,4	duplicate(OutsideFlagsPA4)	Sacred Altar#4	722
+guild_vs2,57,30,0	warp	WOEW_12	1,1,payg_cas04,252,272
+
+// บ้าน Bright Arbor
+guild_vs2,63,32,1	duplicate(OutsideFlagsPA1)	Bright Arbor#5	722
+//morocc,210,106,4	duplicate(OutsideFlagsPA1)	Bright Arbor#4	722
+guild_vs2,61,34,0	warp	WOEW_13	1,1,payg_cas01,214,47
+
+// บ้าน Scarlet Palace
+guild_vs2,67,36,1	duplicate(OutsideFlagsPA2)	Scarlet Palace#5	722
+//morocc,214,106,4	duplicate(OutsideFlagsPA2)	Scarlet Palace#4	722
+guild_vs2,65,38,0	warp	WOEW_14	1,1,payg_cas02,273,61
+
+//บ้าน Bamboo Grove Hill
+guild_vs2,49,23,8	duplicate(OutsideFlagsPA5)	Bamboo Grove Hill#5	722
+//morocc,196,102,4	duplicate(OutsideFlagsPA5)	Bamboo Grove Hill#4	722
+guild_vs2,49,27,0	warp	WOEW_15	1,1,payg_cas05,62,225
+
+/////////////////////////////////////////////////////
+
+// บ้าน Skoegul
+guild_vs2,28,40,7	duplicate(OutsideFlagsPR4)	Skoegul#5	722
+//morocc,200,102,4	duplicate(OutsideFlagsPR4)	Skoegul#4	722
+guild_vs2,30,42,0	warp	WOEW_16	1,1,prtg_cas04,86,12
+
+// บ้าน Swanhild
+guild_vs2,32,36,7	duplicate(OutsideFlagsPR2)	Swanhild#5	722
+//morocc,204,102,4	duplicate(OutsideFlagsPR2)	Swanhild#4	722
+guild_vs2,34,38,0	warp	WOEW_17	1,1,prtg_cas02,43,230
+
+// บ้าน Fadhgridh
+guild_vs2,36,32,7	duplicate(OutsideFlagsPR3)	Fadhgridh#5	722
+//morocc,208,102,4	duplicate(OutsideFlagsPR3)	Fadhgridh#4	722
+guild_vs2,38,34,0	warp	WOEW_18	1,1,prtg_cas03,168,11
+
+// บ้าน Gondul
+guild_vs2,40,28,7	duplicate(OutsideFlagsPR5)	Gondul#5	722
+//morocc,197,97,4	duplicate(OutsideFlagsPR5)	Gondul#4	722
+guild_vs2,42,30,0	warp	WOEW_19	1,1,prtg_cas05,17,234
+
+//บ้าน Kriemhild
+guild_vs2,24,50,6	duplicate(OutsideFlagsPR1)	Kriemhild#5	722
+//morocc,210,97,4	duplicate(OutsideFlagsPR1)	Kriemhild#4	722
+guild_vs2,27,50,0	warp	WOEW_20	1,1,prtg_cas01,99,32
+
+/////////////////////////////////////////////////////

@@ -23,17 +23,8 @@
 	set .@GID, GetCastleData("payg_cas01",1);
 
 	if (.@GID == 0) {
-		mes "[ Edict of the Divine Rune-Midgarts Kingdom ]";
-		mes " ";
-		mes "1. Follow the ordinance of The Divine Rune-Midgarts Kingdom, ";
-		mes "We declare that";
-		mes "there is no formal master of this castle.";
-		mes " ";
-		mes "2. To the one who can ";
-		mes "overcome all trials";
-		mes "and destroy the Emperium,";
-		mes "the king will endow the one with";
-		mes "ownership of this castle.";
+		mes "ºéÒ¹ ^0000FF > Bright Arbor < ^000000 ";
+		mes "ÂÑ§äÁèÁÕ¼Ùéã´ÂÖ´¤ÃÍ§ ";
 		close;
 	}
 	if (getcharid(2) == .@GID) {
@@ -51,16 +42,10 @@
 		}
 		close;
 	}
-	mes "[ Edict of the Divine Rune-Midgarts Kingdom ]";
-	mes " ";
-	mes "1. Follow the ordinance of The Divine Rune-Midgarts Kingdom, ";
-	mes "we approve that this place is in";
-	mes "the private prossession of ^ff0000"+GetGuildName(.@GID)+"^000000 Guild.";
-	mes " ";
-	mes "2. The guild Master of ^ff0000"+GetGuildName(.@GID)+"^000000 Guild is";
-	mes "^ff0000"+GetGuildMaster(.@GID)+"^000000";
-	mes "If there is anyone who objects to this,";
-	mes "prove your strength and honor with a steel blade in your hand.";
+	mes "ºéÒ¹ ^0000FF > Bright Arbor < ^000000 ";
+	mes "¶Ù¡ÂÖ´¤ÃÍ§â´Â ";
+	mes "¡ÔÅ´ì ^ff0000"+GetGuildName(.@GID)+"^000000";
+	mes "ËÑÇË¹éÒ¡ÔÅ´ì ^ff0000"+GetGuildMaster(.@GID)+"^000000";
 	close;
 
 OnRecvCastlePy01:
@@ -71,7 +56,6 @@ OnRecvCastlePy01:
 pay_gld,125,236,4	duplicate(OutsideFlagsPA1)	Bright Arbor#1-2	722
 pay_gld,110,233,4	duplicate(OutsideFlagsPA1)	Bright Arbor#2	722
 pay_gld,116,233,4	duplicate(OutsideFlagsPA1)	Bright Arbor#3	722
-pay_gld,91,239,2	duplicate(OutsideFlagsPA1)	Bright Arbor#4	722
 
 // Guild Flags (Inside Castle)
 //============================================================
@@ -92,8 +76,8 @@ payg_cas01,212,108,4	duplicate(InsideFlagsPA1)	Bright Arbor#10	722
 
 // Guild Flag (Town)
 //============================================================
-payon,90,322,4	duplicate(InsideFlagsPA1)	Bright Arbor#11	722
-payon,166,177,3	duplicate(InsideFlagsPA1)	Bright Arbor#12	722
+//payon,90,322,4	duplicate(InsideFlagsPA1)	Bright Arbor#11	722
+//payon,166,177,3	duplicate(InsideFlagsPA1)	Bright Arbor#12	722
 
 // Kafra Employee
 //============================================================

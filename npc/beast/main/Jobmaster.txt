@@ -244,8 +244,12 @@ mes "ไม่สามารถเปลี่ยนได้อีก";
 close;
 
 OnInit:
-	waitingroom "   เปลี่ยนอาชีพ   ",0;
+	//waitingroom "   เปลี่ยนอาชีพ   ",0;
+	setunitdata (getnpcid(0), UNPC_GROUP_ID, 106); 
+    setunittitle(getnpcid(0), "Job master");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 end;
 }
 
-prontera,156,191,4	duplicate(jobmaster)	Job Master#01	811
+ultia,196,163,4	duplicate(jobmaster)	เปลี่ยนอาชีพ#01	10368

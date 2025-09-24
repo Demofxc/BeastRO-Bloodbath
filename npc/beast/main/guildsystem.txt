@@ -1,6 +1,11 @@
 -	script	guildsystem_	-1,{
-if(agitcheck())goto wars;
-goto main;
+if(agitcheck()){
+    goto wars;
+}
+else{
+    goto main;
+}
+
 
 wars:
 set @GIDGUILD,getcharid(2);
@@ -10,16 +15,18 @@ menu
 "^0000FF-^000000 สร้างกิลด์",guildsys_yes,
 "^0000FF-^000000 อัพเวลกิลด์",Ca,
 "^0000FF-^000000 ลบกิลด์",Ea;
+close;
 
 main:
 set @GIDGUILD,getcharid(2);
 set .@name$, "^FF0000[ระบบจัดการกิลด์]^000000";
 
-menu 
+menu
 "^0000FF-^000000 สร้างกิลด์",Yes,
 "^0000FF-^000000 อัพเวลกิลด์",Ca,
 "^0000FF-^000000 โอนหัวกิลด์",Da,
 "^0000FF-^000000 ลบกิลด์",Ea;
+close;
 
 guildsys_yes:
 if( getcharid(2) ){
@@ -52,8 +59,11 @@ close;
 end;
 
 OnInit:
-waitingroom " ระบบจัดการกิลด์ ", 0;
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 108); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Guild Manger");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 end;
 }
 
-prontera,152,195,5	duplicate(guildsystem_)	Guild Manger#101	653 
+ultia,179,137,5	duplicate(guildsystem_)	จัดการกิลด์#101	653 

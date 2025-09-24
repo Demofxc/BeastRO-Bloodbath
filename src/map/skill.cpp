@@ -2382,10 +2382,10 @@ int32 skill_additional_effect( struct block_list* src, struct block_list *bl, ui
 			if (skill == PF_SPIDERWEB) //Special case, due to its nature of coding.
 				type = CAST_GROUND;
 #ifndef RENEWAL
-			else if( skill == AS_SONICBLOW ){
-				// Special case, Sonic Blow autospell should stop the player attacking.
-				unit_stop_attack( sd );
-			}
+			//else if( skill == AS_SONICBLOW ){
+			//	// Special case, Sonic Blow autospell should stop the player attacking.
+			//	unit_stop_attack( sd );
+			//}
 #endif
 
 			sd->state.autocast = 1;
@@ -4183,6 +4183,9 @@ int64 skill_attack (int32 attack_type, struct block_list* src, struct block_list
 	if ((flag&0x1000000) && rmdamage)
 		return 0; //Should return 0 when damage was reflected
 
+	if(damage > 0 && sd != nullptr){
+		clif_parse_restore_animation(sd,*dsrc,skill_id,skill_lv);
+	}
 	return damage;
 }
 

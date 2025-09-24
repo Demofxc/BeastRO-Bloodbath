@@ -9,7 +9,7 @@
 		Ver.1.3 เพิ่มระบบล้างประวัติการรับไอเทม (เมื่อลบแล้วผู้เล่นต้องออกเข้าเกมใหม่ เพื่อให้ประวัติถูกเครีย)
 		Ver.1.4 เช็คเมื่อมีคนกดรับพร้อมกัน เกินจำนวน จำไม่สามารถรับได้
 */
-prontera,159,212,7	script	แอดไลน์ @hipvp รับ Code	888,{
+ultia,212,137,3	script	แลกไอเท็มโค๊ด	888,{
 	disable_items;
 	.@GM = getgmlevel() >= 99;
 	mes .NPCname$;
@@ -149,6 +149,9 @@ prontera,159,212,7	script	แอดไลน์ @hipvp รับ Code	888,{
 	
 OnInit:
 	.NPCname$ = "[ Item Code ]";
-    waitingroom " เติม Item Code", 0;
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 112); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Redeem Item code");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 	end;
 }

@@ -108,7 +108,7 @@ OnNPCKillEvent: // Logic to detect when a MvP is killed
 
 //---- MvP Ladder Info NPC
 
-morocc,186,107,5	script	จัดอันดับ MVP	15004,{
+ultia,188,160,5	script	จัดอันดับ MVP	857,{
 	.@npcname$ = "^738C5A[ จัดอันดับ MVP ]^000000";
 	while (true) {
 		mes .@npcname$;
@@ -157,7 +157,7 @@ morocc,186,107,5	script	จัดอันดับ MVP	15004,{
 			}
 			for (.@j = 0; .@j < .@nb; .@j += getvariableofnpc(.showpage,"MVPLadder")) {
 				for (.@i = .@j; .@i < (getvariableofnpc(.showpage,"MVPLadder") + .@j) && .@i < .@nb; ++.@i) {
-					mes "^000000" + (.@i+1) + ". ^ff0000" + strmobinfo(1, .@mobid[.@i]) + " ^000000ถูกกำจัด ^0000FF" + .@kills[.@i] + " ^000000ตัว^000000";
+					mes "^000000" + (.@i+1) + ". ^ff0000" + getmonsterinfo(1,.@mobid[.@i]) + " ^000000ถูกกำจัด ^0000FF" + .@kills[.@i] + " ^000000ตัว^000000";
 				}
 				next;
 			}
@@ -179,7 +179,7 @@ morocc,186,107,5	script	จัดอันดับ MVP	15004,{
 			.@totalKillCount = 0;
 			for (.@j = 0; .@j < .@nb; .@j += getvariableofnpc(.showpage,"MVPLadder")) {
 				for (.@i = .@j; .@i < (getvariableofnpc(.showpage,"MVPLadder") + .@j) && .@i < .@nb; ++.@i ) {	
-					mes "^000000" + (.@i+1) + ". ^ff0000" + strmobinfo(1, .@mobid[.@i]) + " ^000000ถูกกำจัด ^0000FF" + .@kills[.@i] + " ^000000ตัว^000000";
+					mes "^000000" + (.@i+1) + ". ^ff0000" + getmonsterinfo(1,.@mobid[.@i]) + " ^000000ถูกกำจัด ^0000FF" + .@kills[.@i] + " ^000000ตัว^000000";
 					.@totalKillCount = .@totalKillCount + .@kills[.@i];
 				}
 				next;
@@ -218,9 +218,9 @@ OnInit:
 	end;
 }
 
-morocc,192,106,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#1	1_F_MARIA
-morocc,194,107,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#2	1_F_MARIA
-morocc,190,107,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#3	1_F_MARIA
+ultia,202,162,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#1	1_F_MARIA
+ultia,200,161,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#2	1_F_MARIA
+ultia,204,163,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#3	1_F_MARIA
 //prontera,156,184,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#4	1_F_MARIA
 //prontera,158,184,4	duplicate(mvp_ladder_statue)	mvp_ladder_statue#5	1_F_MARIA
 

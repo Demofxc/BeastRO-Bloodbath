@@ -63762,25 +63762,25 @@ Body:
     Script: |
       specialeffect2 EF_POTION_BERSERK;
       sc_start SC_INFINITY_DRINK,1800000,0;
-  - Id: 23484
-    AegisName: Firstaid_Box_5
-    Name: First aid Box (5)
-    Type: Usable
-    EquipLevelMin: 5
-    Trade:
-      NoDrop: true
-      NoTrade: true
-      NoCart: true
-      NoStorage: true
-      NoGuildStorage: true
-      NoMail: true
-      NoAuction: true
-    Script: |
-      getitem 11518,10;
-      getitem 11614,20;
-      getitem 12325,15;
-      getitem 22542,1;
-      getitem 23485,1;
+#  - Id: 23484
+#    AegisName: Firstaid_Box_5
+#    Name: First aid Box (5)
+#    Type: Usable
+#    EquipLevelMin: 5
+#    Trade:
+#      NoDrop: true
+#      NoTrade: true
+#      NoCart: true
+#      NoStorage: true
+#      NoGuildStorage: true
+#      NoMail: true
+#      NoAuction: true
+#    Script: |
+#      getitem 11518,10;
+#      getitem 11614,20;
+#      getitem 12325,15;
+#      getitem 22542,1;
+#      getitem 23485,1;
   - Id: 23485
     AegisName: Firstaid_Box_10
     Name: First aid Box (10)
@@ -70491,7 +70491,7 @@ Body:
       laphine_synthesis();
   - Id: 100784
     AegisName: Shadow_Changer_W_Shi
-    Name: Shadow Changer (Weaponâ†’Shield)
+    Name: Shadow Changer (Weaponâÿ’Shield)
     Type: DelayConsume
     Weight: 10
     Flags:
@@ -70778,7 +70778,7 @@ Body:
       laphine_synthesis();
   - Id: 100890
     AegisName: Shadow_Changer_A_W
-    Name: Shadow Changer (Armorâ†’Weapon)
+    Name: Shadow Changer (Armorâÿ’Weapon)
     Type: DelayConsume
     Weight: 10
     Flags:
@@ -85496,7 +85496,7 @@ Body:
       getgroupitem(IG_EYPGT_COSTUME_BOX3);
   - Id: 200537
     AegisName: If_Speed_Booster_10_Box
-    Name: Efreet Speed â€‹â€‹Booster Package 10 Sets    # !todo check english name
+    Name: Efreet Speed â€ÿâ€ÿBooster Package 10 Sets    # !todo check english name
     Type: Cash
     Weight: 10
     Flags:
@@ -85513,7 +85513,7 @@ Body:
       getgroupitem(IG_IF_SPEED_BOOSTER_10_BOX);
   - Id: 200538
     AegisName: If_Speed_Booster_Box
-    Name: Efreet Speed â€‹â€‹Booster Package    # !todo check english name
+    Name: Efreet Speed â€ÿâ€ÿBooster Package    # !todo check english name
     Type: Cash
     Weight: 10
     Flags:

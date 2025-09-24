@@ -1,0 +1,191 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 553,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 558,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 558,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 558,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 565,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 558,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 558,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 558,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 618,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_base",
+			"destination" : ".",
+			"paths" : 
+			[
+				"athena-start",
+				"LICENSE",
+				"README.md",
+				"dbghelp.dll",
+				"libmysql.dll",
+				"pcre3.dll",
+				"zlib1.dll",
+				"tools/charserv.bat",
+				"tools/logserv.bat",
+				"tools/mapserv.bat",
+				"tools/runserver.bat",
+				"tools/serv.bat"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Runtime_base",
+			"destination" : "conf",
+			"paths" : 
+			[
+				{
+					"from" : "conf",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Runtime_base",
+			"destination" : "db",
+			"paths" : 
+			[
+				{
+					"from" : "db",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Runtime_base",
+			"destination" : "doc",
+			"paths" : 
+			[
+				{
+					"from" : "doc",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "Runtime_base",
+			"type" : "code"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "Runtime_base",
+			"destination" : "npc",
+			"paths" : 
+			[
+				{
+					"from" : "npc",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 7,
+			"component" : "Runtime_base",
+			"destination" : "sql-files",
+			"paths" : 
+			[
+				{
+					"from" : "sql-files",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 8,
+			"component" : "Runtime_base",
+			"destination" : "tools",
+			"paths" : 
+			[
+				{
+					"from" : "tools",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 9,
+			"component" : "Runtime_templates",
+			"scriptFile" : "out/build/x64-Debug/InstallTemplates.cmake",
+			"type" : "script"
+		}
+	],
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	}
+}

@@ -21,7 +21,7 @@ OnInit:
 	monster strnpcinfo(4),.@d[UNPC_X],.@d[UNPC_Y],"Punching Bag[DemiHuman]",20516,1,strnpcinfo(0)+"::OnMyMobDead";
 	.@dupid = atoi(strnpcinfo(2));
 	.gid[.@dupid] = $@mobid[0];
-	.mhp[.@dupid] = strmobinfo(4,20516);
+	.mhp[.@dupid] = getmonsterinfo(4,20516);
 	setunitdata .gid[.@dupid],UMOB_MODE,.@d[UMOB_MODE]|0x4000000|0x0200000|0x6200000; // Set MD_STATUS_IMMUNE (0x4000000) because EDP/burn/%MHP based status can skew the DPS counter so much.
 	initnpctimer;
 	end;
@@ -43,4 +43,4 @@ OnTimer5000:
 morocc,208,100,0	duplicate(PunchingBag#0)	PunchingBag#1	844
 morocc,200,93,0	duplicate(PunchingBag#0)	PunchingBag#2	844
 
-morocc,208,93,0	monster	Punching Bag[Emperium]#1	20517,1,0,0,1
+morocc,208,93,0	monster	Punching Bag[Emperium]#1	20517,1

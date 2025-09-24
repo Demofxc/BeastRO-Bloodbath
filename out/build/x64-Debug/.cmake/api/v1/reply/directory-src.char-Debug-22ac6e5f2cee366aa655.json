@@ -1,0 +1,56 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"src/char/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 34,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_charserver",
+			"destination" : ".",
+			"paths" : 
+			[
+				"C:/Users/Awake/Desktop/Beast-HiClass/char-server.exe"
+			],
+			"targetId" : "char-server::@d03abcc085423b291df8",
+			"targetIndex" : 2,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_charserver",
+			"cxxModuleBmiTarget" : 
+			{
+				"id" : "char-server::@d03abcc085423b291df8",
+				"index" : 2
+			},
+			"destination" : ".",
+			"type" : "cxxModuleBmi"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "src/char",
+		"source" : "src/char"
+	}
+}

@@ -1,0 +1,143 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"src/tool/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 60,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 65,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 70,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 75,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_mapcache",
+			"destination" : ".",
+			"paths" : 
+			[
+				"C:/Users/Awake/Desktop/Beast-HiClass/mapcache.exe"
+			],
+			"targetId" : "mapcache::@312d1879a87bc0da48b6",
+			"targetIndex" : 9,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_mapcache",
+			"cxxModuleBmiTarget" : 
+			{
+				"id" : "mapcache::@312d1879a87bc0da48b6",
+				"index" : 9
+			},
+			"destination" : ".",
+			"type" : "cxxModuleBmi"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Runtime_csv2yaml",
+			"destination" : ".",
+			"paths" : 
+			[
+				"C:/Users/Awake/Desktop/Beast-HiClass/csv2yaml.exe"
+			],
+			"targetId" : "csv2yaml::@312d1879a87bc0da48b6",
+			"targetIndex" : 5,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Runtime_csv2yaml",
+			"cxxModuleBmiTarget" : 
+			{
+				"id" : "csv2yaml::@312d1879a87bc0da48b6",
+				"index" : 5
+			},
+			"destination" : ".",
+			"type" : "cxxModuleBmi"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Runtime_yaml2sql",
+			"destination" : ".",
+			"paths" : 
+			[
+				"C:/Users/Awake/Desktop/Beast-HiClass/yaml2sql.exe"
+			],
+			"targetId" : "yaml2sql::@312d1879a87bc0da48b6",
+			"targetIndex" : 15,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Runtime_yaml2sql",
+			"cxxModuleBmiTarget" : 
+			{
+				"id" : "yaml2sql::@312d1879a87bc0da48b6",
+				"index" : 15
+			},
+			"destination" : ".",
+			"type" : "cxxModuleBmi"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Runtime_yamlupgrade",
+			"destination" : ".",
+			"paths" : 
+			[
+				"C:/Users/Awake/Desktop/Beast-HiClass/yamlupgrade.exe"
+			],
+			"targetId" : "yamlupgrade::@312d1879a87bc0da48b6",
+			"targetIndex" : 16,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Runtime_yamlupgrade",
+			"cxxModuleBmiTarget" : 
+			{
+				"id" : "yamlupgrade::@312d1879a87bc0da48b6",
+				"index" : 16
+			},
+			"destination" : ".",
+			"type" : "cxxModuleBmi"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "src/tool",
+		"source" : "src/tool"
+	}
+}

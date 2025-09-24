@@ -380,7 +380,7 @@ OnPCLoadMapEvent:
 	end;
 }
 
-morocc,193,112,5	script	จัดอันดับ PVP	15005,{
+ultia,203,160,3	script	จัดอันดับ PVP	857,{
 	.@npcname$ = "^738C5A[ จัดอันดับ PVP ]^000000";
 	while (true) {
 		mes .@npcname$;
@@ -541,9 +541,9 @@ OnInit:
 	end;
 }
 
-morocc,199,112,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#1	1_F_MARIA
-morocc,201,113,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#2	1_F_MARIA
-morocc,197,113,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#3	1_F_MARIA
+ultia,189,162,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#1	1_F_MARIA
+ultia,187,163,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#2	1_F_MARIA
+ultia,191,161,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#3	1_F_MARIA
 //prontera,156,180,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#4	1_F_MARIA
 //prontera,158,180,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#5	1_F_MARIA
 //prontera,160,180,4	duplicate(pvp_ladder_statue)	pvp_ladder_statue#6	1_F_MARIA

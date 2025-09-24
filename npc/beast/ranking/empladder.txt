@@ -90,7 +90,7 @@ morocc,221,107,3	script	จัดอันดับ EMP	15003,{
 		mes "การจัดอันดับกิลด์ที่ฆ่ามากที่สุดจะรีเซ็ตหลังจากแจกเงินรางวัล.";
 		mes "ผู้เล่นอันดับ 1 เท่านั้นที่จะได้รับรางวัลในแต่ละเดือน.";
 		next;
-		switch (select("^738C5A•^000000 อันดับผู้ที่ทำลาย Emperium")) {
+		switch (select("^738C5A?^000000 อันดับผู้ที่ทำลาย Emperium")) {
 		mes .@npcname$;
 		case 1:
 			.@queryBreakerList$ = "SELECT t1.char_id, t1.count, t2.name "

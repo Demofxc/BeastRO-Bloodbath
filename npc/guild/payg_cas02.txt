@@ -24,17 +24,8 @@
 	set .@GID, GetCastleData("payg_cas02",1);
 
 	if (.@GID == 0) {
-		mes "[ Edict of the Divine Rune-Midgarts Kingdom ]";
-		mes " ";
-		mes "1. Follow the ordinance of The Divine Rune-Midgarts Kingdom, ";
-		mes "We declare that";
-		mes "there is no formal master of this castle.";
-		mes " ";
-		mes "2. To the one who can ";
-		mes "overcome all trials";
-		mes "and destroy the Emperium,";
-		mes "the king will endow the one with";
-		mes "ownership of this castle.";
+		mes "ºéÒ¹ ^0000FF > Scarlet Palace < ^000000 ";
+		mes "ÂÑ§äÁèÁÕ¼Ùéã´ÂÖ´¤ÃÍ§ ";
 		close;
 	}
 	if (getcharid(2) == .@GID) {
@@ -52,16 +43,10 @@
 		}
 		close;
 	}
-	mes "[ Edict of the Divine Rune-Midgarts Kingdom ]";
-	mes " ";
-	mes "1. Follow the ordinance of The Divine Rune-Midgarts Kingdom, ";
-	mes "we approve that this place is in";
-	mes "the private prossession of ^ff0000"+GetGuildName(.@GID)+"^000000 Guild.";
-	mes " ";
-	mes "2. The guild Master of ^ff0000"+GetGuildName(.@GID)+"^000000 Guild is";
-	mes "^ff0000"+GetGuildMaster(.@GID)+"^000000";
-	mes "If there is anyone who objects to this,";
-	mes "prove your strength and honor with a steel blade in your hand.";
+	mes "ºéÒ¹ ^0000FF > Scarlet Palace < ^000000 ";
+	mes "¶Ù¡ÂÖ´¤ÃÍ§â´Â ";
+	mes "¡ÔÅ´ì ^ff0000"+GetGuildName(.@GID)+"^000000";
+	mes "ËÑÇË¹éÒ¡ÔÅ´ì ^ff0000"+GetGuildMaster(.@GID)+"^000000";
 	close;
 
 OnRecvCastlePy02:
@@ -72,7 +57,6 @@ OnRecvCastlePy02:
 pay_gld,292,112,6	duplicate(OutsideFlagsPA2)	Scarlet Palace#1-2	722
 pay_gld,292,120,6	duplicate(OutsideFlagsPA2)	Scarlet Palace#2	722
 pay_gld,291,135,6	duplicate(OutsideFlagsPA2)	Scarlet Palace#3	722
-pay_gld,271,163,0	duplicate(OutsideFlagsPA2)	Scarlet Palace#4	722
 
 // Guild Flags (Inside Castle)
 //============================================================
@@ -93,8 +77,8 @@ payg_cas02,70,282,4	duplicate(InsideFlagsPA2)	Scarlet Palace#10	722
 
 // Guild Flag (Town)
 //============================================================
-payon,97,322,4	duplicate(InsideFlagsPA2)	Scarlet Palace#11	722
-payon,166,173,3	duplicate(InsideFlagsPA2)	Scarlet Palace#12	722
+//payon,97,322,4	duplicate(InsideFlagsPA2)	Scarlet Palace#11	722
+//payon,166,173,3	duplicate(InsideFlagsPA2)	Scarlet Palace#12	722
 
 // Kafra Employee
 //============================================================

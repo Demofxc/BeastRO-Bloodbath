@@ -1,0 +1,56 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"src/login/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 29,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_loginserver",
+			"destination" : ".",
+			"paths" : 
+			[
+				"C:/Users/Awake/Desktop/Beast-HiClass/login-server.exe"
+			],
+			"targetId" : "login-server::@b49ffc661df6bab7e8e2",
+			"targetIndex" : 7,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Runtime_loginserver",
+			"cxxModuleBmiTarget" : 
+			{
+				"id" : "login-server::@b49ffc661df6bab7e8e2",
+				"index" : 7
+			},
+			"destination" : ".",
+			"type" : "cxxModuleBmi"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "src/login",
+		"source" : "src/login"
+	}
+}

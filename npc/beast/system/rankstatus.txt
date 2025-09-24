@@ -580,13 +580,15 @@ function	script	RankStatus	{
 		callfunc("ReputationUpdate",0);
 		close;
 }
-prontera,159,195,3	script	RankStatus#Main2	628,{
+ultia,218,143,3	script	จัดการยศเพิ่มสเตตัส#Main2	628,{
 	callfunc("RankStatus");
 	end;
 
 	OnInit:
-
-		waitingroom "ระบบ Rank Status", 0;
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 109); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Rank Status System");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 }
 // ชื่อยศ
 function	script	ReputationUpdate	{

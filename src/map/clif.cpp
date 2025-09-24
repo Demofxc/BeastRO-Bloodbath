@@ -1707,7 +1707,8 @@ int32 clif_spawn( struct block_list *bl, bool walking ){
 			if (sd->spiritcharm_type != CHARM_TYPE_NONE && sd->spiritcharm > 0)
 				clif_spiritcharm( *sd );
 			clif_efst_status_change_sub(bl, bl, AREA);
-			clif_hat_effects( *sd, *sd, AREA );
+			//clif_hat_effects( *sd, *sd, AREA );
+			clif_hat_effects(bl, bl, true, AREA);
 		}
 		break;
 	case BL_MOB:
@@ -1719,6 +1720,7 @@ int32 clif_spawn( struct block_list *bl, bool walking ){
 				clif_specialeffect(md,EF_BABYBODY2,AREA);
 			if ( md->special_state.ai == AI_ABR || md->special_state.ai == AI_BIONIC )
 				clif_summon_init(*md);
+			clif_hat_effects(bl, bl, true, AREA);
 			clif_name_area(md);
 		}
 		break;
@@ -1731,6 +1733,7 @@ int32 clif_spawn( struct block_list *bl, bool walking ){
 				clif_specialeffect(nd,EF_BABYBODY2,AREA);
 			clif_efst_status_change_sub(bl, bl, AREA);
 			clif_progressbar_npc_area(nd);
+			clif_hat_effects(bl, bl, true, AREA);
 		}
 		break;
 	case BL_PET:
@@ -5040,7 +5043,8 @@ void clif_getareachar_unit( map_session_data* sd,struct block_list *bl ){
 			if( tsd->bg_id && map_getmapflag(tsd->m, MF_BATTLEGROUND) )
 				clif_sendbgemblem_single(sd->fd,tsd);
 			clif_efst_status_change_sub(sd, bl, SELF);
-			clif_hat_effects( *sd, *tsd, SELF );
+			//clif_hat_effects( *sd, *tsd, SELF );
+			clif_hat_effects(static_cast<block_list*>(sd), bl, true, SELF);
 		}
 		break;
 	case BL_MER: // Devotion Effects
@@ -5065,6 +5069,7 @@ void clif_getareachar_unit( map_session_data* sd,struct block_list *bl ){
 				clif_specialeffect_single(bl,EF_BABYBODY2,sd->fd);
 			clif_efst_status_change_sub(sd, bl, SELF);
 			clif_progressbar_npc(nd, sd);
+			clif_hat_effects(static_cast<block_list*>(sd), bl, true, SELF);
 		}
 		break;
 	case BL_MOB:
@@ -5085,6 +5090,7 @@ void clif_getareachar_unit( map_session_data* sd,struct block_list *bl ){
 			}
 #endif
 		clif_name_area(md);
+		clif_hat_effects(static_cast<block_list*>(sd), bl, true, SELF);
 		}
 		break;
 	case BL_PET:
@@ -6091,7 +6097,78 @@ int32 clif_skill_damage2(struct block_list *src,struct block_list *dst,t_tick ti
 	return clif_calc_walkdelay(*dst,ddelay,type,damage,div);
 }
 */
+/*==========================
+ RESTORE ANIMATION BY AOSHINHO
+============================*/
+void clif_parse_restore_animation(map_session_data* sd, block_list& target, uint16 skill_id, uint16 skill_lv)
+{
+#if PACKETVER >= 20181128
 
+#ifdef RENEWAL
+#ifndef PRENEWAL_ANIMATION
+	return;
+#endif
+#endif
+
+	nullpo_retv(sd);
+
+	short hit_count = 0;
+	switch (skill_id)
+	{
+#if PACKETVER >= 20191016
+	case GC_CROSSIMPACT:
+		hit_count = 6;
+		break;
+#endif
+	case AS_SONICBLOW:
+		hit_count = 8;
+		break;
+	case CG_ARROWVULCAN:
+		hit_count = 9;
+		break;
+	default:
+		break;
+	}
+	if(hit_count > 0){
+		bool exist = false;
+
+		if(!sd->animation.empty())
+		{
+			auto isEven = [target](const std::unique_ptr<e_skill_animation_restore>& p) { 
+				return p->get_targetid() == target.id; 
+			};
+			auto iter = std::find_if(sd->animation.begin(), sd->animation.end(), isEven);
+			if(iter == sd->animation.end())
+			{
+				if(!status_isdead(target)){
+					auto& it = *iter;
+					it->update_animation(hit_count);
+					exist = true;
+				}
+			}
+		}
+		if(!exist)
+			sd->animation.push_back(std::make_unique<e_skill_animation_restore>(sd, target, skill_id, skill_lv, hit_count));
+
+		if(!sd->animation.empty() && (sd->animation.back()->get_skillid() == 0))
+			sd->animation.pop_back();
+	}
+#endif
+}
+/// 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3)
+/// yep sending damage action without damage&target
+void clif_hit_frame(block_list& bl, int motion)
+{
+	PACKET_ZC_NOTIFY_ACT p{};
+
+	p.packetType = HEADER_ZC_NOTIFY_ACT;
+	p.srcID = bl.id;
+	p.type = DMG_NORMAL;
+	p.div = 1;
+	p.srcSpeed = motion;
+
+	clif_send(&p, sizeof(p), &bl, AREA);
+}
 
 /// Non-damaging skill effect
 /// 011a <skill id>.W <heal>.W <dst id>.L <src id>.L <result>.B (ZC_USE_SKILL)
@@ -10087,17 +10164,16 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 				packet.packet_id = HEADER_ZC_ACK_REQNAMEALL_NPC;
 				packet.gid = bl->id;
-				safestrncpy(packet.name, md->name, NAME_LENGTH);
-
+				
 #if PACKETVER_MAIN_NUM >= 20180207 || PACKETVER_RE_NUM >= 20171129 || PACKETVER_ZERO_NUM >= 20171130
 				unit_data *ud = unit_bl2ud(bl);
 
 				int ele_group = -1;
-				char ele_name[8] = {0};
-				char output[100]     = {0};   // พอสำหรับ "Undead" ฯลฯ + เผื่อ
-				char name_table[100] = {0};   // ข้อความชื่อ + Lv + ขนาด
-				char size_name[16]  = {0};   // "Medium"/"Large" ฯลฯ
-				char race_name[16]  = {0};   // "Medium"/"Large" ฯลฯ
+				char ele_name[50] = {0};
+				char output[50] = {0};
+				char title[50] = {0};
+				char size_name[50] = {0};
+				char race_name[50] = {0};
 
 				// Show Element Info [Hyroshima]
 				if(battle_config.mob_ele_view)
@@ -10137,19 +10213,17 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 						case 9: strcpy(race_name, "Dragon");break;
 						default: break;
 					}
+
 					if(ud != nullptr)
 					{
 						if(ele_group > -1)
-							ud->group_id = ele_group;  // ใช้ ud โดยตรง
+							md->ud.group_id = ele_group;
 						
 						if(strlen(ele_name))
 						{
-							//กำหนดชื่อ
-							safesnprintf(name_table,sizeof(name_table),"Lv.%d %s ( %s )",md->level, md->name, size_name);
-							safestrncpy(ud->title, name_table, NAME_LENGTH);
-
-							safesnprintf(output,sizeof(output),"%s Lv.%d [ %s ]",ele_name, md->status.ele_lv, race_name);
-							safestrncpy(md->name, output, NAME_LENGTH);
+							safesnprintf(title,sizeof(title),"%s",md->name);
+							safesnprintf(output,sizeof(output),"%s [%s]",ele_name,  race_name);
+							safestrncpy(ud->title, title, NAME_LENGTH);
 							safestrncpy(packet.name, output, NAME_LENGTH);
 						}
 					}
@@ -21631,58 +21705,47 @@ void clif_navigateTo(map_session_data *sd, const char* mapname, uint16 x, uint16
 
 /// Send hat effects to the client.
 /// 0A3B <Length>.W <AID>.L <Status>.B { <HatEffectId>.W } (ZC_EQUIPMENT_EFFECT)
-void clif_hat_effects( map_session_data& sd, block_list& bl, enum send_target target ){
+void clif_hat_effects(struct block_list* src, struct block_list* bl, bool enable, enum send_target target ){
 #if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
-	map_session_data *tsd;
-	block_list* tbl;
-
-	if( target == SELF ){
-		tsd = BL_CAST(BL_PC,&bl);
-		tbl = &sd;
-	}else{
-		tsd = &sd;
-		tbl = &bl;
-	}
-
-	if( tsd == nullptr ){
+	struct unit_data* ud;
+	
+	if (!src || !bl || !(ud = unit_bl2ud(bl)))
 		return;
-	}
-
-	if( tsd->hatEffects.empty() || map_getmapdata(tbl->m)->getMapFlag(MF_NOCOSTUME) ){
-		return;
-	}
+	
+	if (ud->hatEffects.empty() || map_getmapdata(src->m)->getMapFlag(MF_NOCOSTUME)) {
+ 		return;
+ 	}
 
 	PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
-
-	p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
-	p->packetLength = sizeof( *p );
-	p->aid = tsd->id;
-	p->status = 1;
-
-	for( size_t i = 0; i < tsd->hatEffects.size(); i++ ){
-		p->effects[i] = tsd->hatEffects[i];
-
-		p->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->effects[0] ) );
-	}
-
-	clif_send( p, p->packetLength, tbl, target );
+ 
+ 	p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
+	
+	p->packetLength = (int16)( sizeof( struct PACKET_ZC_EQUIPMENT_EFFECT ) + sizeof( int16 ) * ud->hatEffects.size() );
+	p->aid = bl->id;
+	p->status = enable;
+	
+	for (size_t i = 0; i < ud->hatEffects.size(); i++) {
+		p->effects[i] = ud->hatEffects[i];
+ 	}
+	
+	clif_send(p, p->packetLength, src, target);
 #endif
 }
 
 /// Send a single hat effect to the client.
 /// 0A3B <Length>.W <AID>.L <Status>.B { <HatEffectId>.W } (ZC_EQUIPMENT_EFFECT)
-void clif_hat_effect_single( map_session_data& sd, uint16 effectId, bool enable ){
+void clif_hat_effect_single( struct block_list* bl, uint16 effectId, bool enable ){
 #if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
 	PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
-
-	p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
-	p->packetLength = sizeof( *p );
-	p->aid = sd.id;
-	p->status = enable;
-	p->effects[0] = effectId;
-	p->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->effects[0] ) );
-
-	clif_send( p, p->packetLength, &sd, AREA );
+	nullpo_retv(bl);
+ 
+ 	p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
+ 	p->packetLength = (int16)( sizeof( struct PACKET_ZC_EQUIPMENT_EFFECT ) + sizeof( int16 ) );
+	p->aid = bl->id;
+ 	p->status = enable;
+ 	p->effects[0] = effectId;
+ 
+	clif_send( p, p->packetLength, bl, AREA );
 #endif
 }
 

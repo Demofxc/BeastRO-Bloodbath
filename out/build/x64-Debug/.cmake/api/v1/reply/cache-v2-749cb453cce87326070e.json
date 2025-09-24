@@ -1,0 +1,3339 @@
+{
+	"entries" : 
+	[
+		{
+			"name" : "ALLOW_SAME_DIRECTORY",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Allow CMake to build in the source directory."
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "BUILD_SERVERS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "build server executables"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "C4CORE_CXX_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "compilation flags for c4core targets"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "C4CORE_CXX_LINKER_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "linker flags for c4core targets"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "C4CORE_DEV",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable development targets: tests, benchmarks, sanitize, static analysis, coverage"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "C4CORE_USE_LIBCXX",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use libc++ instead of the default standard library"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "C4CORE_WITH_FASTFLOAT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use fastfloat to parse floats"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "C4_ADD_EXTS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "list of additional file extensions that might be added as sources to targets"
+				}
+			],
+			"type" : "STRING",
+			"value" : "natvis"
+		},
+		{
+			"name" : "C4_CXX_STANDARDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "list of CXX standards"
+				}
+			],
+			"type" : "STRING",
+			"value" : "20;17;14;11"
+		},
+		{
+			"name" : "C4_CXX_STANDARD_DEFAULT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "the default CXX standard for projects not specifying one"
+				}
+			],
+			"type" : "STRING",
+			"value" : "11"
+		},
+		{
+			"name" : "C4_DBG_ENABLED",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable detailed cmake logs in c4Project code"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "C4_DEV",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable development targets for all c4 projects"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "C4_EXTERN_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "the directory where imported projects should be looked for (or cloned in when not found)"
+				}
+			],
+			"type" : "PATH",
+			"value" : ""
+		},
+		{
+			"name" : "C4_GEN_HDR_EXT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "the extension of the output header files resulting from concatenation"
+				}
+			],
+			"type" : "STRING",
+			"value" : "hpp"
+		},
+		{
+			"name" : "C4_GEN_SRC_EXT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "the extension of the output source files resulting from concatenation"
+				}
+			],
+			"type" : "STRING",
+			"value" : "cpp"
+		},
+		{
+			"name" : "C4_HDR_EXTS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "list of header extensions for determining which files are headers"
+				}
+			],
+			"type" : "STRING",
+			"value" : "h;hpp;hh;h++;hxx"
+		},
+		{
+			"name" : "C4_LIBRARY_TYPE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "default library type: either \"\"(defer to BUILD_SHARED_LIBS),INTERFACE,STATIC,SHARED,MODULE"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "C4_SOURCE_TRANSFORM",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "global source transform method"
+				}
+			],
+			"type" : "STRING",
+			"value" : "NONE"
+		},
+		{
+			"name" : "C4_SRC_EXTS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "list of compilation unit extensions for determining which files are sources"
+				}
+			],
+			"type" : "STRING",
+			"value" : "c;cpp;cc;c++;cxx;cu;"
+		},
+		{
+			"name" : "CHAR_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src/char"
+		},
+		{
+			"name" : "CMAKE_AR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a program."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lib.exe"
+		},
+		{
+			"name" : "CMAKE_BUILD_TYPE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "STRING",
+			"value" : "Debug"
+		},
+		{
+			"name" : "CMAKE_CACHEFILE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "This is the directory where this CMakeCache.txt was created"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "c:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug"
+		},
+		{
+			"name" : "CMAKE_CACHE_MAJOR_VERSION",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Major version of cmake used to create the current loaded cache"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "3"
+		},
+		{
+			"name" : "CMAKE_CACHE_MINOR_VERSION",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Minor version of cmake used to create the current loaded cache"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "31"
+		},
+		{
+			"name" : "CMAKE_CACHE_PATCH_VERSION",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Patch version of cmake used to create the current loaded cache"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "6"
+		},
+		{
+			"name" : "CMAKE_COMMAND",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to CMake executable."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe"
+		},
+		{
+			"name" : "CMAKE_CPACK_COMMAND",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to cpack program executable."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cpack.exe"
+		},
+		{
+			"name" : "CMAKE_CTEST_COMMAND",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to ctest program executable."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/ctest.exe"
+		},
+		{
+			"name" : "CMAKE_CXX_COMPILER",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe"
+		},
+		{
+			"name" : "CMAKE_CXX_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the CXX compiler during all build types."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
+		},
+		{
+			"name" : "CMAKE_CXX_FLAGS_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the CXX compiler during DEBUG builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MDd /Zi /Ob0 /Od /RTC1"
+		},
+		{
+			"name" : "CMAKE_CXX_FLAGS_MINSIZEREL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the CXX compiler during MINSIZEREL builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MD /O1 /Ob1 /DNDEBUG"
+		},
+		{
+			"name" : "CMAKE_CXX_FLAGS_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the CXX compiler during RELEASE builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MD /O2 /Ob2 /DNDEBUG"
+		},
+		{
+			"name" : "CMAKE_CXX_FLAGS_RELWITHDEBINFO",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the CXX compiler during RELWITHDEBINFO builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MD /Zi /O2 /Ob1 /DNDEBUG"
+		},
+		{
+			"name" : "CMAKE_CXX_STANDARD_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Libraries linked by default with all C++ applications."
+				}
+			],
+			"type" : "STRING",
+			"value" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib"
+		},
+		{
+			"name" : "CMAKE_C_COMPILER",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe"
+		},
+		{
+			"name" : "CMAKE_C_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the C compiler during all build types."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/DWIN32 /D_WINDOWS /W3"
+		},
+		{
+			"name" : "CMAKE_C_FLAGS_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the C compiler during DEBUG builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MDd /Zi /Ob0 /Od /RTC1"
+		},
+		{
+			"name" : "CMAKE_C_FLAGS_MINSIZEREL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the C compiler during MINSIZEREL builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MD /O1 /Ob1 /DNDEBUG"
+		},
+		{
+			"name" : "CMAKE_C_FLAGS_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the C compiler during RELEASE builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MD /O2 /Ob2 /DNDEBUG"
+		},
+		{
+			"name" : "CMAKE_C_FLAGS_RELWITHDEBINFO",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the C compiler during RELWITHDEBINFO builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/MD /Zi /O2 /Ob1 /DNDEBUG"
+		},
+		{
+			"name" : "CMAKE_C_STANDARD_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Libraries linked by default with all C applications."
+				}
+			],
+			"type" : "STRING",
+			"value" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib"
+		},
+		{
+			"name" : "CMAKE_EXECUTABLE_FORMAT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Executable file format"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "Unknown"
+		},
+		{
+			"name" : "CMAKE_EXE_LINKER_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during all build types."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/machine:x64"
+		},
+		{
+			"name" : "CMAKE_EXE_LINKER_FLAGS_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during DEBUG builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/debug /INCREMENTAL"
+		},
+		{
+			"name" : "CMAKE_EXE_LINKER_FLAGS_MINSIZEREL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during MINSIZEREL builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/INCREMENTAL:NO"
+		},
+		{
+			"name" : "CMAKE_EXE_LINKER_FLAGS_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during RELEASE builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/INCREMENTAL:NO"
+		},
+		{
+			"name" : "CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during RELWITHDEBINFO builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/debug /INCREMENTAL"
+		},
+		{
+			"name" : "CMAKE_EXPORT_BUILD_DATABASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable/Disable output of build database during the build."
+				}
+			],
+			"type" : "BOOL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_EXPORT_COMPILE_COMMANDS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable/Disable output of compile commands during generation."
+				}
+			],
+			"type" : "BOOL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_EXTRA_GENERATOR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Name of external makefile project generator."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_FIND_PACKAGE_REDIRECTS_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake."
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/CMakeFiles/pkgRedirects"
+		},
+		{
+			"name" : "CMAKE_GENERATOR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Name of generator."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "Ninja"
+		},
+		{
+			"name" : "CMAKE_GENERATOR_INSTANCE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Generator instance identifier."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_GENERATOR_PLATFORM",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Name of generator platform."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_GENERATOR_TOOLSET",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Name of generator toolset."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_HAVE_LIBC_PTHREAD",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Test CMAKE_HAVE_LIBC_PTHREAD"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_HAVE_PTHREADS_CREATE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have library pthreads"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_HAVE_PTHREAD_CREATE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have library pthread"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_HOME_DIRECTORY",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Source directory with the top level CMakeLists.txt file for this project"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass"
+		},
+		{
+			"name" : "CMAKE_INSTALL_PREFIX",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/install"
+		},
+		{
+			"name" : "CMAKE_LINKER",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a program."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.exe"
+		},
+		{
+			"name" : "CMAKE_MAKE_PROGRAM",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "make program"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+		},
+		{
+			"name" : "CMAKE_MODULE_LINKER_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of modules during all build types."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/machine:x64"
+		},
+		{
+			"name" : "CMAKE_MODULE_LINKER_FLAGS_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of modules during DEBUG builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/debug /INCREMENTAL"
+		},
+		{
+			"name" : "CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of modules during MINSIZEREL builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/INCREMENTAL:NO"
+		},
+		{
+			"name" : "CMAKE_MODULE_LINKER_FLAGS_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of modules during RELEASE builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/INCREMENTAL:NO"
+		},
+		{
+			"name" : "CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of modules during RELWITHDEBINFO builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/debug /INCREMENTAL"
+		},
+		{
+			"name" : "CMAKE_MODULE_PATH",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/cmake"
+		},
+		{
+			"name" : "CMAKE_MT",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a program."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/mt.exe"
+		},
+		{
+			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "number of local generators"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "18"
+		},
+		{
+			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Platform information initialized"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "1"
+		},
+		{
+			"name" : "CMAKE_PROJECT_DESCRIPTION",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_PROJECT_HOMEPAGE_URL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_PROJECT_NAME",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "rAthena"
+		},
+		{
+			"name" : "CMAKE_RANLIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "noop for ranlib"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ":"
+		},
+		{
+			"name" : "CMAKE_RC_COMPILER",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "RC compiler"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/rc.exe"
+		},
+		{
+			"name" : "CMAKE_RC_COMPILER_WORKS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "1"
+		},
+		{
+			"name" : "CMAKE_RC_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags for Windows Resource Compiler during all build types."
+				}
+			],
+			"type" : "STRING",
+			"value" : "-DWIN32"
+		},
+		{
+			"name" : "CMAKE_RC_FLAGS_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags for Windows Resource Compiler during DEBUG builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "-D_DEBUG"
+		},
+		{
+			"name" : "CMAKE_RC_FLAGS_MINSIZEREL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags for Windows Resource Compiler during MINSIZEREL builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_RC_FLAGS_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags for Windows Resource Compiler during RELEASE builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_RC_FLAGS_RELWITHDEBINFO",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags for Windows Resource Compiler during RELWITHDEBINFO builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_ROOT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to CMake installation."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31"
+		},
+		{
+			"name" : "CMAKE_SHARED_LINKER_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of shared libraries during all build types."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/machine:x64"
+		},
+		{
+			"name" : "CMAKE_SHARED_LINKER_FLAGS_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of shared libraries during DEBUG builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/debug /INCREMENTAL"
+		},
+		{
+			"name" : "CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of shared libraries during MINSIZEREL builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/INCREMENTAL:NO"
+		},
+		{
+			"name" : "CMAKE_SHARED_LINKER_FLAGS_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of shared libraries during RELEASE builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/INCREMENTAL:NO"
+		},
+		{
+			"name" : "CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of shared libraries during RELWITHDEBINFO builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/debug /INCREMENTAL"
+		},
+		{
+			"name" : "CMAKE_SKIP_INSTALL_RPATH",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "If set, runtime paths are not added when installing shared libraries, but are added when building."
+				}
+			],
+			"type" : "BOOL",
+			"value" : "NO"
+		},
+		{
+			"name" : "CMAKE_SKIP_RPATH",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "If set, runtime paths are not added when using shared libraries."
+				}
+			],
+			"type" : "BOOL",
+			"value" : "NO"
+		},
+		{
+			"name" : "CMAKE_STATIC_LINKER_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of static libraries during all build types."
+				}
+			],
+			"type" : "STRING",
+			"value" : "/machine:x64"
+		},
+		{
+			"name" : "CMAKE_STATIC_LINKER_FLAGS_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of static libraries during DEBUG builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of static libraries during MINSIZEREL builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_STATIC_LINKER_FLAGS_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of static libraries during RELEASE builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Flags used by the linker during the creation of static libraries during RELWITHDEBINFO builds."
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "CMAKE_VERBOSE_MAKEFILE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "If this value is on, makefiles will be generated without the .SILENT directive, and all commands will be echoed to the console during the make.  This is useful for debugging only. With Visual Studio IDE projects all commands are done without /nologo."
+				}
+			],
+			"type" : "BOOL",
+			"value" : "FALSE"
+		},
+		{
+			"name" : "COMMON_BASE_DEFINITIONS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "common_base definitions"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "-DLIBCONFIG_STATIC"
+		},
+		{
+			"name" : "COMMON_BASE_HEADERS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "common_base headers"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/src/common/version.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/cbasetypes.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/mmo.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/conf.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/core.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/database.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/db.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/des.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/ers.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/grfio.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/malloc.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/mapindex.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/md5calc.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/nullpo.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/random.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/showmsg.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/socket.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/strlib.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/timer.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/utils.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/msg_conf.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/cli.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/utilities.hpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/grammar.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/libconfig.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/parsectx.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanctx.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanner.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/strbuf.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/wincompat.h;C:/Users/Awake/Desktop/Beast-HiClass/src/common/winapi.hpp"
+		},
+		{
+			"name" : "COMMON_BASE_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "common_base include dirs"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include"
+		},
+		{
+			"name" : "COMMON_BASE_SOURCES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "common_base sources"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src/common/conf.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/core.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/database.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/db.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/des.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/ers.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/grfio.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/malloc.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/mapindex.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/md5calc.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/nullpo.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/random.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/showmsg.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/socket.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/strlib.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/timer.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/utils.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/msg_conf.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/cli.cpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/utilities.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/grammar.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/libconfig.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanctx.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanner.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/strbuf.c;C:/Users/Awake/Desktop/Beast-HiClass/src/common/winapi.cpp"
+		},
+		{
+			"name" : "COMMON_HEADERS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "common headers"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/src/common/version.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/cbasetypes.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/mmo.hpp;C:/Users/Awake/Desktop/Beast-HiClass/src/common/sql.hpp"
+		},
+		{
+			"name" : "COMMON_SOURCES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "common sources"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src/common/sql.cpp"
+		},
+		{
+			"name" : "COMMON_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "common source directory"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src/common"
+		},
+		{
+			"name" : "CPACK_BINARY_7Z",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build 7-Zip packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "CPACK_BINARY_IFW",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build IFW packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "CPACK_BINARY_INNOSETUP",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build Inno Setup packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "CPACK_BINARY_NSIS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build NSIS packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "CPACK_BINARY_NUGET",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build NuGet packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "CPACK_BINARY_WIX",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build WiX packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "CPACK_BINARY_ZIP",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build ZIP packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "CPACK_SOURCE_7Z",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build 7-Zip source packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "CPACK_SOURCE_ZIP",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable to build ZIP source packages"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "CURL_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "The directory containing a CMake configuration file for CURL."
+				}
+			],
+			"type" : "PATH",
+			"value" : "CURL_DIR-NOTFOUND"
+		},
+		{
+			"name" : "CURL_INCLUDE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/dev/vcpkg/installed/x64-windows/include"
+		},
+		{
+			"name" : "CURL_LIBRARY",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "No help, variable specified on the command line."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/dev/vcpkg/installed/x64-windows/lib/libcurl.lib"
+		},
+		{
+			"name" : "Development",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "Development files"
+		},
+		{
+			"name" : "Development_base",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "projects, 3rdparty, sources, templates"
+		},
+		{
+			"name" : "ENABLE_EXTRA_BUILDBOT_CODE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable extra buildbot code (default=OFF)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "ENABLE_EXTRA_DEBUG_CODE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable extra debug code (default=OFF)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "ENABLE_EXTRA_SOCKET_POLL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable SOCKET_EPOLL (default=OFF)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "ENABLE_MEMMGR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable builtin memory manager: default;yes;no (default=default)"
+				},
+				{
+					"name" : "STRINGS",
+					"value" : "default;yes;no"
+				}
+			],
+			"type" : "STRING",
+			"value" : "default"
+		},
+		{
+			"name" : "ENABLE_MEMORY",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable memory library: system;memwatch;dmalloc;gcollect (default=system)"
+				},
+				{
+					"name" : "STRINGS",
+					"value" : "system;memwatch;dmalloc;gcollect"
+				}
+			],
+			"type" : "STRING",
+			"value" : "system"
+		},
+		{
+			"name" : "ENABLE_PROFILER",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable profiler: none;gprof (default=none)"
+				},
+				{
+					"name" : "STRINGS",
+					"value" : "none;gprof"
+				}
+			],
+			"type" : "STRING",
+			"value" : "none"
+		},
+		{
+			"name" : "ENABLE_RDTSC",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use RDTSC instruction as a timing source (default=OFF)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "ENABLE_WEB_SERVER",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Build web-server (default=ON)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_CURL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Details about finding CURL"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "[C:/dev/vcpkg/installed/x64-windows/lib/libcurl.lib][C:/dev/vcpkg/installed/x64-windows/include][c ][v8.16.0-DEV()]"
+		},
+		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_Git",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Details about finding Git"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "[C:/Program Files/Git/cmd/git.exe][v2.51.0.windows.1()]"
+		},
+		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_Threads",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Details about finding Threads"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "[TRUE][v()]"
+		},
+		{
+			"name" : "GIT_EXECUTABLE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Git command line client"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files/Git/cmd/git.exe"
+		},
+		{
+			"name" : "GLOBAL_DEFINITIONS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : " -DFD_SETSIZE=4096 -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DHAVE_STRNLEN -DHAVE_GETPID"
+		},
+		{
+			"name" : "GLOBAL_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/src/common"
+		},
+		{
+			"name" : "GLOBAL_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "oldnames.lib;ws2_32.lib"
+		},
+		{
+			"name" : "HAVE_GETADDRINFO",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have function getaddrinfo"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "HAVE_GETHOSTBYNAME",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have function gethostbyname"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "HAVE_GETPID",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have function getpid"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "1"
+		},
+		{
+			"name" : "HAVE_GETTID",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have function gettid"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "HAVE_LOCALE_H",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have include xlocale.h"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "HAVE_LOCAL_MYSQL",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "mysql client is available as a local copy"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "HAVE_LOCAL_PCRE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "pcre is available as a local copy"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "HAVE_LOCAL_ZLIB",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "zlib is available as a local copy"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "HAVE_MONOTONIC_CLOCK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Test HAVE_MONOTONIC_CLOCK"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "HAVE_MONOTONIC_CLOCK_COMPILED",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Result of TRY_COMPILE"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "FALSE"
+		},
+		{
+			"name" : "HAVE_SETRLIMIT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have function setrlimit"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "HAVE_STRNLEN",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Have function strnlen"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "1"
+		},
+		{
+			"name" : "HAVE_TLS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Test HAVE_TLS"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : ""
+		},
+		{
+			"name" : "HAVE_TLS_COMPILED",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Result of TRY_COMPILE"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "FALSE"
+		},
+		{
+			"name" : "HAVE_common",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "HAVE_common_base",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "ON"
+		},
+		{
+			"name" : "HTTPLIB_DEFINITIONS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "http definitions"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "-std=c++11"
+		},
+		{
+			"name" : "HTTPLIB_HEADERS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "httplib headers"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/httplib/httplib.h"
+		},
+		{
+			"name" : "HTTPLIB_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/httplib"
+		},
+		{
+			"name" : "HTTPLIB_SOURCES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "httplib sources"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/httplib/httplib.cc"
+		},
+		{
+			"name" : "HTTPLIB_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/httplib"
+		},
+		{
+			"name" : "INSTALL_COMPONENT_DEVELOPMENT",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "install/package files needed to build the project"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "INSTALL_COMPONENT_RUNTIME",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "install/package files needed to run the project"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "INSTALL_PATH",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "install path (only used when INSTALL_TO_PATH is set)"
+				}
+			],
+			"type" : "STRING",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/install/x64-Debug"
+		},
+		{
+			"name" : "INSTALL_TO",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "subdir"
+		},
+		{
+			"name" : "INSTALL_TO_PATH",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "copy files to INSTALL_PATH"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "INSTALL_TO_SOURCE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "copy files to source directory, skips what is already there (C:/Users/Awake/Desktop/Beast-HiClass)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "INSTALL_TO_SUBDIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "copy files to subdirectory (C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/install)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "JSON_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "json include dir"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/json/include"
+		},
+		{
+			"name" : "LIBCONFIG_DEFINITIONS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "libconfig definitions"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "-DLIBCONFIG_STATIC"
+		},
+		{
+			"name" : "LIBCONFIG_HEADERS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "libconfig headers"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/grammar.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/libconfig.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/parsectx.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanctx.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanner.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/strbuf.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/wincompat.h"
+		},
+		{
+			"name" : "LIBCONFIG_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig"
+		},
+		{
+			"name" : "LIBCONFIG_SOURCES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "libconfig sources"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/grammar.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/libconfig.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanctx.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/scanner.c;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig/strbuf.c"
+		},
+		{
+			"name" : "LIBCONFIG_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/libconfig"
+		},
+		{
+			"name" : "LOGIN_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src/login"
+		},
+		{
+			"name" : "MAP_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src/map"
+		},
+		{
+			"name" : "MYSQL_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "MYSQL include directories"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/mysql/include"
+		},
+		{
+			"name" : "MYSQL_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "MYSQL libraries"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/mysql/lib/x64/libmysql.lib"
+		},
+		{
+			"name" : "MYSQL_LOCAL_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/mysql/include"
+		},
+		{
+			"name" : "MYSQL_LOCAL_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/mysql/lib/x64/libmysql.lib"
+		},
+		{
+			"name" : "MYSQL_SYSTEM_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "system mysql include directories"
+				}
+			],
+			"type" : "PATH",
+			"value" : "MYSQL_INCLUDE_DIRS-NOTFOUND"
+		},
+		{
+			"name" : "MYSQL_SYSTEM_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "system mysql libraries"
+				}
+			],
+			"type" : "PATH",
+			"value" : "MYSQL_LIBRARIES-NOTFOUND"
+		},
+		{
+			"name" : "PACKETVER",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Sets the PACKETVER define of the servers. (see src/common/mmo.h)"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "PCRE_INCLUDE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "PCRE_INCLUDE_DIR-NOTFOUND"
+		},
+		{
+			"name" : "PCRE_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "PCRE include directories"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/pcre/include"
+		},
+		{
+			"name" : "PCRE_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "PCRE libraries"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/pcre/lib/x64/pcre8.lib"
+		},
+		{
+			"name" : "PCRE_LIBRARY",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "PCRE_LIBRARY-NOTFOUND"
+		},
+		{
+			"name" : "PCRE_LOCAL_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/pcre/include"
+		},
+		{
+			"name" : "PCRE_LOCAL_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/pcre/lib/x64/pcre8.lib"
+		},
+		{
+			"name" : "PCRE_SYSTEM_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "system pcre include directories"
+				}
+			],
+			"type" : "PATH",
+			"value" : ""
+		},
+		{
+			"name" : "PCRE_SYSTEM_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "system pcre libraries"
+				}
+			],
+			"type" : "PATH",
+			"value" : ""
+		},
+		{
+			"name" : "PKG_CONFIG_ARGN",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Arguments to supply to pkg-config"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "PKG_CONFIG_EXECUTABLE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "pkg-config executable"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "PKG_CONFIG_EXECUTABLE-NOTFOUND"
+		},
+		{
+			"name" : "RA_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "rathena include directory"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src"
+		},
+		{
+			"name" : "RT_LIBRARY",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "RT_LIBRARY-NOTFOUND"
+		},
+		{
+			"name" : "RYML_BUILD_API",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable API generation (python, etc)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "RYML_BUILD_TOOLS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "build tools"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "RYML_CXX_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "compilation flags for ryml targets"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "RYML_CXX_LINKER_FLAGS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "linker flags for ryml targets"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "RYML_DBG",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable (very verbose) ryml debug prints."
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "RYML_DEFAULT_CALLBACKS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable ryml's default implementation of callbacks: allocate(), free(), error()"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "RYML_DEV",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable development targets: tests, benchmarks, sanitize, static analysis, coverage"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "RYML_STANDALONE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable compilation of opting-in targets from ryml in standalone mode (ie, incorporate subprojects as specified in the INCORPORATE clause to c4_add_library/c4_add_target)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "RYML_USE_LIBCXX",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use libc++ instead of the default standard library"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "RYML_WITH_TAB_TOKENS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Enable parsing of tabs after ':' and '-'. This is costly and disabled by default."
+				}
+			],
+			"type" : "BOOL",
+			"value" : "OFF"
+		},
+		{
+			"name" : "Runtime",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "Runtime files"
+		},
+		{
+			"name" : "Runtime_base",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "configurations, dbs, npcs, docs, ..."
+		},
+		{
+			"name" : "Runtime_templates",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "conf/import and save (generated from conf/import-tmpl and save-tmpl)"
+		},
+		{
+			"name" : "SVNVERSION",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "SVN version of the source code"
+				}
+			],
+			"type" : "STRING",
+			"value" : ""
+		},
+		{
+			"name" : "SVN_FOLDER_PATTERN",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "pattern of svn folder that we exclude from instalations"
+				}
+			],
+			"type" : "STRING",
+			"value" : "[\\.]svn"
+		},
+		{
+			"name" : "TARGET_LIST",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "common_base;common;login-server;char-server;map-server;web-server;mapcache;csv2yaml;yaml2sql;yamlupgrade"
+		},
+		{
+			"name" : "WEB_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/src/web"
+		},
+		{
+			"name" : "WITH_CPACK",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "enable building packages with CPack ('package' target)"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "WITH_LOCAL_MYSQL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use local version of MYSQL"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "WITH_LOCAL_PCRE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use local version of PCRE"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "WITH_LOCAL_ZLIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use local version of ZLIB"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "WITH_MYSQL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use MYSQL"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "WITH_PCRE",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use PCRE"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "WITH_ZLIB",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "use ZLIB"
+				}
+			],
+			"type" : "BOOL",
+			"value" : "ON"
+		},
+		{
+			"name" : "YAML_DEFINITIONS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "yaml definitions"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "-std=c++11"
+		},
+		{
+			"name" : "YAML_HEADERS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "yaml headers"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/yaml.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/traits.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/stlemitter.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/parser.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/ostream_wrapper.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/null.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/noncopyable.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/noexcept.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/mark.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/exceptions.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/eventhandler.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/emitterstyle.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/emittermanip.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/emitter.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/emitterdef.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/emitfromevents.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/dll.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/depthguard.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/binary.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/anchor.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/type.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/ptr.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/parse.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/node.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/iterator.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/impl.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/emit.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/node/convert.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/contrib/graphbuilder.h;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include/yaml-cpp/contrib/anchordict.h"
+		},
+		{
+			"name" : "YAML_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/include"
+		},
+		{
+			"name" : "YAML_SOURCES",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "yaml sources"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/binary.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/convert.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/depthguard.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/directives.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/emit.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/emitfromevents.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/emitter.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/emitterstate.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/emitterutils.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/exceptions.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/exp.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/memory.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/nodebuilder.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/node.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/node_data.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/nodeevents.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/null.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/ostream_wrapper.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/parse.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/parser.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/regex_yaml.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/scanner.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/scanscalar.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/scantag.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/scantoken.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/simplekey.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/singledocparser.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/stream.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/tag.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/contrib/graphbuilderadapter.cpp;C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src/contrib/graphbuilder.cpp"
+		},
+		{
+			"name" : "YAML_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp/src"
+		},
+		{
+			"name" : "ZLIB_INCLUDE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "ZLIB_INCLUDE_DIR-NOTFOUND"
+		},
+		{
+			"name" : "ZLIB_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "ZLIB include directories"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/zlib/include"
+		},
+		{
+			"name" : "ZLIB_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "ZLIB libraries"
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/zlib/lib/x64/zlib.lib"
+		},
+		{
+			"name" : "ZLIB_LIBRARY_DEBUG",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "ZLIB_LIBRARY_DEBUG-NOTFOUND"
+		},
+		{
+			"name" : "ZLIB_LIBRARY_RELEASE",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "ZLIB_LIBRARY_RELEASE-NOTFOUND"
+		},
+		{
+			"name" : "ZLIB_LOCAL_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a file."
+				}
+			],
+			"type" : "PATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/zlib/include"
+		},
+		{
+			"name" : "ZLIB_LOCAL_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/zlib/lib/x64/zlib.lib"
+		},
+		{
+			"name" : "ZLIB_SYSTEM_INCLUDE_DIRS",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "system zlib include directories"
+				}
+			],
+			"type" : "PATH",
+			"value" : ""
+		},
+		{
+			"name" : "ZLIB_SYSTEM_LIBRARIES",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "system zlib libraries"
+				}
+			],
+			"type" : "PATH",
+			"value" : "ZLIB_LIBRARY-NOTFOUND"
+		},
+		{
+			"name" : "c4core_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/3rdparty/rapidyaml/subprojects/c4core/build"
+		},
+		{
+			"name" : "c4core_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "OFF"
+		},
+		{
+			"name" : "c4core_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/rapidyaml/ext/c4core"
+		},
+		{
+			"name" : "httplib_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/3rdparty/httplib"
+		},
+		{
+			"name" : "httplib_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "OFF"
+		},
+		{
+			"name" : "httplib_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/httplib"
+		},
+		{
+			"name" : "rAthena_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug"
+		},
+		{
+			"name" : "rAthena_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "ON"
+		},
+		{
+			"name" : "rAthena_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass"
+		},
+		{
+			"name" : "ryml_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/3rdparty/rapidyaml"
+		},
+		{
+			"name" : "ryml_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "OFF"
+		},
+		{
+			"name" : "ryml_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/rapidyaml"
+		},
+		{
+			"name" : "yaml-cpp_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/out/build/x64-Debug/3rdparty/yaml-cpp"
+		},
+		{
+			"name" : "yaml-cpp_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "OFF"
+		},
+		{
+			"name" : "yaml-cpp_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "C:/Users/Awake/Desktop/Beast-HiClass/3rdparty/yaml-cpp"
+		}
+	],
+	"kind" : "cache",
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}

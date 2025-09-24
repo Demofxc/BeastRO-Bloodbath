@@ -60,7 +60,11 @@ Rental:
 end;
 
 OnInit:
-waitingroom "เช่านก/เป็ด/รถเข็น  ", 0;
+//waitingroom "เช่านก/เป็ด/รถเข็น  ", 0;
+	setunitdata (getnpcid(0), UNPC_GROUP_ID, 111); 
+    setunittitle(getnpcid(0), "Rental Service");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 end;
 
 }
@@ -68,4 +72,4 @@ end;
 //==============================================
 //ที่ตั้งNPC
 //==============================================
-prontera,147,200,3	duplicate(Rental)	เช่าเป็ด นก รถเข็น#01	10460
+ultia,176,140,5	duplicate(Rental)	เช่าเป็ด นก รถเข็น#01	10396

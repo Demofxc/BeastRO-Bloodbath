@@ -9,6 +9,28 @@
 //===== Additional Comments: =================================
 //= 1.0 Merged to template file.
 //============================================================
+-	script	Horn#1::OutsideFlagsH1	722,{ 
+
+	set .@GID, GetCastleData("arug_cas03",1);
+
+	if (.@GID == 0) {
+		mes "ºéÒ¹ ^0000FF > Horn < ^000000 ";
+		mes "ÂÑ§äÁèÁÕ¼Ùéã´ÂÖ´¤ÃÍ§ ";
+		close;
+	}
+
+	mes "ºéÒ¹ ^0000FF > Horn < ^000000 ";
+	mes "¶Ù¡ÂÖ´¤ÃÍ§â´Â ";
+	mes "¡ÔÅ´ì ^ff0000"+GetGuildName(.@GID)+"^000000";
+	mes "ËÑÇË¹éÒ¡ÔÅ´ì ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+	close;
+
+OnRecvCastleA03:
+	FlagEmblem GetCastleData("arug_cas03",1);
+	end;
+}
+
+//alde_gld,146,82,8	duplicate(OutsideFlagsH1)	Nuernberg#1-2	722
 
 -	duplicate(Manager#template)	Manager#arug_cas03	-1
 -	duplicate(gard#template)	gard1#arug_cas03	-1

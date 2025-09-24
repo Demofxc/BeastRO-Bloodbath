@@ -342,6 +342,9 @@ struct mob_data : public block_list {
 	status_change sc;
 	std::shared_ptr<s_mob_db> db;	//For quick data access (saves doing mob_db(md->mob_id) all the time) [Skotlex]
 	char name[NAME_LENGTH];
+	char party_name[NAME_LENGTH];
+	char guild_name[NAME_LENGTH];
+	uint16 group_id; // เลขรูป group ที่ client จะแสดง (เช่น 0..xxx)
 	struct s_specialState {
 		uint32 size : 2; //Small/Big monsters.
 		enum mob_ai ai; //Special ai for summoned monsters.

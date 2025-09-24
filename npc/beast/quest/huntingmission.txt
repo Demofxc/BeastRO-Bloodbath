@@ -39,8 +39,8 @@ function Chk;
 	mes "คุณมี ^0055FF" + #Mission_Points + "^000000 Mission Points.";
 	next;
 	switch(select(
-		((!Mission0) ? " ^738C5A•^000000 รับภารกิจ::" : ": ^738C5A•^000000 สถานะภารกิจ: ^738C5A•^000000 ยกเลิกภารกิจ") +
-		": ^738C5A•^000000 ข้อมูลเพิ่มเติม: ^738C5A•^000000 ร้านค้าภารกิจ: ^738C5A•^000000 อันดับผู้ล่าภารกิจ: ^738C5A•^000000 ^777777ยกเลิกการสนทนา^000000"
+		((!Mission0) ? " ^738C5Aÿ^000000 รับภารกิจ::" : ": ^738C5Aÿ^000000 สถานะภารกิจ: ^738C5Aÿ^000000 ยกเลิกภารกิจ") +
+		": ^738C5Aÿ^000000 ข้อมูลเพิ่มเติม: ^738C5Aÿ^000000 ร้านค้าภารกิจ: ^738C5Aÿ^000000 อันดับผู้ล่าภารกิจ: ^738C5Aÿ^000000 ^777777ยกเลิกการสนทนา^000000"
 	)) {
 	case 1:
 		mes "^738C5A[ Hunting Missions ]^000000";
@@ -156,10 +156,10 @@ Mission_Status:
 	deletearray .@j[0], getarraysize(.@j);
 	for (.@i = 0; .@i < .Quests; .@i++) {
 		.@j[.@i] = getd("Mission" + .@i);
-		.@j[.Quests] = .@j[.Quests] + strmobinfo(3,.@j[.@i]);
-		.@j[.Quests+1] = .@j[.Quests+1] + (strmobinfo(6,.@j[.@i]) / (getbattleflag("base_exp_rate") / 100) * .Modifier[0]);
-		.@j[.Quests+2] = .@j[.Quests+2] + (strmobinfo(7,.@j[.@i]) / (getbattleflag("job_exp_rate") / 100) * .Modifier[1]);
-	mes " > "+Chk(getd("Mission"+.@i+"_"),#Mission_Count) + strmobinfo(1,.@j[.@i]) + " [" +getmonsterinfo(.@j[.@i],MOB_ID) +"] " + "(" + getd("Mission"+.@i+"_") + "/" + #Mission_Count + ")^000000";
+		.@j[.Quests] = .@j[.Quests] + getmonsterinfo(3,.@j[.@i]);
+		.@j[.Quests+1] = .@j[.Quests+1] + (getmonsterinfo(6,.@j[.@i]) / (getbattleflag("base_exp_rate") / 100) * .Modifier[0]);
+		.@j[.Quests+2] = .@j[.Quests+2] + (getmonsterinfo(7,.@j[.@i]) / (getbattleflag("job_exp_rate") / 100) * .Modifier[1]);
+	mes " > "+Chk(getd("Mission"+.@i+"_"),#Mission_Count) + getmonsterinfo(1,.@j[.@i]) + " [" +getmonsterinfo(.@j[.@i],MOB_ID) +"] " + "(" + getd("Mission"+.@i+"_") + "/" + #Mission_Count + ")^000000";
 	}
 
 	// Reward formulas:
@@ -263,10 +263,10 @@ OnNPCKillEvent:
 	if (!getcharid(1) || !.Party) {
 		if (!#Mission_Count || !Mission0) end;
 		for (.@i = 0; .@i < .Quests; .@i++) {
-			if (strmobinfo(1,killedrid) == strmobinfo(1,getd("Mission" + .@i))) {
+			if (getmonsterinfo(1,killedrid) == getmonsterinfo(1,getd("Mission" + .@i))) {
 				if (getd("Mission" + .@i + "_") < #Mission_Count) {
 					dispbottom "[Hunting Mission] คุณได้ฆ่าไปแล้ว " + (set(getd("Mission" + .@i + "_"),getd("Mission" + .@i + "_") + 1)) +
-					           " จากทั้งหมด " + #Mission_Count + " " + strmobinfo(1,killedrid) + ".";
+					           " จากทั้งหมด " + #Mission_Count + " " + getmonsterinfo(1,killedrid) + ".";
 					end;
 				}
 			}
@@ -288,10 +288,10 @@ OnNPCKillEvent:
 						for (.@j = 0; .@j < .Quests; .@j++) {
 							.@my_mob_id = getvar( getd("Mission"+.@j),$@partymembercid[.@i] );
 							.@my_count = getvar( getd("Mission"+.@j+"_"), $@partymembercid[.@i] );
-							if (strmobinfo(1,.@mob) == strmobinfo(1,.@my_mob_id)) {
+							if (getmonsterinfo(1,.@mob) == getmonsterinfo(1,.@my_mob_id)) {
 								if (.@my_count < .@Mission_Count) {
 									setd "Mission"+.@j+"_", (.@my_count+1), $@partymembercid[.@i];
-									dispbottom "[Hunting Mission] จำนวนการฆ่าไปแล้ว " + (.@my_count+1) + " จากทั้งหมด " + .@Mission_Count + " " + strmobinfo(1,.@mob) + ".", 0x777777, $@partymembercid[.@i];
+									dispbottom "[Hunting Mission] จำนวนการฆ่าไปแล้ว " + (.@my_count+1) + " จากทั้งหมด " + .@Mission_Count + " " + getmonsterinfo(1,.@mob) + ".", 0x777777, $@partymembercid[.@i];
 									break;
 								}
 							}

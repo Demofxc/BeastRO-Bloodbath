@@ -1,4 +1,4 @@
-prontera,149,189,3	script	PVP	65,{
+ultia,185,155,5	script	ลานประลอง	65,{
 	cutin "4job_robin_01.png", 2;
     mes "^738C5A[ สนามประลอง ]^000000";
 	mes "สวัสดีท่าน : ^738C5A "+strcharinfo(0)+" ^000000"; 
@@ -78,6 +78,10 @@ prontera,149,189,3	script	PVP	65,{
 	}
 
 OnInit:
+    setunitdata(getnpcid(0), UNPC_GROUP_ID, 105); 
+    setunittitle(getnpcid(0), "PVP Arena");
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
     while(1){
 		delwaitingroom;
 		waitingroom "เข้าสู่ PVP ["+(getmapusers("pvp_y_1-2")+getmapusers("hallow01")+getmapusers("pvp_n_2-3")+getmapusers("pvp_n_2-5"))+"] คน",0;

@@ -349,6 +349,12 @@ close;
 Lkcancel:
 mes "แล้วพบกันใหม่...";
 close;
+
+OnInit:
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 127); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Kafra Service");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 }
 
-prontera,154,186,5	duplicate(KFSV)	Kafra Express#01	113
+ultia,193,152,5	duplicate(KFSV)	บริการคาฟร่า#01	10119

@@ -8950,9 +8950,56 @@ const char* status_get_name( block_list& bl ){
 					return sd.status.name;
 				}
 			} break;
-
-		case BL_MOB:
-			return reinterpret_cast<mob_data&>( bl ).name;
+		case BL_MOB: {
+		    auto& md = reinterpret_cast<mob_data&>(bl);
+		
+		    // บัฟเฟอร์แบบ static เพื่อคืน pointer ได้ (ระวังเรื่อง thread safety หากมี multi-thread)
+		    static char bottom_line[NAME_LENGTH];
+		    bottom_line[0] = '\0';
+		
+		    // ถ้าเปิดให้แสดงธาตุ/เผ่า ให้คืน "บรรทัดล่าง" เป็นข้อมูลเสริม
+		    if (battle_config.mob_ele_view) {
+		        const char* ele_name = "";
+		        const char* race_name = "";
+			
+		        switch (md.status.def_ele) {
+		            case 0: ele_name = "Neutral"; break;
+		            case 1: ele_name = "Water";   break;
+		            case 2: ele_name = "Earth";   break;
+		            case 3: ele_name = "Fire";    break;
+		            case 4: ele_name = "Wind";    break;
+		            case 5: ele_name = "Poison";  break;
+		            case 6: ele_name = "Holy";    break;
+		            case 7: ele_name = "Shadow";  break;
+		            case 8: ele_name = "Ghost";   break;
+		            case 9: ele_name = "Undead";  break;
+		        }
+		        switch (md.status.race) {
+		            case 0: race_name = "Formless";  break;
+		            case 1: race_name = "Undead";    break;
+		            case 2: race_name = "Brute";     break;
+		            case 3: race_name = "Plant";     break;
+		            case 4: race_name = "Insect";    break;
+		            case 5: race_name = "Fish";      break;
+		            case 6: race_name = "Demon";     break;
+		            case 7: race_name = "Demihuman"; break;
+		            case 8: race_name = "Angel";     break;
+		            case 9: race_name = "Dragon";    break;
+		        }
+			
+		        if (ele_name[0] != '\0') {
+		            // ตัวอย่างรูปแบบบรรทัดล่าง: "Fire Lv.3 [ Demon ]"
+		            // (ปรับรูปแบบตามที่คุณใช้ใน clif_name ให้ตรงกัน)
+		            safesnprintf(bottom_line, sizeof(bottom_line),
+		                         "%s [%s]",
+		                         ele_name, race_name);
+		            return bottom_line;
+		        }
+		    }
+		
+		    // ไม่เปิดโชว์ธาตุ/หรือประกอบไม่ได้ -> ใช้ชื่อดิบเป็นบรรทัดล่าง
+		    return md.name;
+		}
 		case BL_PET:
 			return reinterpret_cast<pet_data&>( bl ).pet.name;
 
