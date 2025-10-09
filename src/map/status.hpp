@@ -1446,7 +1446,7 @@ enum sc_type : int16 {
 	SC_WATER_CHARM_POWER,
 	SC_WIND_CHARM_POWER,
 	SC_GROUND_CHARM_POWER,
-
+	SC_VIPSTATE, // VIP Status Icon
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 };
 
@@ -2928,6 +2928,8 @@ enum efst_type : int16{
 	EFST_C_BUFF_8,
 	EFST_C_BUFF_9,	// 1517
 
+	EFST_VIPSTATE = 1500, // VIP Status Icon
+	
 	EFST_CHASING = 1560,
 
 	EFST_MYSTERY_POWDER = 1665,

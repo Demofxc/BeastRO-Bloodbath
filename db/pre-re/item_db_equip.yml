@@ -22944,11 +22944,6 @@ Body:
     Type: Armor
     Buy: 20
     Defense: 1
-    Jobs:
-      Crusader: true
-      Knight: true
-      StarGladiator: true
-      Swordman: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -22974,11 +22969,6 @@ Body:
     Type: Armor
     Buy: 20
     Defense: 1
-    Jobs:
-      Assassin: true
-      Ninja: true
-      Rogue: true
-      Thief: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -23004,10 +22994,6 @@ Body:
     Type: Armor
     Buy: 20
     Defense: 1
-    Jobs:
-      Acolyte: true
-      Monk: true
-      Priest: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -23032,11 +23018,6 @@ Body:
     Type: Armor
     Buy: 20
     Defense: 1
-    Jobs:
-      Mage: true
-      Sage: true
-      SoulLinker: true
-      Wizard: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -23061,10 +23042,6 @@ Body:
     Type: Armor
     Buy: 20
     Defense: 1
-    Jobs:
-      Archer: true
-      BardDancer: true
-      Hunter: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1
@@ -23090,10 +23067,6 @@ Body:
     Type: Armor
     Buy: 20
     Defense: 1
-    Jobs:
-      Alchemist: true
-      Blacksmith: true
-      Merchant: true
     Locations:
       Both_Accessory: true
     ArmorLevel: 1

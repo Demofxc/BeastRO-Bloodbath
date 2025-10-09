@@ -10575,10 +10575,10 @@ ACMD_FUNC(vip) {
 		return -1;
 	}
 
-	if( pc_get_group_level( pl_sd ) > 0 ){
-		clif_displaymessage( sd->fd, msg_txt( sd, 437 ) ); // GM's cannot become a VIP.
-		return -1;
-	}
+	//if( pc_get_group_level( pl_sd ) > 0 ){
+	//	clif_displaymessage( sd->fd, msg_txt( sd, 437 ) ); // GM's cannot become a VIP.
+	//	return -1;
+	//}
 
 	if(pl_sd->vip.time==0) pl_sd->vip.time=now;
 	pl_sd->vip.time += vipdifftime; //increase or reduce VIP duration

@@ -11819,6 +11819,7 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 			break;
 		case SC_EXPBOOST:
 		case SC_JEXPBOOST:
+		case SC_VIPSTATE: // VIP Status Icon
 		case SC_PERIOD_RECEIVEITEM_2ND:
 		case SC_PERIOD_PLUSEXP_2ND:
 			if (val1 < 1)

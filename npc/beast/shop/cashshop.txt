@@ -26,7 +26,7 @@
 //	callfunc "cashshop"{,<shop ID>{,<shop ID>{,...}}};
 //  ADD YOUR NPC HERE
 //============================================================
-prontera,133,160,5	script	Cash Shop	564,{ 
+ultia,156,133,5	script	Cash Shop	564,{ 
 callfunc "cashshop";
 
 OnInit:

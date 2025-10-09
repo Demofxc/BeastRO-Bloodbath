@@ -40,6 +40,244 @@
 #include "pc.hpp"
 #include "pet.hpp"
 #include "quest.hpp"
+#include "discord_webhook.hpp"
+
+#ifdef HAVE_CURL
+#include <curl/curl.h>
+#endif
+#include <string>
+#include <vector>
+#include <cstdio>
+#include <cstring>
+
+// ???? TIS620 ? UTF8
+static std::string tis620_to_utf8(const char* s) {
+    if (!s) return {};
+    std::string out;
+    for (const unsigned char* p = (const unsigned char*)s; *p; ++p) {
+        unsigned char c = *p;
+        if (c < 0x80) {
+            out.push_back(c); // ASCII ?ÿÿ???ÿÿ
+        } else if (c >= 0xA1 && c <= 0xFB) {
+            unsigned cp = 0x0E01 + (c - 0xA1); // Unicode Thai block U+0E01-U+0E5B
+            out.push_back(0xE0 | ((cp >> 12) & 0x0F));
+            out.push_back(0x80 | ((cp >> 6) & 0x3F));
+            out.push_back(0x80 | (cp & 0x3F));
+        } else {
+            out.push_back('?'); // ????ÿÿ???? TIS620 range
+        }
+    }
+    return out;
+}
+
+// escape ÿÿ?ÿÿÿÿ?? JSON + ???? TIS620 ???? UTF8 ??ÿÿ?
+static std::string json_escape_tis620(const char* s) {
+    std::string utf8 = tis620_to_utf8(s);
+    std::string out;
+    for (unsigned char c : utf8) {
+        switch (c) {
+            case '\\': out += "\\\\"; break;
+            case '\"': out += "\\\""; break;
+            case '\n': out += "\\n"; break;
+            case '\r': out += "\\r"; break;
+            case '\t': out += "\\t"; break;
+            default:
+                if (c < 0x20) {
+                    char buf[7];
+                    snprintf(buf, sizeof(buf), "\\u%04x", c);
+                    out += buf;
+                } else {
+                    out.push_back(c);
+                }
+        }
+    }
+    return out;
+}
+
+// --- escape JSON ÿÿ??????? UTF-8 ???ÿÿ ---
+static std::string json_escape_u8(const std::string& in){
+    std::string out; out.reserve(in.size()+16);
+    for (unsigned char c: in){
+        switch(c){
+            case '\\': out+="\\\\"; break;
+            case '\"': out+="\\\""; break;
+            case '\b': out+="\\b"; break;
+            case '\f': out+="\\f"; break;
+            case '\n': out+="\\n"; break;
+            case '\r': out+="\\r"; break;
+            case '\t': out+="\\t"; break;
+            default:
+                if (c<0x20){ char buf[7]; snprintf(buf,sizeof(buf),"\\u%04x",(int)c); out+=buf; }
+                else out+=(char)c;
+        }
+    }
+    return out;
+}
+
+// --- JSON escape ÿÿ??????? UTF-8 ???ÿÿ ---
+static std::string json_escape(const std::string& in_utf8) {
+    std::string out; out.reserve(in_utf8.size()+16);
+    for (unsigned char c : in_utf8) {
+        switch (c) {
+            case '\\': out += "\\\\"; break;
+            case '\"': out += "\\\""; break;
+            case '\b': out += "\\b";  break;
+            case '\f': out += "\\f";  break;
+            case '\n': out += "\\n";  break;
+            case '\r': out += "\\r";  break;
+            case '\t': out += "\\t";  break;
+            default:
+                if (c < 0x20) {
+                    char buf[7]; std::snprintf(buf, sizeof(buf), "\\u%04x", (int)c);
+                    out += buf;
+                } else out += (char)c;
+        }
+    }
+    return out;
+}
+// ????ÿÿ?ÿÿÿÿ?ÿÿ??ÿÿ??ÿÿ?? Discord (title<=256, desc<=4096)
+static std::string clamp_len(const std::string& s, size_t maxlen){
+    if (s.size()<=maxlen) return s;
+    if (maxlen<3) return s.substr(0,maxlen);
+    return s.substr(0,maxlen-3)+"...";
+}
+
+// utility ?ÿÿ??????ÿÿ???????ÿÿ?ÿÿ?? UTC
+static std::string now_ymdhms() {
+    time_t t = time(nullptr);
+    t += 7 * 3600; // ?ÿÿ? 7 ???ÿÿ?ÿÿ? (GMT+7)
+
+    tm g;
+#if defined(_WIN32)
+    gmtime_s(&g, &t); // Windows ??? gmtime_s
+#else
+    g = *gmtime(&t);  // Linux ??? gmtime
+#endif
+
+    char buf[32];
+    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &g);
+    return std::string(buf);
+}
+#ifdef HAVE_CURL
+// ÿÿ????ÿÿ?ÿÿ?ÿÿ?ÿÿÿÿÿÿ?? (content) ????? Discord
+static long discord_send_content(const char* url, const char* username_tis620, const char* content_tis620){
+    if (!url || !*url) return -1;
+    std::string user = json_escape_u8(tis620_to_utf8(username_tis620 ? username_tis620 : "Drop Notifier"));
+    std::string cont = json_escape_u8(tis620_to_utf8(content_tis620 ? content_tis620 : ""));
+    std::string payload = "{\"username\":\""+user+"\",\"content\":\""+cont+"\"}";
+
+    CURL* curl=curl_easy_init(); if(!curl) return -2;
+    struct curl_slist* headers=nullptr;
+    headers=curl_slist_append(headers,"Content-Type: application/json; charset=utf-8");
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)payload.size());
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 7L);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "rAthena-DiscordWebhook/1.0");
+    long code=0; CURLcode res=curl_easy_perform(curl);
+    if (res==CURLE_OK) curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE,&code); else code=-3;
+    curl_slist_free_all(headers); curl_easy_cleanup(curl);
+    return code; // 204 = OK
+}
+#endif
+#ifdef HAVE_CURL
+static long discord_send_mvp_embed(const char* url,
+                                   const char* username_tis620,
+                                   const char* title_tis620,
+                                   const char* desc_tis620,
+                                   int color_decimal,
+                                   const char* image_url_opt /*nullable*/) {
+    if (!url || !*url) return -1;
+
+    // ???? TIS620 -> UTF8 ???ÿÿ escape
+    std::string user  = json_escape(tis620_to_utf8(username_tis620 ? username_tis620 : "rAthena"));
+    std::string title = json_escape(clamp_len(tis620_to_utf8(title_tis620 ? title_tis620 : ""), 256));
+    std::string desc  = json_escape(clamp_len(tis620_to_utf8(desc_tis620  ? desc_tis620  : ""), 4096));
+
+    std::string payload = "{";
+    payload += "\"username\":\""+user+"\",";
+    payload += "\"embeds\":[{";
+    payload += "\"title\":\""+title+"\",";
+    payload += "\"description\":\""+desc+"\",";
+    payload += "\"color\":"+std::to_string(color_decimal);
+    if (image_url_opt && *image_url_opt){
+        // URL ???????? ASCII/UTF-8 ??? escape ?ÿÿ?????ÿÿÿÿ?ÿÿ???ÿÿÿÿ???ÿÿÿÿ
+        std::string img = json_escape(image_url_opt);
+        payload += ",\"image\":{\"url\":\""+img+"\"}";
+    }
+    payload += "}]";
+    payload += "}";
+
+    // (?????) ?ÿÿ JSON ???ÿÿ?? 50109
+    // ShowDebug("Discord MVP JSON: %s\n", payload.c_str());
+
+    CURL* curl = curl_easy_init();
+    if (!curl) return -2;
+    struct curl_slist* headers=nullptr;
+    headers = curl_slist_append(headers,"Content-Type: application/json; charset=utf-8");
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)payload.size());
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 7L);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "rAthena-DiscordWebhook/1.0");
+
+    long code=0; CURLcode res=curl_easy_perform(curl);
+    if (res==CURLE_OK) curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE,&code);
+    else code=-3;
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    return code; // 204 = OK
+}
+#endif
+
+#ifdef HAVE_CURL
+static long discord_send_drop_webhook(const char* url,
+                                      const char* username_tis620,
+                                      const char* title_u8,
+                                      const char* desc_tis620,
+                                      int color /*decimal*/){
+    if (!url || !*url) return -1;
+
+    // ????+escape
+    std::string user = json_escape(tis620_to_utf8(username_tis620 ? username_tis620 : "Drop Notifier"));
+    std::string desc = json_escape(tis620_to_utf8(desc_tis620 ? desc_tis620 : ""));
+
+    std::string payload = "{";
+    payload += "\"username\":\""+user+"\",";
+    payload += "\"embeds\":[{";
+    payload += "\"title\":\""+std::string(title_u8?title_u8:"Rare Drop")+"\",";
+    payload += "\"description\":\""+desc+"\",";
+    payload += "\"color\":"+std::to_string(color);
+    payload += "}]";
+    payload += "}";
+
+    CURL* curl = curl_easy_init();
+    if (!curl) return -2;
+    struct curl_slist* headers=nullptr;
+    headers=curl_slist_append(headers,"Content-Type: application/json; charset=utf-8");
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)payload.size());
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 7L);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "rAthena-DiscordWebhook/1.0");
+
+    long code=0; CURLcode res=curl_easy_perform(curl);
+    if (res==CURLE_OK) curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE,&code);
+    else code=-3;
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+    return code; // 204 = OK
+}
+#endif
+
 
 using namespace rathena;
 
@@ -1041,22 +1279,44 @@ int32 mob_linksearch(struct block_list *bl,va_list ap)
 /*==========================================
  * mob spawn with delay (timer function)
  *------------------------------------------*/
-TIMER_FUNC(mob_delayspawn){
+TIMER_FUNC(mob_delayspawn) {
 	struct block_list* bl = map_id2bl(id);
 	struct mob_data* md = BL_CAST(BL_MOB, bl);
 
-	if( md )
-	{
-		if( md->spawn_timer != tid )
-		{
+	if (md) {
+		if (md->spawn_timer != tid) {
 			ShowError("mob_delayspawn: Timer mismatch: %d != %d\n", tid, md->spawn_timer);
 			return 0;
 		}
 		md->spawn_timer = INVALID_TIMER;
+
+		if (md->spawn->state.boss) {
+			const char* mapname = map_mapid2mapname(md->spawn->m);
+
+			// --- ?ÿÿÿÿ??ÿÿ????ÿÿ ---
+			char announce_msg[256];
+			std::snprintf(announce_msg, sizeof(announce_msg),
+				"[MVP Spawn]: %s ฟื้นคืนชีพอีกครั้งที่แผนที่ %s รีบไปกำจัดพวกมันซะ!",
+				md->name, mapname);
+			clif_broadcast(md, announce_msg, (int)std::strlen(announce_msg) + 1, BC_DEFAULT, ALL_CLIENT);
+
+    		WBJob job;
+    		job.type  = WBType::MVP_EMBED;
+    		job.url   = "https://discord.com/api/webhooks/1421372413396123648/bcYylEN61JFaBc7evsRf8_hzChjETs3rnmvg9-CLi5NJC4d6qaHFO5yLztOjIUjjO0nS";
+    		job.user  = "BeastRO Announce";
+    		job.title = "MVP Spawned";
+    		job.desc  = std::string(md->name) + " ได้เกิดขึ้นที่แผนที่ " + map_mapid2mapname(md->spawn->m);
+    		job.image = "https://file5s.ratemyserver.net/mobs/" + std::to_string(md->mob_id) + ".gif";
+    		job.color = 0x00FF00;
+
+    		webhook_async_enqueue(job);
+		}
 		mob_spawn(md);
 	}
 	return 0;
 }
+
+
 
 /*==========================================
  * spawn timing calculation
@@ -2919,6 +3179,20 @@ map_session_data* mob_data::get_mvp_player() {
 
 	return mvp_sd;
 }
+// ÿ?ÿÿÿÿÿÿ
+std::string now_ymdhms_gmt7() {
+    time_t raw = time(nullptr);
+    raw += 7 * 3600;
+    tm t;
+#ifdef _WIN32
+    gmtime_s(&t, &raw);
+#else
+    gmtime_r(&raw, &t);
+#endif
+    char buf[32];
+    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &t);
+    return std::string(buf);
+}
 
 /*==========================================
  * Signals death of mob.
@@ -3337,10 +3611,65 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 
 			//A Rare Drop Global Announce by Lupus
 			if (first_sd != nullptr && entry->rate <= battle_config.rare_drop_announce) {
-				char message[128];
+				char message[128];		
 				sprintf(message, msg_txt(nullptr, 541), first_sd->status.name, md->name, it->ename.c_str(), (float)drop_rate / 100);
 				//MSG: "'%s' won %s's %s (chance: %0.02f%%)"
 				intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
+
+			// --- Timestamp รคยทรÿ (GMT+7) ---
+			time_t raw = time(nullptr);
+			raw += 7 * 3600; // shift +7h
+			tm t;
+			#ifdef _WIN32
+			    gmtime_s(&t, &raw);
+			#else
+			    gmtime_r(&raw, &t);
+			#endif
+			char timestr[64];
+			strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", &t);
+					
+    			// --- เตรียม webhook ---
+    			WBJob job;
+    			job.type  = WBType::DROP_EMBED;
+    			job.url   = "https://discord.com/api/webhooks/1421372464189149266/vzWJad4HTuxVzZQ4VnBPZgNCILNYrOo8DpHQxT6Mk3zAnUCTgRdXZUqOgifhFV74njL3"; // webhook ของคุณ
+    			job.user  = "BeastRO Announce";
+    			job.title = "";
+
+    			// รายละเอียด embed
+    			char desc[512];
+    			snprintf(desc, sizeof(desc),
+    			    "**Player:** %s\n"
+    			    "**Monster:** %s (ID: %d)\n"
+    			    "**Item:** %s (ID: %d)\n"
+    			    "**Drop Rate:** %.2f%%\n"
+    			    "**Time:** %s",
+    			    first_sd ? first_sd->status.name : "Unknown",
+    			    md ? md->name : "Unknown",
+    			    md ? md->mob_id : 0,
+    			    it->ename.c_str(),
+    			    it->nameid,
+    			    (float)drop_rate / 100.0f,
+    			    now_ymdhms_gmt7().c_str()   // helper คืนเวลาไทย
+    			);
+    			job.desc  = desc;
+    			job.color = 0xFF0000; // แดง
+			
+				// รูปไอเท็ม: การ์ดใช้รูปจาก Divine-Pride, อื่น ๆ ใช้ RMS
+				char img_url[256];
+				if (it && it->type == IT_CARD) {
+				    // การ์ด (เช่น 4302) ? https://static.divine-pride.net/images/items/cards/4302.png
+				    snprintf(img_url, sizeof(img_url),
+				        "https://static.divine-pride.net/images/items/cards/%d.png", it->nameid);
+				} else {
+				    // ไอเท็มทั่วไป ? RMS (large)
+				    snprintf(img_url, sizeof(img_url),
+				        "https://file5s.ratemyserver.net/items/large/%d.gif", it->nameid);
+				}
+				job.image = img_url;
+
+			
+    			// ส่ง async
+    			webhook_async_enqueue(job);
 			}
 			// Announce first, or else ditem will be freed. [Lance]
 			// By popular demand, use base drop rate for autoloot code. [Skotlex]

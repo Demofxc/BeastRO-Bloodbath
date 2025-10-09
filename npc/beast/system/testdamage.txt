@@ -12,7 +12,7 @@
 //===== Additional Comments: =======================================
 //= When duplicating this NPC. Only use NUMBER after the # [secret]
 //==================================================================
-morocc,200,100,0	script	PunchingBag#0	844,{
+ultia,0,0,0	script	PunchingBag#0	844,{
 	end;
 	
 OnMyMobDead:
@@ -40,7 +40,12 @@ OnTimer5000:
 	initnpctimer;
 }
 
-morocc,208,100,0	duplicate(PunchingBag#0)	PunchingBag#1	844
-morocc,200,93,0	duplicate(PunchingBag#0)	PunchingBag#2	844
+ultia,227,124,3	duplicate(PunchingBag#0)	PunchingBag#1	844
+ultia,233,124,3	duplicate(PunchingBag#0)	PunchingBag#2	844
+ultia,239,124,3	duplicate(PunchingBag#0)	PunchingBag#3	844
+ultia,245,124,3	duplicate(PunchingBag#0)	PunchingBag#4	844
 
-morocc,208,93,0	monster	Punching Bag[Emperium]#1	20517,1
+ultia,227,115,0	monster	Emperium	1288,1
+ultia,233,115,0	monster	Emperium	1288,1
+ultia,239,115,0	monster	Emperium	1288,1
+ultia,245,115,0	monster	Emperium	1288,1

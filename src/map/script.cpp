@@ -71,6 +71,7 @@
 #include "pet.hpp"
 #include "quest.hpp"
 #include "storage.hpp"
+#include "discord_webhook.hpp"
 
 using namespace rathena;
 
@@ -27878,7 +27879,7 @@ static std::vector<std::string> split(const std::string& s, char sep) {
     return v;
 }
 
-// ===== MAIN BUILDIN_FUNC =====
+// ===== MAIN BUILDIN_FUNC (fixed fields parsing) =====
 BUILDIN_FUNC(discord_webhook_rich) {
     const char* url        = script_getstr(st, 2);
     const char* content_in = script_hasdata(st, 3) ? script_getstr(st, 3) : "";
@@ -27892,29 +27893,44 @@ BUILDIN_FUNC(discord_webhook_rich) {
 #else
     if (!url || !*url) { script_pushint(st, 400); return SCRIPT_CMD_SUCCESS; }
 
-    // escape ทุก field ด้วย json_escape_tis620
+    // escape ทุก field ด้วย json_escape_tis620 (ซึ่งรวม TIS620->UTF-8 แล้ว)
     std::string content  = json_escape_tis620(content_in);
     std::string username = json_escape_tis620(user_in);
 
     std::string title, desc, footer, image, thumb, fields_str;
     int color = -1, with_ts = 0;
 
-    // parse opts string
-    auto opts = split(opts_in, ';');
+    // -------- FIX: ตัด fields= ออกมาก่อน แล้วค่อย split opts อื่น ๆ --------
+    std::string opts_all = opts_in ? opts_in : "";
+    // หา "fields=" (ไม่สนใจตัวพิมพ์ใหญ่/เล็กในที่นี้ ถ้าต้องการก็แปลงเป็น lower ก่อน)
+    size_t fpos = opts_all.find("fields=");
+    if (fpos != std::string::npos) {
+        size_t vpos = fpos + 7;            // ข้าม "fields="
+        fields_str = opts_all.substr(vpos); // เก็บทั้งค่าหลัง fields= จนสุดสตริง
+        // ตัด "fields=..." ออกไปจาก opts_all
+        opts_all.erase(fpos);
+        // ลบ ;/ช่องว่าง นำหน้าที่อาจหลงเหลือจากการต่อสตริง
+        while (!fields_str.empty() && (fields_str[0] == ';' || fields_str[0] == ' '))
+            fields_str.erase(0,1);
+    }
+
+    // parse opts อื่น ๆ ด้วย ';'
+    auto opts = split(opts_all, ';');
     for (auto &o : opts) {
         if (o.empty()) continue;
         auto kv = split(o, '=');
         if (kv.size()<2) continue;
         std::string k = kv[0], v = kv[1];
-        if (k=="title")      title  = json_escape_tis620(v.c_str());
-        else if (k=="desc")  desc   = json_escape_tis620(v.c_str());
-        else if (k=="footer")footer = json_escape_tis620(v.c_str());
-        else if (k=="image") image  = json_escape_tis620(v.c_str());
-        else if (k=="thumb") thumb  = json_escape_tis620(v.c_str());
-        else if (k=="fields")fields_str = v;
-        else if (k=="color") color = atoi(v.c_str());
+        if (k=="title")       title   = json_escape_tis620(v.c_str());
+        else if (k=="desc")   desc    = json_escape_tis620(v.c_str());
+        else if (k=="footer") footer  = json_escape_tis620(v.c_str());
+        else if (k=="image")  image   = json_escape_tis620(v.c_str());
+        else if (k=="thumb")  thumb   = json_escape_tis620(v.c_str());
+        else if (k=="color")  color   = atoi(v.c_str());
         else if (k=="timestamp") with_ts = atoi(v.c_str());
+        // NOTE: ไม่ parse fields ที่นี่แล้ว เพราะตัดออกไว้ใน fields_str ข้างบน
     }
+    // -------------------------------------------------------------------------
 
     auto make_timestamp = []() -> std::string {
         time_t t = time(nullptr);
@@ -27929,7 +27945,8 @@ BUILDIN_FUNC(discord_webhook_rich) {
     payload += "\"username\":\""+username+"\"";
     payload += ",\"content\":\""+content+"\"";
 
-    bool need_embed = !title.empty() || !desc.empty() || color>=0 || !footer.empty() || !image.empty() || !thumb.empty() || !fields_str.empty() || with_ts;
+    bool need_embed = !title.empty() || !desc.empty() || color>=0 || !footer.empty()
+                    || !image.empty() || !thumb.empty() || !fields_str.empty() || with_ts;
     if (need_embed) {
         payload += ",\"embeds\":[{";
         bool first=true;
@@ -27941,28 +27958,28 @@ BUILDIN_FUNC(discord_webhook_rich) {
         if(!thumb.empty()){ if(!first)payload+=","; payload+="\"thumbnail\":{\"url\":\""+thumb+"\"}"; first=false; }
 
         if(!fields_str.empty()){
-            if(!first)payload+=",";
-            payload+="\"fields\":[";
+            if(!first)payload+=","; payload+="\"fields\":[";
             bool f2=true;
-            auto rows=split(fields_str,';');
-            for(auto&r:rows){
-                if(r.empty())continue;
-                auto parts=split(r,'|');
-                std::string n=json_escape_tis620(parts.size()>0?parts[0].c_str():"");
-                std::string v=json_escape_tis620(parts.size()>1?parts[1].c_str():"");
-                std::string in=(parts.size()>2?parts[2]:"0");
-                if(!n.empty()||!v.empty()){
-                    if(!f2)payload+=",";
-                    payload+="{\"name\":\""+n+"\",\"value\":\""+v+"\",\"inline\":"+( (in=="1"||in=="true")?"true":"false" )+"}";
+            auto rows=split(fields_str,';'); // ตอนนี้ rows มีเฉพาะรายการฟิลด์ ไม่ปะปน opts แล้ว
+            for(auto &r: rows){
+                if(r.empty()) continue;
+                auto parts = split(r,'|'); // name|value|inline
+                std::string n = json_escape_tis620(parts.size()>0?parts[0].c_str():"");
+                std::string v = json_escape_tis620(parts.size()>1?parts[1].c_str():"");
+                std::string in= (parts.size()>2?parts[2]:"0");
+                if(!n.empty() || !v.empty()){
+                    if(!f2) payload+=",";
+                    payload += "{\"name\":\""+n+"\",\"value\":\""+v+"\",\"inline\":"
+                            + std::string((in=="1"||in=="true"||in=="TRUE")?"true":"false")
+                            + "}";
                     f2=false;
                 }
             }
-            payload+="]";
+            payload += "]";
             first=false;
         }
         if(with_ts){
-            if(!first)payload+=",";
-            payload+="\"timestamp\":\""+make_timestamp()+"\"";
+            if(!first)payload+=","; payload+="\"timestamp\":\""+make_timestamp()+"\"";
             first=false;
         }
         payload += "}]";
@@ -27991,6 +28008,77 @@ BUILDIN_FUNC(discord_webhook_rich) {
     curl_easy_cleanup(curl);
 
     script_pushint(st,(int)code);
+    return SCRIPT_CMD_SUCCESS;
+#endif
+}
+
+// helper แบ่งสตริง
+static std::vector<std::string> split_kv(const std::string& s, char sep) {
+    std::vector<std::string> out; std::string cur;
+    for (char c: s) {
+        if (c==sep) { out.push_back(cur); cur.clear(); }
+        else cur.push_back(c);
+    }
+    out.push_back(cur);
+    return out;
+}
+
+BUILDIN_FUNC(discord_webhook_async) {
+    const char* url  = script_getstr(st,2);
+    const char* user = script_hasdata(st,3) ? script_getstr(st,3) : "rAthena";
+    const char* opts = script_hasdata(st,4) ? script_getstr(st,4) : "";
+
+#ifndef HAVE_CURL
+    ShowError("discord_webhook_async: built without libcurl (HAVE_CURL off)\n");
+    script_pushint(st, -1);
+    return SCRIPT_CMD_SUCCESS;
+#else
+    if (!url || !*url) { script_pushint(st, -2); return SCRIPT_CMD_SUCCESS; }
+
+    WBJob job;
+    job.type = WBType::GENERIC_EMBED;
+    job.url  = url;
+    job.user = user;
+
+    std::string s(opts ? opts : "");
+
+    // --- กิน fields= ทั้งก้อนตั้งแต่ '=' จนถึงท้ายสตริง (ห้ามตามด้วย ';')
+    std::size_t fk = s.find("fields=");
+    std::string head = s, fields;
+    if (fk != std::string::npos) {
+        std::size_t fv = fk + 7;          // ตำแหน่งหลัง "fields="
+        fields = s.substr(fv);            // เอาตั้งแต่ตรงนี้ถึงท้ายสตริง
+        head   = s.substr(0, fk);         // ส่วนอื่นๆ ที่อยู่ก่อนหน้า
+    }
+
+    // parse key=value ที่เหลือ (ตัดด้วย ';')
+    std::size_t start = 0;
+    while (start < head.size()) {
+        std::size_t end = head.find(';', start);
+        std::string piece = head.substr(start, (end==std::string::npos)?std::string::npos:(end-start));
+        if (!piece.empty()) {
+            std::size_t eq = piece.find('=');
+            if (eq != std::string::npos) {
+                std::string k = piece.substr(0, eq);
+                std::string v = piece.substr(eq+1);
+                if (k=="title")      job.title  = v;
+                else if (k=="desc")  job.desc   = v;
+                else if (k=="color") job.color  = atoi(v.c_str());
+                else if (k=="image") job.image  = v;
+                else if (k=="thumb") job.thumb  = v;
+                else if (k=="footer")job.footer = v;
+                else if (k=="timestamp") job.with_ts = atoi(v.c_str());
+            }
+        }
+        if (end==std::string::npos) break;
+        start = end+1;
+    }
+
+    // ใส่ fields ที่กินยาวไว้ข้างบน
+    job.fields = fields;
+
+    webhook_async_enqueue(job);
+    script_pushint(st, 1);
     return SCRIPT_CMD_SUCCESS;
 #endif
 }
@@ -28777,6 +28865,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(petgrade, ""),
 
 	BUILDIN_DEF(discord_webhook_rich, "s*"),
+	BUILDIN_DEF(discord_webhook_async,"s??"),
 
 #include <custom/script_def.inc>
 

@@ -52,6 +52,7 @@
 #include "quest.hpp"
 #include "storage.hpp"
 #include "trade.hpp"
+#include "discord_webhook.hpp"
 
 using namespace rathena;
 using namespace rathena::server_map;
@@ -5062,6 +5063,7 @@ void MapServer::finalize(){
 	do_final_buyingstore();
 	do_final_path();
 	do_final_emotions();
+	webhook_async_stop();
 
 	map_db->destroy(map_db, map_db_final);
 
@@ -5439,6 +5441,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_vending();
 	do_init_buyingstore();
 	do_init_emotions();
+	webhook_async_init();
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 
