@@ -12,7 +12,6 @@ AC_CONFIG_FILES([3rdparty/libconfig/Makefile 3rdparty/yaml-cpp/Makefile 3rdparty
 AC_CONFIG_FILES([src/char/Makefile src/login/Makefile])
 AC_CONFIG_FILES([src/map/Makefile src/tool/Makefile])
 AC_CONFIG_FILES([src/web/Makefile])
-AC_CONFIG_FILES([src/voice/Makefile])
 
 AC_GNU_SOURCE
 
@@ -1360,10 +1359,6 @@ else
 	AC_MSG_RESULT([no])
 fi
 
-#
-# uWebSockets / uSockets submodules (required for voice server)
-#
-AC_MSG_CHECKING([for uWebSockets submodule])
 AS_IF([test -f "3rdparty/uWebSockets/src/App.h"],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])

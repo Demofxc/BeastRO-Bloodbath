@@ -157,7 +157,7 @@
     </ClInclude>
     <ClInclude Include="pc_battle_stats.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>  
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">

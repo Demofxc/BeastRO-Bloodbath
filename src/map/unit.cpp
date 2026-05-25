@@ -37,7 +37,6 @@
 #include "pet.hpp"
 #include "storage.hpp"
 #include "trade.hpp"
-#include "voice_bridge.hpp"
 
 using namespace rathena;
 
@@ -317,7 +316,6 @@ int32 unit_walktoxy_sub(struct block_list *bl)
 
 	if (bl->type == BL_PC) {
 		map_session_data* sd = BL_CAST(BL_PC, bl);
-		voice_bridge_send_map_pos(sd);
 	}
 
 	return 1;

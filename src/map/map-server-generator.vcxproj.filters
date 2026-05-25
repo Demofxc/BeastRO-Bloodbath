@@ -158,9 +158,6 @@
     <ClInclude Include="pc_battle_stats.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="voice_bridge.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">
@@ -293,9 +290,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pc_battle_stats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="voice_bridge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
