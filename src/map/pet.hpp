@@ -191,6 +191,7 @@ struct pet_data : public block_list {
 	int32 target_id;
 	struct {
 		unsigned skillbonus : 1;
+		unsigned hidden_by_master : 1;
 	} state;
 	int32 move_fail_count;
 	t_tick next_walktime,last_thinktime;
@@ -241,6 +242,7 @@ int32 pet_recv_petdata(uint32 account_id,struct s_pet *p,int32 flag);
 int32 pet_select_egg(map_session_data *sd,int16 egg_index);
 void pet_catch_process_start( map_session_data& sd, t_itemid item_id, e_pet_catch_flag flag );
 void pet_catch_process_end( map_session_data& sd, int32 target_id );
+void pet_set_hidden_by_master(pet_data& pd, bool hidden);
 bool pet_get_egg(uint32 account_id, int16 pet_class, int32 pet_id);
 int32 pet_menu(map_session_data *sd,int32 menunum);
 int32 pet_change_name(map_session_data *sd,char *name);

@@ -52,6 +52,7 @@
 #include "quest.hpp"
 #include "storage.hpp"
 #include "trade.hpp"
+#include "voice_bridge.hpp"
 #include "discord_webhook.hpp"
 
 using namespace rathena;
@@ -128,7 +129,7 @@ static struct block_list *bl_list[BL_LIST_MAX];
 static int32 bl_list_count = 0;
 
 #ifndef MAP_MAX_MSG
-	#define MAP_MAX_MSG 1550
+	#define MAP_MAX_MSG 5000
 #endif
 
 struct map_data map[MAX_MAP_PER_SERVER];
@@ -2165,6 +2166,7 @@ void map_addiddb(struct block_list *bl)
 		TBL_PC* sd = (TBL_PC*)bl;
 		idb_put(pc_db,sd->id,sd);
 		uidb_put(charid_db,sd->status.char_id,sd);
+		voice_bridge_send_join(sd);
 	}
 	else if( bl->type == BL_MOB )
 	{
@@ -2211,6 +2213,8 @@ void map_deliddb(struct block_list *bl)
  *------------------------------------------*/
 int32 map_quit(map_session_data *sd) {
 	int32 i;
+
+	voice_bridge_send_leave(sd);
 
 	if (sd->state.keepshop == false) { // Close vending/buyingstore
 		if (sd->state.vending)
@@ -5096,6 +5100,7 @@ void MapServer::finalize(){
 	regen_db->destroy(regen_db, nullptr);
 
 	map_sql_close();
+	voice_bridge_final();
 
 	ShowStatus("Finished.\n");
 }
@@ -5393,6 +5398,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	iwall_db = strdb_alloc(DB_OPT_RELEASE_DATA,2*NAME_LENGTH+2+1); // [Zephyrus] Invisible Walls
 
 	map_sql_init();
+	voice_bridge_init();
 	if (log_config.sql_logs)
 		log_sql_init();
 

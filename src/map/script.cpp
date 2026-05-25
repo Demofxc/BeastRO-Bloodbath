@@ -27829,7 +27829,7 @@ static std::string tis620_to_utf8(const char* s) {
     for (const unsigned char* p = (const unsigned char*)s; *p; ++p) {
         unsigned char c = *p;
         if (c < 0x80) {
-            out.push_back((char)c); // ASCII ตรง
+            out.push_back((char)c); // ASCII ๏ฟฝรง
         } else if (c >= 0xA1 && c <= 0xFB) {
             // TIS-620 (0xA1 ? U+0E01)
             unsigned int codepoint = 0x0E01 + (c - 0xA1);
@@ -27843,7 +27843,7 @@ static std::string tis620_to_utf8(const char* s) {
     return out;
 }
 
-// ===== Escape JSON หลังแปลง UTF-8 =====
+// ===== Escape JSON ๏ฟฝ๏ฟฝัง๏ฟฝลง UTF-8 =====
 static std::string json_escape_tis620(const char* s) {
     std::string in = tis620_to_utf8(s);
     std::string out; out.reserve(in.size()+16);
@@ -27893,28 +27893,28 @@ BUILDIN_FUNC(discord_webhook_rich) {
 #else
     if (!url || !*url) { script_pushint(st, 400); return SCRIPT_CMD_SUCCESS; }
 
-    // escape ทุก field ด้วย json_escape_tis620 (ซึ่งรวม TIS620->UTF-8 แล้ว)
+    // escape ๏ฟฝุก field ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ json_escape_tis620 (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ TIS620->UTF-8 ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ)
     std::string content  = json_escape_tis620(content_in);
     std::string username = json_escape_tis620(user_in);
 
     std::string title, desc, footer, image, thumb, fields_str;
     int color = -1, with_ts = 0;
 
-    // -------- FIX: ตัด fields= ออกมาก่อน แล้วค่อย split opts อื่น ๆ --------
+    // -------- FIX: ๏ฟฝัด fields= ๏ฟฝอก๏ฟฝาก๏ฟฝอน ๏ฟฝ๏ฟฝ๏ฟฝวค๏ฟฝ๏ฟฝ๏ฟฝ split opts ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ --------
     std::string opts_all = opts_in ? opts_in : "";
-    // หา "fields=" (ไม่สนใจตัวพิมพ์ใหญ่/เล็กในที่นี้ ถ้าต้องการก็แปลงเป็น lower ก่อน)
+    // ๏ฟฝ๏ฟฝ "fields=" (๏ฟฝ๏ฟฝ๏ฟฝสนใจต๏ฟฝวพ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝหญ๏ฟฝ/๏ฟฝ๏ฟฝ๏ฟฝในท๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝาต๏ฟฝอง๏ฟฝ๏ฟฝรก๏ฟฝ๏ฟฝลง๏ฟฝ๏ฟฝ lower ๏ฟฝ๏ฟฝอน)
     size_t fpos = opts_all.find("fields=");
     if (fpos != std::string::npos) {
-        size_t vpos = fpos + 7;            // ข้าม "fields="
-        fields_str = opts_all.substr(vpos); // เก็บทั้งค่าหลัง fields= จนสุดสตริง
-        // ตัด "fields=..." ออกไปจาก opts_all
+        size_t vpos = fpos + 7;            // ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ "fields="
+        fields_str = opts_all.substr(vpos); // ๏ฟฝ็บท๏ฟฝ้งค๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝัง fields= ๏ฟฝ๏ฟฝ๏ฟฝุดสต๏ฟฝิง
+        // ๏ฟฝัด "fields=..." ๏ฟฝอกไปจาก opts_all
         opts_all.erase(fpos);
-        // ลบ ;/ช่องว่าง นำหน้าที่อาจหลงเหลือจากการต่อสตริง
+        // ลบ ;/๏ฟฝ๏ฟฝอง๏ฟฝ๏ฟฝาง ๏ฟฝ๏ฟฝหน๏ฟฝาท๏ฟฝ๏ฟฝ๏ฟฝาจ๏ฟฝลง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอจาก๏ฟฝ๏ฟฝรต๏ฟฝ๏ฟฝสต๏ฟฝิง
         while (!fields_str.empty() && (fields_str[0] == ';' || fields_str[0] == ' '))
             fields_str.erase(0,1);
     }
 
-    // parse opts อื่น ๆ ด้วย ';'
+    // parse opts ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ';'
     auto opts = split(opts_all, ';');
     for (auto &o : opts) {
         if (o.empty()) continue;
@@ -27928,7 +27928,7 @@ BUILDIN_FUNC(discord_webhook_rich) {
         else if (k=="thumb")  thumb   = json_escape_tis620(v.c_str());
         else if (k=="color")  color   = atoi(v.c_str());
         else if (k=="timestamp") with_ts = atoi(v.c_str());
-        // NOTE: ไม่ parse fields ที่นี่แล้ว เพราะตัดออกไว้ใน fields_str ข้างบน
+        // NOTE: ๏ฟฝ๏ฟฝ๏ฟฝ parse fields ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝะตัด๏ฟฝอก๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ fields_str ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ
     }
     // -------------------------------------------------------------------------
 
@@ -27960,7 +27960,7 @@ BUILDIN_FUNC(discord_webhook_rich) {
         if(!fields_str.empty()){
             if(!first)payload+=","; payload+="\"fields\":[";
             bool f2=true;
-            auto rows=split(fields_str,';'); // ตอนนี้ rows มีเฉพาะรายการฟิลด์ ไม่ปะปน opts แล้ว
+            auto rows=split(fields_str,';'); // ๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ rows ๏ฟฝ๏ฟฝเฉพ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝยก๏ฟฝรฟ๏ฟฝลด๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝะป๏ฟฝ opts ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ
             for(auto &r: rows){
                 if(r.empty()) continue;
                 auto parts = split(r,'|'); // name|value|inline
@@ -27987,7 +27987,7 @@ BUILDIN_FUNC(discord_webhook_rich) {
 
     payload += "}";
 
-    // ส่งไป Discord
+    // ๏ฟฝ๏ฟฝ๏ฟฝ Discord
     CURL* curl = curl_easy_init();
     if (!curl) { script_pushint(st,-2); return SCRIPT_CMD_SUCCESS; }
     struct curl_slist* headers=NULL;
@@ -28012,7 +28012,7 @@ BUILDIN_FUNC(discord_webhook_rich) {
 #endif
 }
 
-// helper แบ่งสตริง
+// helper ๏ฟฝ๏ฟฝสต๏ฟฝิง
 static std::vector<std::string> split_kv(const std::string& s, char sep) {
     std::vector<std::string> out; std::string cur;
     for (char c: s) {
@@ -28042,16 +28042,16 @@ BUILDIN_FUNC(discord_webhook_async) {
 
     std::string s(opts ? opts : "");
 
-    // --- กิน fields= ทั้งก้อนตั้งแต่ '=' จนถึงท้ายสตริง (ห้ามตามด้วย ';')
+    // --- ๏ฟฝิน fields= ๏ฟฝ๏ฟฝ้งก๏ฟฝอน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ '=' ๏ฟฝ๏ฟฝ๏ฟฝึง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝสต๏ฟฝิง (๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ';')
     std::size_t fk = s.find("fields=");
     std::string head = s, fields;
     if (fk != std::string::npos) {
-        std::size_t fv = fk + 7;          // ตำแหน่งหลัง "fields="
-        fields = s.substr(fv);            // เอาตั้งแต่ตรงนี้ถึงท้ายสตริง
-        head   = s.substr(0, fk);         // ส่วนอื่นๆ ที่อยู่ก่อนหน้า
+        std::size_t fv = fk + 7;          // ๏ฟฝ๏ฟฝ๏ฟฝหน๏ฟฝ๏ฟฝ๏ฟฝัง "fields="
+        fields = s.substr(fv);            // ๏ฟฝ๏ฟฝาต๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝรง๏ฟฝ๏ฟฝ๏ฟฝึง๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝสต๏ฟฝิง
+        head   = s.substr(0, fk);         // ๏ฟฝ๏ฟฝวน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝอนหน๏ฟฝ๏ฟฝ
     }
 
-    // parse key=value ที่เหลือ (ตัดด้วย ';')
+    // parse key=value ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ (๏ฟฝัด๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ ';')
     std::size_t start = 0;
     while (start < head.size()) {
         std::size_t end = head.find(';', start);
@@ -28074,7 +28074,7 @@ BUILDIN_FUNC(discord_webhook_async) {
         start = end+1;
     }
 
-    // ใส่ fields ที่กินยาวไว้ข้างบน
+    // ๏ฟฝ๏ฟฝ๏ฟฝ fields ๏ฟฝ๏ฟฝ๏ฟฝิน๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝ๏ฟฝาง๏ฟฝ๏ฟฝ
     job.fields = fields;
 
     webhook_async_enqueue(job);
@@ -28133,6 +28133,19 @@ BUILDIN_FUNC(preg_match) {
 #endif
 }
 
+BUILDIN_FUNC(progressbar_abort)
+{
+	map_session_data* sd = nullptr;
+
+	script_rid2sd(sd);
+
+	if (!sd)
+		return SCRIPT_CMD_FAILURE;
+
+	clif_progressbar_abort(sd);
+
+	return SCRIPT_CMD_SUCCESS;
+}
 /// script command definitions
 /// for an explanation on args, see add_buildin_func
 struct script_function buildin_func[] = {
@@ -28866,6 +28879,8 @@ struct script_function buildin_func[] = {
 
 	BUILDIN_DEF(discord_webhook_rich, "s*"),
 	BUILDIN_DEF(discord_webhook_async,"s??"),
+
+	BUILDIN_DEF(progressbar_abort,""),
 
 #include <custom/script_def.inc>
 

@@ -1,7 +1,7 @@
-prontera,188,171,5	script	นักถอดการ์ด	15000,{
+ultia,246,183,3	script	นักถอดการ์ด	10480,{
 set @cardbatzeny1,1000000; //ค่าถอดการ์ด
 set @cardbatzeny2,0; //ค่าบริการเพิ่มต่อการ์ดแต่ละใบ
-set @cardbatzeny3,0; // จำนวน Star Crumb
+set @cardbatzeny3,1; // จำนวน Star Crumb
 set @cardbatzeny4,0; // จำนวน Yellow Gemstone
 
 set @failbatrate1,0; //อัตรา การ์ด และ Item เสียหาย ทั้งคู่
@@ -11,22 +11,22 @@ set @failbatrate4,@failbatrate1+@failbatrate2+@failbatrate3; //ไม่สามารถถอดได้ แ
 //สรุปคือ โอกาสผิดพลาดเท่ากับ 15%
 
 UPGRADEROOT:
-	mes "^738C5A[ นักถอดการ์ด ]^000000";
-    mes "ข้ามีบริการที่จะถอดการ์ดออกจากอาวุธ";
+	mes "^FF0000[ นักถอดการ์ด ]^000000";
+    mes "ฉันมีบริการที่จะถอดการ์ดออกจากอาวุธ";
     mes "และชุดเกราะของเจ้า";
-    mes "การถอดการ์ดของไม่มีวันเสียหาย";
-	mes "โอกาสติด 100% ค่าบริการ [ "+ @cardbatzeny1 +" ] zeny";
+    mes "ต้องการ ^i[30312] 1 ea";
+	mes "และค่าบริการ [ "+ @cardbatzeny1 +" ] zeny";
 	next;
-	if(select("^738C5A•^000000 น่าสนใจดี ขอข้าทำหน่อย","^738C5A•^000000 ไม่ล่ะ ขอบใจ")-1)
+	if(select("[^FF0000#^000000]^000000 เริ่มถอดการ์ด","[^FF0000#^000000]^000000 ยกเลิก")-1)
 	{
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "ไม่เป็นไร ยังรอเจ้าอยู่เหมือนเดิมนะ";
 		close;
 	}
 
 REMOVEMENU:
-	mes "^738C5A[ นักถอดการ์ด ]^000000";
+	mes "^FF0000[ นักถอดการ์ด ]^000000";
 	mes " ";
 	mes "เอาล่ะ ท่านต้องการถอดการ์ดจากส่วนไหน";
 	next;
@@ -43,7 +43,7 @@ REMOVEMENU:
 		getequipname(10)))
 	{
 	case 1:
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "ไม่เป็นไร ยังรอเจ้าอยู่เหมือนเดิมนะ";
 		close;
@@ -88,14 +88,14 @@ REMOVEMENU:
 
 	if(getequipcardcnt(@part) == 0) 
 	{
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "ของชิ้นนี้ไม่มีการ์ดติดมา... เจ้าคิดจะทำอะไรน่ะ";
 		close;
 	}
 	set @cardcount,getequipcardcnt(@part);
 	set @cardbatzenyall, (@cardbatzeny2 * @cardcount) + @cardbatzeny1;
-	mes "^738C5A[ นักถอดการ์ด ]^000000";
+	mes "^FF0000[ นักถอดการ์ด ]^000000";
 	mes " ";
 	mes "ของชิ้นนี้มีการ์ดจำนวน [ " + @cardcount + " ] ใบ";
 	mes "รวมค่าบริการ [ "+ @cardbatzenyall +" ] zeny";
@@ -107,7 +107,7 @@ REMOVEMENU:
 		mes "ไม่เป็นไร ยังรอเจ้าอยู่เหมือนเดิมนะ";
 		close;
 	}
-	mes "^738C5A[ นักถอดการ์ด ]^000000";
+	mes "^FF0000[ นักถอดการ์ด ]^000000";
 	mes " ";
 	mes "การทำครั้งนี้ มีโอกาสพลาดด้วยคือ";
 	mes "เสียหายทั้ง การ์ดและ Item [ "+ @failbatrate1 +" ]  %";
@@ -118,12 +118,12 @@ REMOVEMENU:
 	next;
 	if(select("ข้ายืนยันที่จะทำต่อ","มีโอกาสแตกด้วยหรอ ไม่เอาแล้ว")-1)
 	{
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "ไม่เป็นไร ยังรอเจ้าอยู่เหมือนเดิมนะ";
 		close;
 	}
-	mes "^738C5A[ นักถอดการ์ด ]^000000";
+	mes "^FF0000[ นักถอดการ์ด ]^000000";
 	mes " ";
 	mes "ต่อไปท่านต้องเลือกว่า เสียหายบางอย่าง";
 	mes "ท่านจะให้ของชิ้นไหน ไม่เสียหาย";
@@ -136,13 +136,13 @@ REMOVEMENU:
 		set @failtype,1;
 	}	
 
-	mes "^738C5A[ นักถอดการ์ด ]^000000";
+	mes "^FF0000[ นักถอดการ์ด ]^000000";
 	mes " ";
 	mes "เอาล่ะ เราจะเริ่มกันแล้วนะ";
 	next;
-	if((zeny < @cardbatzenyall) || (countitem(1000) < @cardbatzeny3) || (countitem(715) < @cardbatzeny4))
+	if((zeny < @cardbatzenyall) || (countitem(30312) < @cardbatzeny3) || (countitem(715) < @cardbatzeny4))
 	{
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "เจ้ามีของไม่ครบตามที่ข้าต้องการ";
 		close;
@@ -159,7 +159,7 @@ REMOVEMENU:
 	if(@failchance < @failbatratecal1)
 	{
 		failedremovecards @part,0;
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "โอ้...พระเจ้า การถอดการ์ดครั้งนี้ผิดพลาด";
 		mes "ท่านเสียทั้งไอเท่มและการ์ด";
@@ -169,7 +169,7 @@ REMOVEMENU:
 	if((@failchance < @failbatratecal2) && (@failtype == 1))
 	{
 		failedremovecards @part,1;
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "โอ้...พระเจ้า การถอดการ์ดครั้งนี้ผิดพลาด";
 		mes "ท่านเสีย Card ไป แต่ Item ของท่านยังคงอยู่";
@@ -178,7 +178,7 @@ REMOVEMENU:
 	if((@failchance < @failbatratecal2) && (@failtype == 2))
 	{
 		failedremovecards @part,2;
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "โอ้...พระเจ้า การถอดการ์ดครั้งนี้ผิดพลาด";
 		mes "ท่านเสีย Item ไป แต่ Card ของท่านยังคงอยู่";
@@ -187,7 +187,7 @@ REMOVEMENU:
 	if(@failchance < @failbatratecal3) 
 	{
 		failedremovecards @part,3;
-		mes "^738C5A[ นักถอดการ์ด ]^000000";
+		mes "^FF0000[ นักถอดการ์ด ]^000000";
 		mes " ";
 		mes "โอ้...พระเจ้า การถอดการ์ดครั้งนี้ผิดพลาด";
 		mes "โชคดีที่ Item และ Card ไม่เสียหาย";
@@ -195,11 +195,15 @@ REMOVEMENU:
 	}
 
 	successremovecards @part;
-	mes "^738C5A[ นักถอดการ์ด ]^000000";
+	mes "^FF0000[ นักถอดการ์ด ]^000000";
 	mes " ";
 	mes "วู้ว... การถอดการ์ดสำเร็จ ขอแสดงความยินดีด้วย";
 close;
 OnInit: 
-waitingroom "  ถอดการ์ด 100%",0; 
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 118); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Card Remove");  //คลาย ๆ ชื่อกิลด์
+	waitingroom "[#] ถอดการ์ด", 0;
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 end;
 }

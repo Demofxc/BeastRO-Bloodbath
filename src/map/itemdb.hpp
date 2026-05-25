@@ -3741,6 +3741,13 @@ bool itemdb_parse_roulette_db(void);
 
 void itemdb_gen_itemmoveinfo();
 
+struct extended_vending {
+	t_itemid nameid;
+	bool is_zeny;
+};
+
+extern std::vector<extended_vending> extended_vending_lists;
+
 void itemdb_reload(void);
 
 void do_final_itemdb(void);

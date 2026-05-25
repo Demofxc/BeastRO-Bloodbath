@@ -34,6 +34,8 @@ using namespace rathena;
 ComboDatabase itemdb_combo;
 ItemGroupDatabase itemdb_group;
 
+std::vector<extended_vending> extended_vending_lists;
+
 struct s_roulette_db rd;
 
 static void itemdb_jobid2mapid(uint64 bclass[3], e_mapid jobmask, bool active);
@@ -4906,6 +4908,40 @@ bool RandomOptionGroupDatabase::option_get_id(std::string name, uint16 &id) {
 	return false;
 }
 
+static bool itemdb_read_extended_vending(char* str[], size_t columns, size_t current) {
+
+	t_itemid nameid;
+	bool is_zeny;
+
+	nameid = strtoul(str[0], nullptr, 10);
+	is_zeny = atoi(str[1]);
+
+	std::shared_ptr<item_data> id = item_db.find(nameid);
+
+	bool found = false;
+	for (const auto& entry : extended_vending_lists){
+		if(nameid == entry.nameid){
+			found = true;
+			break;
+		}
+	}
+
+	if(found)
+		return true;
+
+	struct extended_vending it = {};
+	it.nameid = nameid;
+	it.is_zeny = is_zeny;
+
+	extended_vending_lists.push_back(it);
+
+	std::sort(extended_vending_lists.begin(), extended_vending_lists.end(), [](const extended_vending& a, const extended_vending& b) {
+        return a.nameid < b.nameid;
+    });
+
+	return true;
+}
+
 /**
 * Read all item-related databases
 */
@@ -4938,6 +4974,8 @@ static void itemdb_read(void) {
 		}
 
 		sv_readdb(dbsubpath2, "item_noequip.txt",       ',', 2, 2, -1, &itemdb_read_noequip, i > 0);
+		sv_readdb(dbsubpath1, "custom/extended_vending.txt",       ',', 2, 2, -1, &itemdb_read_extended_vending, i > 0);
+
 		aFree(dbsubpath1);
 		aFree(dbsubpath2);
 	}
@@ -5048,6 +5086,8 @@ void do_final_itemdb(void) {
 	item_package_db.clear();
 	if (battle_config.feature_roulette)
 		itemdb_roulette_free();
+
+	extended_vending_lists.clear();
 }
 
 /**

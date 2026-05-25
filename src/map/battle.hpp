@@ -158,7 +158,7 @@ bool is_infinite_defense(struct block_list *target, int32 flag);
 #define MAX_CLOTH_COLOR battle_config.max_cloth_color
 #define MIN_BODY_STYLE 0
 #if PACKETVER >= 20231220
-#define MAX_BODY_STYLE  4344
+#define MAX_BODY_STYLE (JOB_MAX-1)
 #else
 #define MAX_BODY_STYLE 1
 #endif
@@ -787,6 +787,7 @@ struct Battle_Config
 	int32 open_box_weight_rate;
 	int32 major_overweight_rate;
 	int32 trade_count_stackable;
+	int32 enable_extended_vending;
 
 #include <custom/battle_config_struct.inc>
 };

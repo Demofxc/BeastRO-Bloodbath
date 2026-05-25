@@ -30,7 +30,7 @@ end;
 OnPCLoadMapEvent:
 for (.@i = 0; .@i < .map_size; .@i++)
 	if (strcharinfo(3) == .map$[.@i]) {
-        if(!getcharid(2) && !getstatus(SC_AUDIENCE)) {
+        if(!getcharid(2)) {
 			message	strcharinfo(0),"[ ระบบ ] ท่านไม่ได้เข้าร่วมกิลด์ โปรดสร้างกิลด์ที่ NPC จัดการกิลด์ !!";
 			sleep2	300;
 			warp "SavePoint",0,0;

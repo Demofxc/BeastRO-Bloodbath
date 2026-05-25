@@ -1,0 +1,15 @@
+-	script	FirstLoginNavigator	-1,{
+
+OnPCLoginEvent:
+	if (!#first_login_done) {
+		#first_login_done = 1;
+		setquest 1001; // quest id
+	}
+	end;
+
+StartGuide:
+
+	navigateto "new_1-4",20,179;
+
+	end;
+}

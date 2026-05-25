@@ -58,7 +58,7 @@ pvp_n_1-5	mapflag	pvp
 pvp_n_2-1	mapflag	pvp
 pvp_n_2-2	mapflag	pvp
 pvp_n_2-3	mapflag	pvp
-pvp_n_2-4	mapflag	pvp
+//pvp_n_2-4	mapflag	pvp
 pvp_n_2-5	mapflag	pvp
 pvp_n_3-1	mapflag	pvp
 pvp_n_3-2	mapflag	pvp

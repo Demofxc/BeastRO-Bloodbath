@@ -4,6 +4,7 @@
 #include "vending.hpp"
 
 #include <cstdlib> // atoi
+#include <sstream>
 
 #include <common/malloc.hpp> // aMalloc, aFree
 #include <common/nullpo.hpp>
@@ -18,6 +19,7 @@
 #include "buyingstore.hpp" // struct s_autotrade_entry, struct s_autotrader
 #include "chrif.hpp"
 #include "clif.hpp"
+#include "intif.hpp"
 #include "itemdb.hpp"
 #include "log.hpp"
 #include "npc.hpp"
@@ -66,6 +68,7 @@ void vending_closevending(map_session_data* sd)
 		}
 
 		sd->state.vending = false;
+		sd->state.open_extended_vending = false;
 		sd->vender_id = 0;
 		clif_closevendingboard( *sd, AREA_WOS, nullptr );
 		idb_remove(vending_db, sd->status.char_id);
@@ -93,6 +96,14 @@ void vending_vendinglistreq(map_session_data* sd, int32 id)
 	}
 
 	sd->vended_id = vsd->vender_id;  // register vending uid
+
+	if(vsd->state.open_extended_vending){
+		char output[CHAT_SIZE_MAX];
+		std::shared_ptr<item_data> item = item_db.find(vsd->state.vending_item);
+		sprintf(output, msg_txt(nullptr, 1841), item->ename.c_str());
+		clif_broadcast(sd, output, strlen(output) + 1, BC_BLUE, SELF);
+	}
+
 
 	clif_vendinglist( *sd, *vsd );
 }
@@ -149,6 +160,23 @@ void vending_purchasereq(map_session_data* sd, int32 aid, int32 uid, const uint8
 	// duplicate item in vending to check hacker with multiple packets
 	memcpy(&vending, &vsd->vending, sizeof(vsd->vending)); // copy vending list
 
+	int32 ex_index = -1;
+	bool extended = false;
+	std::shared_ptr<item_data> id;
+	int32 x = 0 , x_total = 0;
+	t_itemid vending_item = vsd->state.vending_item;
+	char output[CHAT_SIZE_MAX];
+	id = item_db.find(vending_item);
+
+	if(vending_item){
+		for (const auto &it : extended_vending_lists) {
+			if(it.nameid == vending_item){
+				extended = !it.is_zeny;
+				break;
+			}
+		}
+	}
+
 	// some checks
 	z = 0.; // zeny counter
 	w = 0;  // weight counter
@@ -170,15 +198,35 @@ void vending_purchasereq(map_session_data* sd, int32 aid, int32 uid, const uint8
 		else
 			vend_list[i] = j;
 
-		z += ((double)vsd->vending[j].value * (double)amount);
-		if( z > (double)sd->status.zeny || z < 0. || z > (double)MAX_ZENY ) {
-			clif_buyvending( *sd, idx, amount, PURCHASEMC_NO_ZENY ); // you don't have enough zeny
-			return;
-		}
-		if( z + (double)vsd->status.zeny > (double)MAX_ZENY ) {
-			clif_buyvending( *sd, idx, vsd->vending[j].amount, PURCHASEMC_OUT_OF_STOCK ); // too much zeny = overflow
-			return;
+		if(extended){
 
+			ex_index = pc_search_inventory( sd, vending_item );
+
+			if(ex_index == -1){
+				sprintf(output, msg_txt(nullptr, 1843), item_db.create_item_link(id).c_str());
+				clif_messagecolor(sd, color_table[COLOR_CYAN], output, false, SELF);
+				return;
+			}
+
+			x = vsd->vending[j].value * amount;
+			x_total += x;
+
+			if (x > sd->inventory.u.items_inventory[ex_index].amount){
+				sprintf(output, msg_txt(nullptr, 1844), item_db.create_item_link(id).c_str(), x);
+				clif_messagecolor(sd, color_table[COLOR_CYAN], output, false, SELF);
+				return;
+			}
+		}else{
+			z += ((double)vsd->vending[j].value * (double)amount);
+
+			if( z > (double)sd->status.zeny || z < 0. || z > (double)MAX_ZENY ) {
+				clif_buyvending( *sd, idx, amount, PURCHASEMC_NO_ZENY ); // you don't have enough zeny
+				return;
+			}
+			if( z + (double)vsd->status.zeny > (double)MAX_ZENY && !battle_config.vending_over_max ) {
+				clif_buyvending( *sd, idx, vsd->vending[j].amount, PURCHASEMC_OUT_OF_STOCK ); // too much zeny = overflow
+				return;
+			}
 		}
 		w += itemdb_weight(vsd->cart.u.items_cart[idx].nameid) * amount;
 		if( w + sd->weight > sd->max_weight ) {
@@ -213,10 +261,95 @@ void vending_purchasereq(map_session_data* sd, int32 aid, int32 uid, const uint8
 		}
 	}
 
-	pc_payzeny(sd, (int32)z, LOG_TYPE_VENDING, vsd->status.char_id);
-	achievement_update_objective(sd, AG_SPEND_ZENY, 1, (int32)z);
-	z = vending_calc_tax(sd, z);
-	pc_getzeny(vsd, (int32)z, LOG_TYPE_VENDING, sd->status.char_id);
+	if(extended){
+
+		// check total needs
+		if(x_total > sd->inventory.u.items_inventory[ex_index].amount){
+			sprintf(output, msg_txt(sd, 1854), item_db.create_item_link(id).c_str(), x_total);
+			clif_messagecolor(sd, color_table[COLOR_CYAN], output, false, SELF);
+			return;
+		}
+
+		if(pc_delitem(sd, ex_index, x_total, 0, 0, LOG_TYPE_VENDING )){
+			sprintf(output, msg_txt(sd, 1854), item_db.create_item_link(id).c_str(), x_total);
+			clif_messagecolor(sd, color_table[COLOR_CYAN], output, false, SELF);
+			return;
+		}		
+
+		struct mail_message msg_vendor = {};
+		msg_vendor.status = MAIL_NEW;
+		msg_vendor.type = MAIL_INBOX_NORMAL;
+		msg_vendor.timestamp = time(nullptr);
+		msg_vendor.zeny = 0;
+		msg_vendor.dest_id = vsd->status.char_id;
+		msg_vendor.item[0].nameid = vending_item;
+		msg_vendor.item[0].identify = 1;
+		msg_vendor.item[0].amount = x_total;
+
+		char send_name[CHAT_SIZE_MAX];
+		sprintf(send_name, msg_txt(sd, 1847));
+		safestrncpy(msg_vendor.send_name, send_name, NAME_LENGTH);
+		char msg_title[CHAT_SIZE_MAX];
+		sprintf(msg_title, msg_txt(sd, 1845));
+		safestrncpy(msg_vendor.title, msg_title, MAIL_TITLE_LENGTH);
+
+		char timestring[23];
+		time_t curtime;
+		time(&curtime);
+		strftime(timestring, 22, "%m/%d/%Y, %H:%M", localtime(&curtime));
+
+		std::ostringstream stream;
+		stream << msg_txt(nullptr,1848) << " : " << timestring << "\r\n\r\n";
+
+		char body[CHAT_SIZE_MAX];
+
+		int32 j_idx;
+
+		int32 sell_total = 0;
+
+		// loop and process for each bought items
+		for(int32 n_idx = 0; n_idx < count; n_idx++){
+			int16 v_amount = *(uint16*)(data + 4*n_idx + 0);
+			int16 v_idx    = *(uint16*)(data + 4*n_idx + 2);
+
+			v_idx -= 2; // offset adjustment (client says that the first cart position is 2)
+
+			ARR_FIND( 0, vsd->vend_num, j_idx, vsd->vending[j_idx].index == v_idx );
+			if( j_idx == vsd->vend_num )
+				return; //picked non-existing item
+			else
+				vend_list[n_idx] = j_idx;
+
+			std::shared_ptr<item_data> itm = item_db.find(vsd->cart.u.items_cart[v_idx].nameid);
+
+			int32 sell_amount = vsd->vending[j_idx].value * v_amount;
+
+			sell_total += sell_amount;
+
+			memset(body, 0, sizeof(body));
+			sprintf(body, msg_txt(sd, 1846), itm->ename.c_str(), id->ename.c_str(), vsd->vending[j_idx].value);
+
+			stream << body << "\r\n";
+
+			memset(body, 0, sizeof(body));
+			sprintf(body, msg_txt(sd, 1849), v_amount, sell_amount);
+
+			stream << body << "\r\n\r\n";
+		}
+
+		memset(body, 0, sizeof(body));
+		sprintf(body, msg_txt(sd, 1850), sell_total, id->ename.c_str());
+		stream << body;
+
+		safestrncpy( msg_vendor.body, const_cast<char*>(stream.str().c_str()), MAIL_BODY_LENGTH );
+		intif_Mail_send(0, &msg_vendor);
+
+	}else{
+		pc_payzeny(sd, (int32)z, LOG_TYPE_VENDING, vsd->status.char_id);
+		achievement_update_objective(sd, AG_SPEND_ZENY, 1, (int32)z);
+		z = vending_calc_tax(sd, z);
+		pc_getzeny(vsd, (int32)z, LOG_TYPE_VENDING, sd->status.char_id);
+	}
 
 	for( i = 0; i < count; i++ ) {
 		int16 amount = *(uint16*)(data + 4*i + 0);
@@ -240,8 +373,13 @@ void vending_purchasereq(map_session_data* sd, int32 aid, int32 uid, const uint8
 		}
 
 		pc_cart_delitem(vsd, idx, amount, 0, LOG_TYPE_VENDING);
-		z = vending_calc_tax(sd, z);
-		clif_vendingreport( *vsd, idx, amount, sd->status.char_id, (int32)z );
+
+		if(extended){
+			clif_vendingreport(*vsd, idx, amount, sd->status.char_id, x);
+		}else{
+			z = vending_calc_tax(sd, z);
+			clif_vendingreport(*vsd, idx, amount, sd->status.char_id, (int32)z);
+		}
 
 		//print buyer's name
 		if( battle_config.buyer_name ) {
@@ -393,9 +531,9 @@ int8 vending_openvending( map_session_data& sd, const char* message, const uint8
 	
 	Sql_EscapeString( mmysql_handle, message_sql, sd.message );
 
-	if( Sql_Query( mmysql_handle, "INSERT INTO `%s`(`id`, `account_id`, `char_id`, `sex`, `map`, `x`, `y`, `title`, `autotrade`, `body_direction`, `head_direction`, `sit`) "
-		"VALUES( %d, %d, %d, '%c', '%s', %d, %d, '%s', %d, '%d', '%d', '%d' );",
-		vendings_table, sd.vender_id, sd.status.account_id, sd.status.char_id, sd.status.sex == SEX_FEMALE ? 'F' : 'M', map_getmapdata(sd.m)->name, sd.x, sd.y, message_sql, sd.state.autotrade, at ? at->dir : sd.ud.dir, at ? at->head_dir : sd.head_dir, at ? at->sit : pc_issit(&sd) ) != SQL_SUCCESS ) {
+	if( Sql_Query( mmysql_handle, "INSERT INTO `%s`(`id`, `account_id`, `char_id`, `sex`, `map`, `x`, `y`, `title`, `autotrade`, `body_direction`, `head_direction`, `sit`, `vending_item`) "
+		"VALUES( %d, %d, %d, '%c', '%s', %d, %d, '%s', %d, '%d', '%d', '%d', '%lld' );",
+		vendings_table, sd.vender_id, sd.status.account_id, sd.status.char_id, sd.status.sex == SEX_FEMALE ? 'F' : 'M', map_getmapdata(sd.m)->name, sd.x, sd.y, message_sql, sd.state.autotrade, at ? at->dir : sd.ud.dir, at ? at->head_dir : sd.head_dir, at ? at->sit : pc_issit(&sd), sd.state.vending_item ) != SQL_SUCCESS ) {
 		Sql_ShowDebug(mmysql_handle);
 	}
 
@@ -411,6 +549,13 @@ int8 vending_openvending( map_session_data& sd, const char* message, const uint8
 
 	clif_openvending( sd );
 	clif_showvendingboard( sd );
+
+	if(sd.state.open_extended_vending){
+		char output[CHAT_SIZE_MAX];
+		std::shared_ptr<item_data> item = item_db.find(sd.state.vending_item);		
+		sprintf(output, msg_txt(nullptr, 1842), item->ename.c_str());
+		clif_broadcast(&sd, output, strlen(output) + 1, BC_BLUE, SELF);
+	}
 
 	idb_put(vending_db, sd.status.char_id, &sd);
 
@@ -596,7 +741,7 @@ void do_init_vending_autotrade(void)
 {
 	if (battle_config.feature_autotrade) {
 		if (Sql_Query(mmysql_handle,
-			"SELECT `id`, `account_id`, `char_id`, `sex`, `title`, `body_direction`, `head_direction`, `sit` "
+			"SELECT `id`, `account_id`, `char_id`, `sex`, `title`, `body_direction`, `head_direction`, `sit`, `vending_item` "
 			"FROM `%s` "
 			"WHERE `autotrade` = 1 AND (SELECT COUNT(`vending_id`) FROM `%s` WHERE `vending_id` = `id`) > 0 "
 			"ORDER BY `id`;",
@@ -616,6 +761,8 @@ void do_init_vending_autotrade(void)
 				size_t len;
 				char* data;
 
+				t_itemid vending_item = 0;
+
 				at = nullptr;
 				CREATE(at, struct s_autotrader, 1);
 				Sql_GetData(mmysql_handle, 0, &data, nullptr); at->id = atoi(data);
@@ -626,6 +773,7 @@ void do_init_vending_autotrade(void)
 				Sql_GetData(mmysql_handle, 5, &data, nullptr); at->dir = atoi(data);
 				Sql_GetData(mmysql_handle, 6, &data, nullptr); at->head_dir = atoi(data);
 				Sql_GetData(mmysql_handle, 7, &data, nullptr); at->sit = atoi(data);
+				Sql_GetData(mmysql_handle, 8, &data, nullptr); vending_item = atoi(data);
 				at->count = 0;
 
 				if (battle_config.feature_autotrade_direction >= 0)
@@ -640,6 +788,7 @@ void do_init_vending_autotrade(void)
 				new (at->sd) map_session_data();
 				pc_setnewpc(at->sd, at->account_id, at->char_id, 0, gettick(), at->sex, 0);
 				at->sd->state.autotrade = 1|2;
+				at->sd->state.vending_item = vending_item;
 				if (battle_config.autotrade_monsterignore)
 					at->sd->state.block_action |= PCBLOCK_IMMUNE;
 				else

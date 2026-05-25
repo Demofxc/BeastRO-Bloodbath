@@ -1,16 +1,16 @@
-ultia,185,155,5	script	ลานประลอง	65,{
-	cutin "4job_robin_01.png", 2;
-    mes "^738C5A[ สนามประลอง ]^000000";
-	mes "สวัสดีท่าน : ^738C5A "+strcharinfo(0)+" ^000000"; 
+ultia,185,155,5	script	ลานประลอง	10573,{
+	//cutin "4job_robin_01.png", 2;
+    mes "^FF0000[ PVP Arena ]^000000";
+	mes "สวัสดีท่าน : ^FF0000 "+strcharinfo(0)+" ^000000"; 
 	mes "ต้องการเข้าสู่สนามประลอง"; 
 	mes "เพื่อทดสอบฝีมือของคุณไหม?"; 
 	next;
-	cutin "4job_robin_02.png", 2;
+	//cutin "4job_robin_02.png", 2;
 	switch (select(
-		"^738C5A•^000000 Izlude  [ "+getmapusers("pvp_y_1-2")+" ] คน.",
-		"^738C5A•^000000 Arena DM  [ "+getmapusers("hallow01")+" ] คน.",
-		"^738C5A•^000000 Champion  [ "+getmapusers("pvp_n_2-3")+" ] คน.",
-		"^738C5A•^000000 Champion & Scholar  [ "+getmapusers("pvp_n_2-5")+" ] คน."))
+		"[^FF0000#^000000]^000000 Izlude  [ "+getmapusers("pvp_y_1-2")+" ] คน.",
+		"[^FF0000#^000000]^000000 Arena DM  [ "+getmapusers("hallow01")+" ] คน.",
+		"[^FF0000#^000000]^000000 Champion  [ "+getmapusers("pvp_n_2-3")+" ] คน.",
+		"[^FF0000#^000000]^000000 Champion & Scholar  [ "+getmapusers("pvp_n_2-5")+" ] คน."))
 	{
 	case 1:
 		cutin " ", 255;

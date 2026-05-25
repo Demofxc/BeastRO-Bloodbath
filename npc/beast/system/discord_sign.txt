@@ -1,0 +1,40 @@
+//============================================================
+// Discord Board NPC - Clickable Link
+// ป้าย Discord แบบกดลิงก์ได้จริง
+//============================================================
+
+new_1-4,16,179,5	script	เข้าร่วมกลุ่มพูดคุย!!#discord_board	857,{
+
+	mes "^7289DA[Discord Invite]^000000";
+	mes "เข้าร่วม Discord Server ของเรา";
+	mes "เพื่อติดตามข่าวสาร กิจกรรม แจ้งปัญหา และพูดคุยกับผู้เล่นอื่น";
+	next;
+
+	mes "^7289DA[Discord Invite]^000000";
+	mes "กดที่ข้อความด้านล่างเพื่อเข้าร่วม";
+	mes "";
+	mes "<URL>คลิกที่นี่เพื่อเข้า Discord<INFO>https://discord.gg/EvxH4cUrDU</INFO></URL>";
+	next;
+
+	mes "^7289DA[คำแนะนำ]^000000";
+	mes "หลังเข้าร่วม Discord แล้ว";
+	mes "กรุณาอ่านกฎของเซิร์ฟเวอร์ก่อนใช้งาน";
+	mes " ";
+	mes "หากกดลิงก์ไม่ได้ ให้คัดลอกลิงก์จากช่องแชทแทน";
+	dispbottom "[ระบบ] Discord Server: https://discord.gg/EvxH4cUrDU";
+	close;
+
+OnPCLoadMapEvent:
+	showevent QTYPE_CLICKME,QMARK_GREEN;
+
+OnInit:
+	setunitdata (getnpcid(0), UNPC_GROUP_ID, 125); 
+    setunittitle(getnpcid(0), "Discord Invite");  //คลาย ๆ ชื่อกิลด์	
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
+while(1) {
+	showscript "ช่องทางการติดตามข่าวสารและพูดคุย!!",getnpcid(0);
+    sleep 1000;
+}
+end;
+}

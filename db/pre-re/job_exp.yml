@@ -360,7 +360,14 @@ Body:
       Clown: true
       Gypsy: true
       Paladin2: true
-    MaxBaseLevel: 99
+    MaxBaseLevel: 120
+    MaxStats:
+      Str: 130
+      Agi: 130
+      Vit: 130
+      Int: 130
+      Dex: 130
+      Luk: 130
     BaseExp:
       - Level: 1
         Exp: 10
@@ -559,7 +566,49 @@ Body:
       - Level: 98
         Exp: 343210000
       - Level: 99
-        Exp: 99999999
+        Exp: 583046239
+      - Level: 100
+        Exp: 750000000
+      - Level: 101
+        Exp: 652274680
+      - Level: 102
+        Exp: 722500324
+      - Level: 103
+        Exp: 793723171
+      - Level: 104
+        Exp: 865943221
+      - Level: 105
+        Exp: 939160474
+      - Level: 106
+        Exp: 1013374929
+      - Level: 107
+        Exp: 1088586587
+      - Level: 108
+        Exp: 1164795448
+      - Level: 109
+        Exp: 1242001512
+      - Level: 110
+        Exp: 1320204778
+      - Level: 111
+        Exp: 1399405248
+      - Level: 112
+        Exp: 1479602920
+      - Level: 113
+        Exp: 1560797795
+      - Level: 114
+        Exp: 1642989872
+      - Level: 115
+        Exp: 1726179153
+      - Level: 116
+        Exp: 1810366636
+      - Level: 117
+        Exp: 1895549322
+      - Level: 118
+        Exp: 1981730211
+      - Level: 119
+        Exp: 2068908302
+      - Level: 120
+        Exp: 2157083598
   - Jobs:
       Novice: true
       Baby: true
@@ -984,7 +1033,7 @@ Body:
       Clown: true
       Gypsy: true
       Paladin2: true
-    MaxJobLevel: 70
+    MaxJobLevel: 75
     JobExp:
       - Level: 1
         Exp: 288
@@ -1125,7 +1174,17 @@ Body:
       - Level: 69
         Exp: 213852071
       - Level: 70
-        Exp: 999999999
+        Exp: 293852071
+      - Level: 71
+        Exp: 382007692
+      - Level: 72
+        Exp: 496610000
+      - Level: 73
+        Exp: 645593000
+      - Level: 74
+        Exp: 839271000
+      - Level: 75
+        Exp: 1091052000
   - Jobs:
       Gunslinger: true
       Ninja: true

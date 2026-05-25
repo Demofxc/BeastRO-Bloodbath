@@ -1,19 +1,19 @@
 -	script	Rental	-1,{
 
-mes "^738C5A[ เช่าเป็ด/นก/รถเข็น ]^000000";
-mes "สวัสดีท่าน : ^738C5A "+strcharinfo(0)+" ^000000"; 
+mes "^FF0000[ Rental Service ]^000000";
+mes "สวัสดีท่าน : ^FF0000 "+strcharinfo(0)+" ^000000"; 
 mes "ต้องการให้ฉันช่วยเหลืออะไร ?";
 next;
 menu 
-"^738C5A•^000000 เช่าเป็ด/นก/รถเข็น",Rental;
+"^FF0000[#]^000000 เช่าเป็ด/นก/รถเข็น",Rental;
 
 Rental:
-	mes "^738C5A[ เช่าเป็ด/นก/รถเข็น ]^000000";
+	mes "^FF0000[ Rental Service ]^000000";
 	mes "เลือกสิ่งที่ต้องการเช่าค่ะ";
 	next;
-	switch (select("^738C5A•^000000 Peco Peco","^738C5A•^000000 Falcon","^738C5A•^000000 Cart")) {
+	switch (select("^FF0000[#]^000000 Peco Peco","^FF0000[#]^000000 Falcon","^FF0000[#]^000000 Cart")) {
 	case 1:
-		mes "^738C5A[ เช่าเป็ด/นก/รถเข็น ]^000000";
+		mes "^FF0000[ Rental Service ]^000000";
 		if (checkriding()) {
 			mes "คุณมี Peco Peco อยู่แล้ว";
 			close2;
@@ -27,7 +27,7 @@ Rental:
 		}
 	break;
 	case 2:
-		mes "^738C5A[ เช่าเป็ด/นก/รถเข็น ]^000000";
+		mes "^FF0000[ Rental Service ]^000000";
 		if (checkfalcon()) {
 			mes "คุณมี Falcon อยู่แล้ว";
 			close2;
@@ -41,7 +41,7 @@ Rental:
 		}
 	break;
 	case 3:
-		mes "^738C5A[ เช่าเป็ด/นก/รถเข็น ]^000000";
+		mes "^FF0000[ Rental Service ]^000000";
 		if (checkcart()) {
 			mes "คุณมี Cart อยู่แล้ว";
 			close2;
@@ -63,6 +63,7 @@ OnInit:
 //waitingroom "เช่านก/เป็ด/รถเข็น  ", 0;
 	setunitdata (getnpcid(0), UNPC_GROUP_ID, 111); 
     setunittitle(getnpcid(0), "Rental Service");  //คลาย ๆ ชื่อกิลด์	
+	waitingroom "[#] เช่าเป็ด/นก/รถเข็น", 0;
 	.@npc_id = getnpcid(0);
 	hateffect 263, true, .@npc_id;
 end;

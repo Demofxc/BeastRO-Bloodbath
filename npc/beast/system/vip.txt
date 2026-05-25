@@ -4,13 +4,13 @@ OnPCLoginEvent:
 		.@remain = vip_status(VIP_STATUS_REMAINING); // seconds
 
 		dispbottom "Remaining VIP duration: " + Time2Str(vip_status(VIP_STATUS_REMAINING) + gettimetick(2));
-		sc_start SC_VIPSTATE, .@remain * 1000, 1;
+		sc_start SC_VIPSTATUS, .@remain * 1000, 1;
 		end;
 	}
 
 OnPCLogoutEvent:
 	if (vip_status(1)) {
-		sc_end SC_VIPSTATE; // remove the buff to update the timer on login
+		sc_end SC_VIPSTATUS; // remove the buff to update the timer on login
 	}
 	end;
 }

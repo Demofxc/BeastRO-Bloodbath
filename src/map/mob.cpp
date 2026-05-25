@@ -57,20 +57,20 @@ static std::string tis620_to_utf8(const char* s) {
     for (const unsigned char* p = (const unsigned char*)s; *p; ++p) {
         unsigned char c = *p;
         if (c < 0x80) {
-            out.push_back(c); // ASCII ?ÿÿ???ÿÿ
+            out.push_back(c); // ASCII ?ï¿½ï¿½???ï¿½ï¿½
         } else if (c >= 0xA1 && c <= 0xFB) {
             unsigned cp = 0x0E01 + (c - 0xA1); // Unicode Thai block U+0E01-U+0E5B
             out.push_back(0xE0 | ((cp >> 12) & 0x0F));
             out.push_back(0x80 | ((cp >> 6) & 0x3F));
             out.push_back(0x80 | (cp & 0x3F));
         } else {
-            out.push_back('?'); // ????ÿÿ???? TIS620 range
+            out.push_back('?'); // ????ï¿½ï¿½???? TIS620 range
         }
     }
     return out;
 }
 
-// escape ÿÿ?ÿÿÿÿ?? JSON + ???? TIS620 ???? UTF8 ??ÿÿ?
+// escape ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½?? JSON + ???? TIS620 ???? UTF8 ??ï¿½ï¿½?
 static std::string json_escape_tis620(const char* s) {
     std::string utf8 = tis620_to_utf8(s);
     std::string out;
@@ -94,7 +94,7 @@ static std::string json_escape_tis620(const char* s) {
     return out;
 }
 
-// --- escape JSON ÿÿ??????? UTF-8 ???ÿÿ ---
+// --- escape JSON ï¿½ï¿½??????? UTF-8 ???ï¿½ï¿½ ---
 static std::string json_escape_u8(const std::string& in){
     std::string out; out.reserve(in.size()+16);
     for (unsigned char c: in){
@@ -114,7 +114,7 @@ static std::string json_escape_u8(const std::string& in){
     return out;
 }
 
-// --- JSON escape ÿÿ??????? UTF-8 ???ÿÿ ---
+// --- JSON escape ï¿½ï¿½??????? UTF-8 ???ï¿½ï¿½ ---
 static std::string json_escape(const std::string& in_utf8) {
     std::string out; out.reserve(in_utf8.size()+16);
     for (unsigned char c : in_utf8) {
@@ -135,17 +135,17 @@ static std::string json_escape(const std::string& in_utf8) {
     }
     return out;
 }
-// ????ÿÿ?ÿÿÿÿ?ÿÿ??ÿÿ??ÿÿ?? Discord (title<=256, desc<=4096)
+// ????ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½??ï¿½ï¿½??ï¿½ï¿½?? Discord (title<=256, desc<=4096)
 static std::string clamp_len(const std::string& s, size_t maxlen){
     if (s.size()<=maxlen) return s;
     if (maxlen<3) return s.substr(0,maxlen);
     return s.substr(0,maxlen-3)+"...";
 }
 
-// utility ?ÿÿ??????ÿÿ???????ÿÿ?ÿÿ?? UTC
+// utility ?ï¿½ï¿½??????ï¿½ï¿½???????ï¿½ï¿½?ï¿½ï¿½?? UTC
 static std::string now_ymdhms() {
     time_t t = time(nullptr);
-    t += 7 * 3600; // ?ÿÿ? 7 ???ÿÿ?ÿÿ? (GMT+7)
+    t += 7 * 3600; // ?ï¿½ï¿½? 7 ???ï¿½ï¿½?ï¿½ï¿½? (GMT+7)
 
     tm g;
 #if defined(_WIN32)
@@ -159,7 +159,7 @@ static std::string now_ymdhms() {
     return std::string(buf);
 }
 #ifdef HAVE_CURL
-// ÿÿ????ÿÿ?ÿÿ?ÿÿ?ÿÿÿÿÿÿ?? (content) ????? Discord
+// ï¿½ï¿½????ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?? (content) ????? Discord
 static long discord_send_content(const char* url, const char* username_tis620, const char* content_tis620){
     if (!url || !*url) return -1;
     std::string user = json_escape_u8(tis620_to_utf8(username_tis620 ? username_tis620 : "Drop Notifier"));
@@ -191,7 +191,7 @@ static long discord_send_mvp_embed(const char* url,
                                    const char* image_url_opt /*nullable*/) {
     if (!url || !*url) return -1;
 
-    // ???? TIS620 -> UTF8 ???ÿÿ escape
+    // ???? TIS620 -> UTF8 ???ï¿½ï¿½ escape
     std::string user  = json_escape(tis620_to_utf8(username_tis620 ? username_tis620 : "rAthena"));
     std::string title = json_escape(clamp_len(tis620_to_utf8(title_tis620 ? title_tis620 : ""), 256));
     std::string desc  = json_escape(clamp_len(tis620_to_utf8(desc_tis620  ? desc_tis620  : ""), 4096));
@@ -203,14 +203,14 @@ static long discord_send_mvp_embed(const char* url,
     payload += "\"description\":\""+desc+"\",";
     payload += "\"color\":"+std::to_string(color_decimal);
     if (image_url_opt && *image_url_opt){
-        // URL ???????? ASCII/UTF-8 ??? escape ?ÿÿ?????ÿÿÿÿ?ÿÿ???ÿÿÿÿ???ÿÿÿÿ
+        // URL ???????? ASCII/UTF-8 ??? escape ?ï¿½ï¿½?????ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½???ï¿½ï¿½ï¿½ï¿½???ï¿½ï¿½ï¿½ï¿½
         std::string img = json_escape(image_url_opt);
         payload += ",\"image\":{\"url\":\""+img+"\"}";
     }
     payload += "}]";
     payload += "}";
 
-    // (?????) ?ÿÿ JSON ???ÿÿ?? 50109
+    // (?????) ?ï¿½ï¿½ JSON ???ï¿½ï¿½?? 50109
     // ShowDebug("Discord MVP JSON: %s\n", payload.c_str());
 
     CURL* curl = curl_easy_init();
@@ -421,10 +421,12 @@ TIMER_FUNC(mvptomb_delayspawn){
  * @param time: time of mob's death
  * @author [GreenBox]
  */
-void mvptomb_create(struct mob_data *md, char *killer, time_t time)
+void mvptomb_create(mob_data *md, char *killer, time_t time, uint32 killer_char_id, int32 killer_guild_id, const char *killer_guild_name)
 {
 	struct npc_data *nd;
-
+	std::map<int32, s_mvp_tomb_damage> guild_damage_map;
+	std::vector<s_mvp_tomb_damage> player_list;
+	
 	if ( md->tomb_nid )
 		mvptomb_destroy(md);
 
@@ -448,6 +450,7 @@ void mvptomb_create(struct mob_data *md, char *killer, time_t time)
 	nd->u.tomb.md = md;
 	nd->u.tomb.kill_time = time;
 	nd->u.tomb.spawn_timer = INVALID_TIMER;
+	nd->u.tomb.killer_char_id = killer_char_id;
 
 	nd->dynamicnpc.owner_char_id = 0;
 	nd->dynamicnpc.last_interaction = 0;
@@ -457,7 +460,132 @@ void mvptomb_create(struct mob_data *md, char *killer, time_t time)
 		safestrncpy(nd->u.tomb.killer_name, killer, NAME_LENGTH);
 	else
 		nd->u.tomb.killer_name[0] = '\0';
+	/**
+	* Author: [royrdev]
+	* Enhanced MVP Tomb System
+	**/
+	nd->u.tomb.mob_id = md->mob_id;
+	if( md->spawn ) {
+		nd->u.tomb.respawn_time = md->spawn->delay1 + md->spawn->delay2;
+	}
+	else {
+		nd->u.tomb.respawn_time = 0;
+	}
 
+	nd->u.tomb.data = (s_mvp_tomb_data*)aCalloc(1, sizeof(s_mvp_tomb_data));
+	memset(nd->u.tomb.data, 0, sizeof(s_mvp_tomb_data));
+
+	s_mvp_kill_history *kill_entry = &nd->u.tomb.data->kill_history[0];
+	kill_entry->char_id = killer_char_id;
+	if( killer )
+		safestrncpy(kill_entry->killer_name, killer, NAME_LENGTH);
+	else
+		kill_entry->killer_name[0] = '\0';
+	kill_entry->kill_time = time;
+	kill_entry->guild_id = killer_guild_id;
+	if( killer_guild_name)
+		safestrncpy(kill_entry->guild_name, killer_guild_name, NAME_LENGTH);
+	else
+		kill_entry->guild_name[0] = '\0';
+	nd->u.tomb.data->kill_history_count = 1;
+
+	for( const s_dmglog& entry : md->dmglog ) {
+		if( entry.flag == MDLF_SELF)
+			continue;
+
+		nd->u.tomb.data->total_damage += entry.dmg;
+		map_session_data* tsd = map_charid2sd(entry.id);
+
+		s_mvp_tomb_damage pdmg = {};
+		pdmg.char_id = entry.id;
+		pdmg.damage = entry.dmg;
+		pdmg.guild_id = 0;
+		pdmg.guild_name[0] = '\0';
+
+		if( tsd != nullptr ) {
+			safestrncpy(pdmg.name, tsd->status.name, NAME_LENGTH);
+			pdmg.guild_id = tsd->status.guild_id;
+			if( pdmg.guild_id > 0 ) {
+				std::shared_ptr<MapGuild> g = guild_search(pdmg.guild_id);
+				if( g != nullptr ) {
+					safestrncpy(pdmg.guild_name, g->guild.name, NAME_LENGTH);
+				}
+			}
+		}
+		else {
+			snprintf(pdmg.name, NAME_LENGTH, "Offline#%u", entry.id);
+		}
+		player_list.push_back(pdmg);
+		if( pdmg.guild_id > 0 ) {
+			auto it = guild_damage_map.find(pdmg.guild_id);
+			if( it != guild_damage_map.end() ) {
+				it->second.damage += entry.dmg;
+			}
+			else {
+				s_mvp_tomb_damage gdmg = {};
+				gdmg.guild_id = pdmg.guild_id;
+				safestrncpy(gdmg.guild_name, pdmg.guild_name, NAME_LENGTH);
+				gdmg.damage = entry.dmg;
+				guild_damage_map[pdmg.guild_id] = gdmg;
+			}
+		}
+	}
+	std::sort(player_list.begin(), player_list.end(), 
+		[](const s_mvp_tomb_damage& a, const s_mvp_tomb_damage& b ) {
+			return a.damage > b.damage;
+		});
+
+	for( size_t i = 0; i < player_list.size() && i < MVP_TOMB_MAX_PLAYERS; i++ ) {
+		nd->u.tomb.data->top_players[i] = player_list[i];
+		nd->u.tomb.data->player_count++;
+	}
+	std::vector<s_mvp_tomb_damage> guild_list;
+	for( auto& pair : guild_damage_map ) {
+		guild_list.push_back(pair.second);
+	}
+	std::sort(guild_list.begin(), guild_list.end(),
+		[](const s_mvp_tomb_damage& a, const s_mvp_tomb_damage& b ) {
+			return a.damage > b.damage;
+		});
+	for( size_t i = 0; i < guild_list.size() && i < MVP_TOMB_MAX_GUILDS; i++ ) {
+		nd->u.tomb.data->top_guilds[i] = guild_list[i];
+		nd->u.tomb.data->guild_count++;
+	}
+	for( const auto& drop : md->db->mvpitem ) {
+		if( drop == nullptr || drop->nameid == 0 )
+			continue;
+		if( nd->u.tomb.data->drop_count >= MVP_TOMB_MAX_DROPS)
+			break;
+		s_mvp_tomb_drop *tdrop = &nd->u.tomb.data->drops[nd->u.tomb.data->drop_count];
+		tdrop->nameid = drop->nameid;
+		tdrop->rate = drop->rate;
+		tdrop->is_mvp_drop = true;
+		std::shared_ptr<item_data> id = item_db.find(drop->nameid);
+		if( id != nullptr )
+			safestrncpy(tdrop->name, id->ename.c_str(), ITEM_NAME_LENGTH);
+		else
+			snprintf(tdrop->name, ITEM_NAME_LENGTH, "Unknown#%u", drop->nameid);
+		nd->u.tomb.data->drop_count++;
+	}
+	for( const auto& drop : md->db->dropitem ) {
+		if( drop == nullptr || drop->nameid == 0 )
+			continue;
+
+		if( nd->u.tomb.data->drop_count >= MVP_TOMB_MAX_DROPS )
+			break;
+
+		s_mvp_tomb_drop *tdrop = &nd->u.tomb.data->drops[nd->u.tomb.data->drop_count];
+		tdrop->nameid = drop->nameid;
+		tdrop->rate = drop->rate;
+		tdrop->is_mvp_drop = false;
+		std::shared_ptr<item_data> id = item_db.find(drop->nameid);
+
+		if( id != nullptr )
+			safestrncpy(tdrop->name, id->ename.c_str(), ITEM_NAME_LENGTH);
+		else
+			snprintf(tdrop->name, ITEM_NAME_LENGTH, "Unknown#%u", drop->nameid);
+		nd->u.tomb.data->drop_count++;
+	}
 	map_addnpc(nd->m, nd);
 	if(map_addblock(nd))
 		return;
@@ -475,6 +603,10 @@ void mvptomb_destroy(struct mob_data *md) {
 	struct npc_data *nd;
 
 	if ( (nd = map_id2nd(md->tomb_nid)) ) {
+		if( nd->u.tomb.data != nullptr ) {
+			aFree(nd->u.tomb.data);
+			nd->u.tomb.data = nullptr;
+		}
 		int32 i;
 		struct map_data *mapdata = map_getmapdata(nd->m);
 
@@ -1293,10 +1425,10 @@ TIMER_FUNC(mob_delayspawn) {
 		if (md->spawn->state.boss) {
 			const char* mapname = map_mapid2mapname(md->spawn->m);
 
-			// --- ?ÿÿÿÿ??ÿÿ????ÿÿ ---
+			// --- ?ï¿½ï¿½ï¿½ï¿½??ï¿½ï¿½????ï¿½ï¿½ ---
 			char announce_msg[256];
 			std::snprintf(announce_msg, sizeof(announce_msg),
-				"[MVP Spawn]: %s ¿×é¹¤×¹ªÕ¾ÍÕ¡¤ÃÑé§·Õèá¼¹·Õè %s ÃÕºä»¡Ó¨Ñ´¾Ç¡ÁÑ¹«Ð!",
+				"[MVP Spawn]: %s ï¿½ï¿½é¹¤×¹ï¿½Õ¾ï¿½Õ¡ï¿½ï¿½ï¿½é§·ï¿½ï¿½á¼¹ï¿½ï¿½ï¿½ %s ï¿½Õºä»¡Ó¨Ñ´ï¿½Ç¡ï¿½Ñ¹ï¿½ï¿½!",
 				md->name, mapname);
 			clif_broadcast(md, announce_msg, (int)std::strlen(announce_msg) + 1, BC_DEFAULT, ALL_CLIENT);
 
@@ -1305,7 +1437,7 @@ TIMER_FUNC(mob_delayspawn) {
     		job.url   = "https://discord.com/api/webhooks/1421372413396123648/bcYylEN61JFaBc7evsRf8_hzChjETs3rnmvg9-CLi5NJC4d6qaHFO5yLztOjIUjjO0nS";
     		job.user  = "BeastRO Announce";
     		job.title = "MVP Spawned";
-    		job.desc  = std::string(md->name) + " ä´éà¡Ô´¢Öé¹·Õèá¼¹·Õè " + map_mapid2mapname(md->spawn->m);
+    		job.desc  = std::string(md->name) + " ï¿½ï¿½ï¿½Ô´ï¿½ï¿½é¹·ï¿½ï¿½á¼¹ï¿½ï¿½ï¿½ " + map_mapid2mapname(md->spawn->m);
     		job.image = "https://file5s.ratemyserver.net/mobs/" + std::to_string(md->mob_id) + ".gif";
     		job.color = 0x00FF00;
 
@@ -1436,7 +1568,7 @@ int32 mob_spawn (struct mob_data *md)
 	md->move_fail_count = 0;
 	md->ud.state.attack_continue = 0;
 	md->ud.target_to = 0;
-	md->ud.dir = 0;
+	md->ud.dir = 4;
 	if( md->spawn_timer != INVALID_TIMER ) {
 		delete_timer(md->spawn_timer, mob_delayspawn);
 		md->spawn_timer = INVALID_TIMER;
@@ -3179,7 +3311,7 @@ map_session_data* mob_data::get_mvp_player() {
 
 	return mvp_sd;
 }
-// ÿ?ÿÿÿÿÿÿ
+// ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 std::string now_ymdhms_gmt7() {
     time_t raw = time(nullptr);
     raw += 7 * 3600;
@@ -3616,7 +3748,7 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 				//MSG: "'%s' won %s's %s (chance: %0.02f%%)"
 				intif_broadcast(message, strlen(message) + 1, BC_DEFAULT);
 
-			// --- Timestamp Ã¤Â·Ãÿ (GMT+7) ---
+			// --- Timestamp Ã¤Â·ï¿½ï¿½ (GMT+7) ---
 			time_t raw = time(nullptr);
 			raw += 7 * 3600; // shift +7h
 			tm t;
@@ -3628,14 +3760,14 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 			char timestr[64];
 			strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", &t);
 					
-    			// --- àµÃÕÂÁ webhook ---
+    			// --- ï¿½ï¿½ï¿½ï¿½ï¿½ webhook ---
     			WBJob job;
     			job.type  = WBType::DROP_EMBED;
-    			job.url   = "https://discord.com/api/webhooks/1421372464189149266/vzWJad4HTuxVzZQ4VnBPZgNCILNYrOo8DpHQxT6Mk3zAnUCTgRdXZUqOgifhFV74njL3"; // webhook ¢Í§¤Ø³
+    			job.url   = "https://discord.com/api/webhooks/1421372464189149266/vzWJad4HTuxVzZQ4VnBPZgNCILNYrOo8DpHQxT6Mk3zAnUCTgRdXZUqOgifhFV74njL3"; // webhook ï¿½Í§ï¿½Ø³
     			job.user  = "BeastRO Announce";
     			job.title = "";
 
-    			// ÃÒÂÅÐàÍÕÂ´ embed
+    			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ embed
     			char desc[512];
     			snprintf(desc, sizeof(desc),
     			    "**Player:** %s\n"
@@ -3649,26 +3781,26 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
     			    it->ename.c_str(),
     			    it->nameid,
     			    (float)drop_rate / 100.0f,
-    			    now_ymdhms_gmt7().c_str()   // helper ¤×¹àÇÅÒä·Â
+    			    now_ymdhms_gmt7().c_str()   // helper ï¿½×¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     			);
     			job.desc  = desc;
     			job.color = 0xFF0000; // á´§
 			
-				// ÃÙ»äÍà·çÁ: ¡ÒÃì´ãªéÃÙ»¨Ò¡ Divine-Pride, Í×è¹ æ ãªé RMS
+				// ï¿½Ù»ï¿½ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù»ï¿½Ò¡ Divine-Pride, ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ RMS
 				char img_url[256];
 				if (it && it->type == IT_CARD) {
-				    // ¡ÒÃì´ (àªè¹ 4302) ? https://static.divine-pride.net/images/items/cards/4302.png
+				    // ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ 4302) ? https://static.divine-pride.net/images/items/cards/4302.png
 				    snprintf(img_url, sizeof(img_url),
 				        "https://static.divine-pride.net/images/items/cards/%d.png", it->nameid);
 				} else {
-				    // äÍà·çÁ·ÑèÇä» ? RMS (large)
+				    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ? RMS (large)
 				    snprintf(img_url, sizeof(img_url),
 				        "https://file5s.ratemyserver.net/items/large/%d.gif", it->nameid);
 				}
 				job.image = img_url;
 
 			
-    			// Êè§ async
+    			// ï¿½ï¿½ async
     			webhook_async_enqueue(job);
 			}
 			// Announce first, or else ditem will be freed. [Lance]
@@ -3950,9 +4082,38 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 	}
 
 	// MvP tomb [GreenBox]
-	if (battle_config.mvp_tomb_enabled && md->spawn->state.boss && map_getmapflag(md->m, MF_NOTOMB) != 1)
-		mvptomb_create(md, mvp_sd != nullptr ? mvp_sd->status.name : (first_sd != nullptr ? first_sd->status.name : nullptr), time(nullptr));
+	if ( battle_config.mvp_tomb_enabled && md->spawn->state.boss && map_getmapflag(md->m, MF_NOTOMB) != 1) {
+		/**
+		* Author: [royrdev]
+		* Enhanced MVP Tomb System
+		**/
+		char* killer_name = nullptr;
+		uint32 killer_char_id = 0;
+		int32 killer_guild_id = 0;
+		const char* killer_guild_name = nullptr;
 
+		if( mvp_sd != nullptr ) {
+			killer_name = mvp_sd->status.name;
+			killer_char_id = mvp_sd->status.char_id;
+			killer_guild_id = mvp_sd->status.guild_id;
+			if( killer_guild_id > 0 ) {
+				std::shared_ptr<MapGuild> g = guild_search(killer_guild_id);
+				if( g != nullptr )
+					killer_guild_name = g->guild.name;
+			}
+		}
+		else if( first_sd != nullptr ) {
+			killer_name = first_sd->status.name;
+			killer_char_id = first_sd->status.char_id;
+			killer_guild_id = first_sd->status.guild_id;
+			if( killer_guild_id > 0 ) {
+				std::shared_ptr<MapGuild> g = guild_search(killer_guild_id);
+				if( g != nullptr )
+					killer_guild_name = g->guild.name;
+			}
+		}
+		mvptomb_create(md, killer_name, time(nullptr), killer_char_id, killer_guild_id, killer_guild_name);
+	}
 	if( !rebirth )
 		mob_setdelayspawn(md); //Set respawning.
 	return 3; //Remove from map.
@@ -4881,6 +5042,7 @@ static bool mob_clone_disabled_skills(uint16 skill_id) {
 	switch (skill_id) {
 		case PR_TURNUNDEAD:
 		case PR_MAGNUS:
+		case PR_AW_MAGNUS:
 			return true;
 	}
 	return false;

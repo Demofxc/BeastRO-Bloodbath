@@ -2132,6 +2132,14 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 
 		if (sc->getSCE(SC_BLADESTOP)) {
 			switch (sc->getSCE(SC_BLADESTOP)->val1) {
+				case 7:
+					if (skill_id == MO_AW_FINGEROFFENSIVE)
+						break;
+					[[fallthrough]];
+				case 6:
+					if (skill_id == MO_AW_EXTREMITYFIST)
+						break;
+					[[fallthrough]];				
 				case 5:
 					if (skill_id == MO_EXTREMITYFIST)
 						break;
@@ -2229,7 +2237,7 @@ bool status_check_skilluse(struct block_list *src, struct block_list *target, ui
 	if (tsc != nullptr && !tsc->empty()) {
 		if(!skill_id && tsc->getSCE(SC_TRICKDEAD))
 			return false;
-		if((skill_id == WZ_STORMGUST || skill_id == WZ_FROSTNOVA || skill_id == NJ_HYOUSYOURAKU || skill_id == NPC_STORMGUST2)
+		if((skill_id == WZ_STORMGUST || skill_id == WZ_AW_STORMGUST || skill_id == WZ_FROSTNOVA || skill_id == NJ_HYOUSYOURAKU || skill_id == NPC_STORMGUST2)
 			&& tsc->getSCE(SC_FREEZE))
 			return false;
 		if(skill_id == PR_LEXAETERNA && (tsc->getSCE(SC_FREEZE) || tsc->getSCE(SC_STONE)))
@@ -2904,9 +2912,8 @@ int32 status_calc_mob_(struct mob_data* md, uint8 opt)
 		struct map_data *mapdata = map_getmapdata(md->m);
 		std::shared_ptr<guild_castle> gc = castle_db.mapname2gc(mapdata->name);
 
-		if (gc == nullptr)
-			ShowError("status_calc_mob: No castle set at map %s\n", mapdata->name);
-		else if(gc->castle_id < 24 || md->mob_id == MOBID_EMPERIUM) {
+		if (gc != nullptr) {
+			if(gc->castle_id < 24 || md->mob_id == MOBID_EMPERIUM) {
 #ifdef RENEWAL
 			status->max_hp += 50 * (gc->defense / 5);
 #else
@@ -2925,7 +2932,7 @@ int32 status_calc_mob_(struct mob_data* md, uint8 opt)
 			status->aspd_rate -= 2 * md->guardian_data->guardup_lv + 3;
 		}
 	}
-
+}
 	if (flag&16 && mbl) { // Max HP setting from Summon Flora/marine Sphere
 		struct unit_data *ud = unit_bl2ud(mbl);
 		// Remove special AI when this is used by regular mobs.
@@ -3358,7 +3365,9 @@ static int32 status_get_spbonus(struct block_list *bl, enum e_status_bonus type)
 			map_session_data *sd = map_id2sd(bl->id);
 			uint8 i;
 
-			if((i = pc_checkskill(sd,HP_MEDITATIO)) > 0)
+			if ((i = pc_checkskill(sd, HP_AW_MEDITATIO)) > 0)
+				bonus += 10 + i; // Lv1~5 => +11~15%
+			else if ((i = pc_checkskill(sd, HP_MEDITATIO)) > 0)
 				bonus += i;
 			if((i = pc_checkskill(sd,HW_SOULDRAIN)) > 0)
 				bonus += 2 * i;
@@ -5308,8 +5317,11 @@ void status_calc_regen(struct block_list *bl, struct status_data *status, struct
 
 	if( sd ) {
 		struct regen_data_sub *sregen;
-		if( (skill=pc_checkskill(sd,HP_MEDITATIO)) > 0 ) {
-			val = regen->sp*(100+3*skill)/100;
+		if ((skill = pc_checkskill(sd, HP_AW_MEDITATIO)) > 0) {
+			val = regen->sp * (100 + 3 * (10 + skill)) / 100; // Lv1~5 => +33~45%
+			regen->sp = cap_value(val, 1, SHRT_MAX);
+		} else if ((skill = pc_checkskill(sd, HP_MEDITATIO)) > 0) {
+			val = regen->sp * (100 + 3 * skill) / 100;
 			regen->sp = cap_value(val, 1, SHRT_MAX);
 		}
 		// Only players have skill/sitting skill regen for now.
@@ -8953,14 +8965,15 @@ const char* status_get_name( block_list& bl ){
 		case BL_MOB: {
 		    auto& md = reinterpret_cast<mob_data&>(bl);
 		
-		    // ºÑ¿à¿ÍÃìáºº static à¾×èÍ¤×¹ pointer ä´é (ÃÐÇÑ§àÃ×èÍ§ thread safety ËÒ¡ÁÕ multi-thread)
+		    // ï¿½Ñ¿ï¿½ï¿½ï¿½ï¿½áºº static ï¿½ï¿½ï¿½Í¤×¹ pointer ï¿½ï¿½ (ï¿½ï¿½ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½Í§ thread safety ï¿½Ò¡ï¿½ï¿½ multi-thread)
 		    static char bottom_line[NAME_LENGTH];
 		    bottom_line[0] = '\0';
 		
-		    // ¶éÒà»Ô´ãËéáÊ´§¸ÒµØ/à¼èÒ ãËé¤×¹ "ºÃÃ·Ñ´ÅèÒ§" à»ç¹¢éÍÁÙÅàÊÃÔÁ
+		    // ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ï¿½Òµï¿½/ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×¹ "ï¿½ï¿½Ã·Ñ´ï¿½ï¿½Ò§" ï¿½ç¹¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		    if (battle_config.mob_ele_view) {
 		        const char* ele_name = "";
 		        const char* race_name = "";
+		        const char* size_name = "";
 			
 		        switch (md.status.def_ele) {
 		            case 0: ele_name = "Neutral"; break;
@@ -8986,18 +8999,24 @@ const char* status_get_name( block_list& bl ){
 		            case 8: race_name = "Angel";     break;
 		            case 9: race_name = "Dragon";    break;
 		        }
-			
+
+				switch (md.status.size) {
+						case 0: size_name = "Small";	break;
+						case 1: size_name = "Medium";	break;
+						case 2: size_name = "Large";	break;
+				}				
+
 		        if (ele_name[0] != '\0') {
-		            // µÑÇÍÂèÒ§ÃÙ»áºººÃÃ·Ñ´ÅèÒ§: "Fire Lv.3 [ Demon ]"
-		            // (»ÃÑºÃÙ»áººµÒÁ·Õè¤Ø³ãªéã¹ clif_name ãËéµÃ§¡Ñ¹)
+		            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò§ï¿½Ù»áººï¿½ï¿½Ã·Ñ´ï¿½ï¿½Ò§: "Fire Lv.3 [ Demon ]"
+		            // (ï¿½ï¿½Ñºï¿½Ù»áººï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø³ï¿½ï¿½ï¿½ clif_name ï¿½ï¿½ï¿½Ã§ï¿½Ñ¹)
 		            safesnprintf(bottom_line, sizeof(bottom_line),
 		                         "%s [%s]",
-		                         ele_name, race_name);
+		                         size_name, race_name);
 		            return bottom_line;
 		        }
 		    }
 		
-		    // äÁèà»Ô´âªÇì¸ÒµØ/ËÃ×Í»ÃÐ¡ÍºäÁèä´é -> ãªéª×èÍ´Ôºà»ç¹ºÃÃ·Ñ´ÅèÒ§
+		    // ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½Òµï¿½/ï¿½ï¿½ï¿½Í»ï¿½Ð¡Íºï¿½ï¿½ï¿½ï¿½ï¿½ -> ï¿½ï¿½ï¿½ï¿½Í´Ôºï¿½ç¹ºï¿½Ã·Ñ´ï¿½ï¿½Ò§
 		    return md.name;
 		}
 		case BL_PET:
@@ -11819,7 +11838,17 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 			break;
 		case SC_EXPBOOST:
 		case SC_JEXPBOOST:
-		case SC_VIPSTATE: // VIP Status Icon
+		case SC_VIPSTATUS: // VIP Status Icon
+		case SC_AWAKENED_LV1: // Awakened Level 1
+		case SC_AWAKENED_LV2: // Awakened Level 2
+		case SC_AWAKENED_LV3: // Awakened Level 3
+		case SC_AWAKENED_LV4: // Awakened Level 4
+		case SC_AWAKENED_LV5: // Awakened Level 5
+		case SC_AWAKENED_LV6: // Awakened Level 6
+		case SC_AWAKENED_LV7: // Awakened Level 7
+		case SC_AWAKENED_LV8: // Awakened Level 8
+		case SC_AWAKENED_LV9: // Awakened Level 9
+		case SC_AWAKENED_LV10: // Awakened Level 10
 		case SC_PERIOD_RECEIVEITEM_2ND:
 		case SC_PERIOD_PLUSEXP_2ND:
 			if (val1 < 1)
@@ -13085,6 +13114,7 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 #if PACKETVER < 20231220
 				clif_changelook(bl,LOOK_BODY2,0);
 #endif
+
 				break;
 			case SC_STONE:
 			case SC_STONEWAIT:
@@ -13392,7 +13422,26 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 				status_zap(bl, val1 ? val1 : 0, val2 ? val2 : 0);
 			break;
 	}
-
+	if (sd) {
+		switch (type) {
+			case SC_AWAKENED_LV1:
+			case SC_AWAKENED_LV2:
+			case SC_AWAKENED_LV3:
+			case SC_AWAKENED_LV4:
+			case SC_AWAKENED_LV5:
+			case SC_AWAKENED_LV6:
+			case SC_AWAKENED_LV7:
+			case SC_AWAKENED_LV8:
+			case SC_AWAKENED_LV9:
+			case SC_AWAKENED_LV10:
+				clif_awaken_refresh_aura(sd);
+				pc_awaken_refresh_skills(sd);
+				status_calc_pc(sd, SCO_NONE);
+				break;
+		}
+	}
+	if( sd && (type == SC_HIDING || type == SC_CLOAKING || type == SC_CLOAKINGEXCEED) )
+		pc_refresh_follower_visibility(*sd);	
 	if( opt_flag[SCF_ONTOUCH] && sd && !sd->npc_ontouch_.empty() )
 		npc_touchnext_areanpc(sd,false); // Run OnTouch_ on next char in range
 
@@ -14129,6 +14178,28 @@ int32 status_change_end( struct block_list* bl, enum sc_type type, int32 tid ){
 
 	clif_status_change(bl,status_icon,0,0,0,0,0);
 
+	if (sd) {
+		switch (type) {
+			case SC_AWAKENED_LV1:
+			case SC_AWAKENED_LV2:
+			case SC_AWAKENED_LV3:
+			case SC_AWAKENED_LV4:
+			case SC_AWAKENED_LV5:
+			case SC_AWAKENED_LV6:
+			case SC_AWAKENED_LV7:
+			case SC_AWAKENED_LV8:
+			case SC_AWAKENED_LV9:
+			case SC_AWAKENED_LV10:
+				clif_awaken_refresh_aura(sd);
+				pc_awaken_refresh_skills(sd);
+				status_calc_pc(sd, SCO_NONE);
+				break;
+		}
+	}
+	
+	if( sd && (type == SC_HIDING || type == SC_CLOAKING || type == SC_CLOAKINGEXCEED) )
+		pc_refresh_follower_visibility(*sd);
+
 	if( opt_flag[SCF_NONPLAYER] ) // bugreport:681
 		clif_changeoption2( *bl );
 	else if (!disable_opt_flag && (opt_flag[SCF_SENDOPTION] || opt_flag[SCF_ONTOUCH] || opt_flag[SCF_UNITMOVE] || opt_flag[SCF_NONPLAYER] || opt_flag[SCF_SENDLOOK])) {
@@ -14469,6 +14540,7 @@ TIMER_FUNC(status_change_timer){
 				case BD_LULLABY:
 				case BD_ETERNALCHAOS:
 				case BD_ROKISWEIL:
+				case DC_AW_FORTUNEKISS:
 				case DC_FORTUNEKISS:
 					s=4;
 					break;
@@ -14476,10 +14548,13 @@ TIMER_FUNC(status_change_timer){
 				case BD_INTOABYSS:
 				case BA_WHISTLE:
 				case DC_HUMMING:
+				case BA_AW_POEMBRAGI:
 				case BA_POEMBRAGI:
+				case DC_AW_SERVICEFORYOU:
 				case DC_SERVICEFORYOU:
 					s=5;
 					break;
+				case BA_AW_APPLEIDUN:
 				case BA_APPLEIDUN:
 					s=6;
 					break;
@@ -16545,6 +16620,62 @@ std::string pet_grade_text(int grade)
 			return "";
 	}
 }
+
+const std::string VipBonusDatabase::getDefaultLocation() {
+	return std::string(db_path) + "/custom/vip_bonus.yml";
+}
+
+/**
+ * Reads and parses an entry from the rank_title
+ * @param node: YAML node containing the entry.
+ * @return count of successfully parsed rows
+ */
+uint64 VipBonusDatabase::parseBodyNode(const ryml::NodeRef& node) {
+
+	if (!this->nodesExist(node, { "Id" }))
+		return 0;
+
+		uint16 Id;
+
+	if (!this->asUInt16(node, "Id", Id))
+		return 0;
+
+	std::shared_ptr<s_vip_bonus> VipBonus = this->find(Id);
+	bool exists = VipBonus != nullptr;
+
+	if (!exists) {
+		if (!this->nodesExist(node, { "Id" }))
+			return 0;
+
+		VipBonus = std::make_shared<s_vip_bonus>();
+		VipBonus->id = Id;
+	}
+
+    if (this->nodeExists(node, "Script")) {
+		std::string script;
+
+		if (!this->asString(node, "Script", script))
+			return 0;
+
+		if (exists && VipBonus->script) {
+			script_free_code(VipBonus->script);
+			VipBonus->script = nullptr;
+		}
+
+		VipBonus->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);
+	} else {
+		if (!exists)
+			VipBonus->script = nullptr;
+	}
+
+	if( !exists ){
+		this->put( VipBonus->id , VipBonus );
+	}
+	return 1;
+}
+
+VipBonusDatabase vip_bonus_db;
+
 
 /**
  * Sets defaults in tables and starts read db functions

@@ -74,15 +74,15 @@ OnInit:
 // -----------------------------------------------------------
 
 	setarray .Shops$[1],
-		"• ของทั่วไป",	
-		"• Equiptment",
-		"• Headgear(ส่วนหัว)",
-		"• Headgear(ส่วนหู)",
-		"• Headgear(ส่วนปาก)",
-		"• อาวุธ Glorious & KvM",
-		"• Costume Head",
-		"• Costume Middle",
-		"• Costume Lower";
+		"[^FF0000#^000000]^000000 ของทั่วไป",	
+		"[^FF0000#^000000]^000000 Equiptment",
+		"[^FF0000#^000000]^000000 Headgear(ส่วนหัว)",
+		"[^FF0000#^000000]^000000 Headgear(ส่วนหู)",
+		"[^FF0000#^000000]^000000 Headgear(ส่วนปาก)",
+		"[^FF0000#^000000]^000000 อาวุธ Glorious & KvM",
+		"[^FF0000#^000000]^000000 Costume Head",
+		"[^FF0000#^000000]^000000 Costume Middle",
+		"[^FF0000#^000000]^000000 Costume Lower";
 
 // -----------------------------------------------------------
 //  Quest items -- do NOT use a reward item more than once!
@@ -92,7 +92,7 @@ OnInit:
 // -----------------------------------------------------------
 
 // Shop 1
-	Add(1,30001,1,1,1);
+	Add(1,30015,1,1,1);
 	Add(1,30016,1,40,40);
 	Add(1,12221,1,10,10);
 	Add(1,12214,1,10,10);
@@ -101,6 +101,7 @@ OnInit:
 	Add(1,30017,1,400,400);
 	Add(1,7620,1,40,400);
 	Add(1,7619,1,40,40);
+	Add(1,30312,1,100,100);
 	Add(1,12210,1,20,20);
 	Add(1,13549,1,150,150);
 	Add(1,13548,1,150,150);
@@ -320,7 +321,7 @@ OnBuyItem:
 		message strcharinfo(0),"You can't purchase that many "+getitemname(.@q[0])+".";
 		end;
 	}
-	mes "[Cash Shop]";
+	mes "^FF0000[ Cash Shop ]^000000";
 	mes "คุณเลือกไอเทม: ^0055FF"+((.@q[2] > 1)?.@q[2]+"x ":"")+Slot(.@q[0])+"^000000";
 	mes "ขายราคา:";
 	disable_items;
@@ -337,13 +338,13 @@ OnBuyItem:
 		switch(select("ซื้อ ^0055FF"+getitemname(.@q[0])+":^777777ยกเลิก^000000")) {
 		case 1:
 			if (@qe[0]) {
-				mes "[Cash Shop]";
+				mes "^FF0000[ Cash Shop ]^000000";
 				mes "You're missing one or more quest requirements.";
 				close;
 			}
 			if (!checkweight(.@q[0],.@q[2])) {
-				mes "[Cash Shop]";
-				mes "^738C5AYou need "+(((.@q[2]*getiteminfo(.@q[0], ITEMINFO_WEIGHT))+Weight-MaxWeight)/10)+" additional weight capacity to complete this trade.^000000";
+				mes "^FF0000[ Cash Shop ]^000000";
+				mes "^FF0000You need "+(((.@q[2]*getiteminfo(.@q[0], ITEMINFO_WEIGHT))+Weight-MaxWeight)/10)+" additional weight capacity to complete this trade.^000000";
 				close;
 			}
 //			if (.@q[4]) set Zeny, Zeny-(.@q[4]*.@q[1]);
@@ -397,7 +398,7 @@ function Add {
 function Chk {
 	if (getarg(0) < getarg(1)) {
 		set @qe[0],1;
-		return "^738C5A";
+		return "^FF0000";
 	} else
 		return "^00FF00";
 }
@@ -413,9 +414,9 @@ function Slot {
 }
 
 function	script	cashshop	{
-	mes "^738C5A[ Cash Shop]^000000";
+	mes "^FF0000[ Cash Shop ]^000000";
 	mes "สวัสดี : ^0000FF "+strcharinfo(0)+" ^000000";
-	mes "คุณมีแต้ม Cash : ^0000FF"+#CASHPOINTS+" ^000000แต้ม";
+	mes "คุณมีแต้ม ^i[30015] : ^0000FF"+#CASHPOINTS+" ^000000แต้ม";
 	deletearray @i[0],getarraysize(@i);
 	for(set .@i,0; .@i<getargcount(); set .@i,.@i+1)
 		set @i[.@i],getarg(.@i);

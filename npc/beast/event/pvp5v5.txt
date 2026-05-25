@@ -1,0 +1,1727 @@
+/*
+DROP TABLE IF EXISTS `party_queue`;
+CREATE TABLE `party_queue` (
+  `party_id` INT(11) UNSIGNED NOT NULL,
+  `name` VARCHAR(24) NOT NULL DEFAULT '',
+  `leader_id` INT(11) UNSIGNED NOT NULL DEFAULT '0',
+  `guild_rating` INT NOT NULL DEFAULT '0',
+  `active` TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `challenge_party` VARCHAR(24) NOT NULL DEFAULT '',
+  PRIMARY KEY (`party_id`),
+  UNIQUE INDEX `party_id_UNIQUE` (`party_id` ASC))
+ENGINE = MyISAM;
+
+DROP TABLE IF EXISTS `guild_stats`;
+CREATE TABLE `guild_stats` (
+  `guild_id` INT(11) UNSIGNED NOT NULL,
+  `char_id` INT(11) UNSIGNED NOT NULL,
+  `name` VARCHAR(24) NOT NULL DEFAULT '',
+  `rating` INT NOT NULL DEFAULT '0',
+  `wins` INT UNSIGNED NOT NULL DEFAULT '0',
+  `loses` INT UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guild_id`))
+ENGINE = MyISAM;
+
+//Only run this command if you're using ramod or have some way of getting mac-address.
+//Or if you have .mac_address variable enabled. This is needed for IP addresses.
+ALTER TABLE `ramod`.`party_queue` 
+ADD COLUMN `party_mac` VARCHAR(255) NOT NULL DEFAULT '' AFTER `challenge_party`;
+*/
+	
+function	script	delete_queue	{
+	query_sql( "DELETE FROM `party_queue` WHERE `party_id` = "+getarg(0)+";" );
+	if( getargcount() > 1 )
+		query_sql( "DELETE FROM `party_queue` WHERE `party_id` = "+getarg(1)+";" );
+	return;
+}
+
+//Input: "<map>", <x>, <y>, <range>;
+//Output: "x|y"; Walkable x, y;
+function	script	loc_find	{
+	setarray .@dx, 1, 1, 0, -1, -1, -1,  0,  1;
+	setarray .@dy, 0, 1, 1,  1,  0, -1, -1, -1;
+	.@dlen = getarraysize(.@dx);
+	.@rlen = getarg(3);
+	.@map$ = getarg(0);
+	.@x = getarg(1);
+	.@y = getarg(2);
+	freeloop(1);
+	for( .@r = 1; .@r <= .@rlen; .@r++ ) {
+		while( .@d < .@dlen ) {
+			.@tx = .@x+(.@dx[.@d]*.@r);
+			.@ty = .@y+(.@dy[.@d]*.@r);
+			if(checkcell(.@map$,.@tx,.@ty,cell_chkwall)
+			|| checkcell(.@map$,.@tx,.@ty,cell_chkcliff)
+			|| checkcell(.@map$,.@tx,.@ty,cell_chknopass)
+			|| checkcell(.@map$,.@tx,.@ty,cell_chknoreach)) {}
+			else {
+				.@size = getarraysize(.@ary_x);
+				.@ary_x[.@size] = .@tx;
+				.@ary_y[.@size] = .@ty;
+			}
+			.@d++;
+		}
+		.@d = 0;
+	}
+	.@v = rand(getarraysize(.@ary_x));
+	return .@ary_x[.@v]+"|"+.@ary_y[.@v];
+}
+
+//Input: "<npc_name>", <party_id>;
+function	script	party_warp	{
+	getmapxy( .@map_name$, .@x, .@y, BL_NPC, getarg(0) );
+	disablenpc getarg(0);
+	explode( .@loc$, loc_find( .@map_name$, .@x, .@y, 5 ), "|" );
+	removemapflag .@map_name$, mf_nowarp;
+	warpparty .@map_name$, atoi(.@loc$), atoi(.@loc$[1]), getarg(1);
+	setmapflag .@map_name$, mf_nowarp;
+	return;
+}
+
+/***************************
+           MAIN NPC
+ ***************************/
+ // By Skorm v6.3.1
+prontera,146,161,5	script	RWC Battleground	651,{
+
+	if( getgmlevel() >= .gmallowed )
+		menu "Main Settings",L_Main,"Player Menu",-;
+
+	mes .npc_nm$;
+	mes "What do you want?";
+	mes "Would you like to participate in RWC Battleground or view ranking ";
+	mes "or maybe spend your ^3399FF"+(getd($@BGR_Point$[0]))+" "+$@BGR_Point$[1]+"^000000 in the shop?";
+	next;
+	menu "What is this?",OnInfo,"Register",OnRegister,"View Ranking",OnViewRank,"Restricted Items",OnRestrict,"^999999Nothing^000000",-;
+	close;
+
+	OnInfo:
+		next;
+		mes .npc_nm$;
+		mes "A group battle game, GVG ^FF0000"+$RWCPartyMem+" vs "+$RWCPartyMem+"^000000. Members must be in same party"+( .guild_r ? " and guild":"")+".";
+		next;
+		mes .npc_nm$;
+		mes "Each round lasts up to ^fe20206 minutes^000000 and there are a total of ^0054ff"+$RWC_MaxRound+" rounds^000000.";
+		mes "The winner will get ^33CC33"+$@BGR_Point0+" "+$@BGR_Point$[1]+"^000000 as a reward which you can spend in the shop for prizes.";
+		close;
+
+	OnJoin:
+		.@join = 1;
+	OnRegister:
+		set .@partyid, getcharid(1);
+		if(!.@join)
+			mes .npc_nm$;
+		if( !.@partyid ) {
+			if(.@join) {
+				dispbottom "You don't seem to have a party. Let me try and add you to the queue for a party.";
+				
+				if( BaseLevel < .level_r ) {
+					dispbottom "Your baselevel needs to be at least "+.level_r+" before you can join.";
+					end;
+				}
+				
+				if( Zeny < .tm_zeny ) {
+					dispbottom "You need at least "+.tm_zeny+" Zeny to join.";
+					end;
+				}
+				
+				.@len = getarraysize(.tm_requirments);
+				for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+					if( countitem( .tm_requirments[.@a] ) < .tm_requirments[.@a+1] ) {
+						dispbottom "You need these items before you may join: "+.items2_m$;
+						end;
+					}
+					
+				if( RWC_bg_delay > gettimetick(2) && .delay ) {
+					dispbottom "You have done this event and are still in delay.";
+					end;
+				}
+				
+				.@players = getarraysize(.que_players);
+				dispbottom "You've been added to a queue of "+.@players+" player(s). Logging out will remove you from the queue.";
+				.que_players[.@players] = getcharid(0);
+				
+			} else {
+				mes "You don't seem to have a party.";
+				mes "Would you like me to try and add you to the queue for a party?";
+				next;
+				if( select( "No:Yes" ) == 1 ) {
+					mes .npc_nm$;
+					mes "Yeah that's fine you can always make your own party, see you soon!";
+					close;
+				}
+				
+				mes .npc_nm$;
+				if( BaseLevel < .level_r ) {
+					mes "Your baselevel needs to be at least "+.level_r+" before you can join.";
+					close;
+				}
+				
+				if( Zeny < .tm_zeny ) {
+					mes "You need at least "+.tm_zeny+" Zeny to join.";
+					close;
+				}
+				
+				.@len = getarraysize(.tm_requirments);
+				for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+					if( countitem( .tm_requirments[.@a] ) < .tm_requirments[.@a+1] ) {
+						mes "You need these items before you may join: "+.items2_m$;
+						close;
+					}
+					
+				if( RWC_bg_delay > gettimetick(2) && .delay ) {
+					mes "You have done this event and are still in delay.";
+					close;
+				}
+				
+				.@players = getarraysize(.que_players);
+				mes "You've been added to a queue of "+.@players+" player(s). Logging out will remove you from the queue.";
+				.que_players[.@players] = getcharid(0);
+			}
+			
+			if( Zeny > .tm_zeny )
+				Zeny = Zeny - .tm_zeny;
+			.@len = getarraysize(.tm_requirments);
+			for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+				if( countitem( .tm_requirments[.@a] ) >= .tm_requirments[.@a+1] )
+					delitem( .tm_requirments[.@a], .tm_requirments[.@a+1] );
+			RWC_bg_delay = gettimetick(2) + .delay;
+			
+			@rwcreg = 1;
+			
+			if(getarraysize(.que_players) >= $RWCPartyMem) {
+				callsub Sub_PartyMake;
+				callsub Sub_InsertParty;
+			}
+			if(.@join)
+				end;
+			close;
+		}
+
+		function sf {
+			function s;
+			.@a = getarg(2);
+			.@len = getarg(3);
+			return (
+					sprintf( getarg(0),
+						s(.@a++, .@len, getarg(1)), s(.@a++, .@len, getarg(1)),
+						s(.@a++, .@len, getarg(1)), s(.@a++, .@len, getarg(1)),
+						s(.@a++, .@len, getarg(1)), s(.@a++, .@len, getarg(1)),
+						s(.@a++, .@len, getarg(1)), s(.@a++, .@len, getarg(1)),
+						s(.@a++, .@len, getarg(1)), s(.@a++, .@len, getarg(1))
+					)
+				+(( .@a+1 < .@len )?":Next":":")
+				+(( .@a-11 > 0 )?":Back":":")
+				+":Cancel"
+			);
+			function s {
+				if( getarg(0) >= getarg(1) ) return "";
+				else {
+					.@name$ = getpartyname(getelementofarray(getarg(2),getarg(0)));
+					return .@name$=="null"?"":"Party [^0054ff"+.@name$+"^000000]";
+				}
+			};
+		};
+
+		function nex { return((getarg(0)+10)<getarg(1)?getarg(0)+10:getarg(1)-(getarg(1)%10)); };
+		function bac { return((getarg(0)-10)>=0?getarg(0)-10:0); };
+
+		.@exist = query_sql( "SELECT `party_id`, `name`, `leader_id`, `guild_rating`, `active`, `challenge_party` FROM `party_queue` WHERE `party_id` = "+.@partyid+";", .@pid, .@name, .@lid, .@rating, .@active, .@c_pname$ );
+		.@c_list = query_sql( "SELECT `party_id` FROM `party_queue` WHERE `challenge_party` LIKE '%"+getpartyname(.@partyid)+"%' AND `party_id` <> "+.@partyid+";", .@c_pid );
+
+		if( .@exist ) {
+			if(!.@join) {
+				mes "Your party is already entered in the event!";
+				next;
+				mes .npc_nm$;
+				if( getcharid(0)==getpartyleader(.@partyid,2) ) {
+					if( !.@active ) {
+						mes "Would you like to remove your party from the queue?";
+						next;
+						if( select("Yes:No")==1 ) {
+							@challenge = 0;
+							delete_queue( .@partyid );
+							deltimer strnpcinfo(1)+"::OnMatchmaking";
+							mes .npc_nm$;
+							mes "^fe2020Your party has been removed from the queue!";
+						}
+					} else mes "The match is starting you'll have to wait.";
+				} else mes "We're still searching for an opponent please wait.";
+				close;
+			} else {
+				dispbottom "Your party is already registered use @rwcleave to remove your party.";
+				end;
+			}
+		}
+		
+		if(!.@join) {
+			mes "Welcome to ^ee9f00RWC^000000!";
+			mes "Here you can compete against other parties to earn your guild ranks. Each round lasts up to ^fe20206 minutes^000000 and there are a total of ^0054ff"+$RWC_MaxRound+" rounds^000000.";
+			next;
+			mes .npc_nm$;
+		}
+		
+		if( getcharid(0) != getpartyleader(.@partyid,2) ) {
+			if(.@join) {
+				dispbottom "I'm sorry, you need to be a party leader to register your party!";
+				end;
+			} else
+				mes "I'm sorry, you need to be a party leader to register your party!";
+				close;
+		} else if( !getcharid(2) ) {
+			if(.@join) {
+				dispbottom "I'm sorry, you need a guild before you can join this event!";
+				end;
+			} else
+				mes "I'm sorry, you need a guild before you can join this event!";
+				close;
+		}
+		mes "So, would you like to add your party to ^ee9f00RWC^000000 queue or challenge a friend's party?"+(.@c_list?" Oh and, it looks like you have a challenger!":"");
+		if(!.@join) next;
+		switch( select("Yes:Challenge Party!:"+(.@c_list?"Accept Challenge!":"")+":No") ) {
+			case 2:
+				mes .npc_nm$;
+				mes "Input the name of the party you'd like to challenge.";
+				if(!.@join)
+					next;
+				if( input( .@challenge_party$, 1, 24 )!=0 ) {
+					mes .npc_nm$;
+					mes "The party name must be withing 1 and 24 characters long.";
+					close;
+				}
+				break;
+
+			case 3:
+				mes .npc_nm$;
+				mes "Select the party you'd like to challenge!";
+				.@format$ = "%s:%s:%s:%s:%s:%s:%s:%s:%s:%s";
+				if(!.@join)
+					next;
+				while( 1 ) {
+					select( sf( .@format$, .@c_pid, .@a, .@c_list ) );
+					switch( @menu ) {
+						case 11: .@a = nex( .@a, .@a_len ); break;
+						case 12: .@a = bac( .@a ); break;
+						case 13: end;
+
+						default:
+							.@select = .@a+@menu-1;
+							mes .npc_nm$;
+							mes "You've selected ^0000FF["+getpartyname(.@c_pid[.@select])+"]^000000 party. Would you like to challenge them?";
+							next;
+							if( select("Yes:No") == 1 ) {
+								@c_accept = 1;
+								callsub OnMatchmaking, .@c_pid[.@select];
+							}
+							close;
+					}
+				}
+			case 4:
+				mes .npc_nm$;
+				mes "Aww, well that's to bad, how about you come back some other time then.";
+				close;
+			default:
+		}
+		if(!.@join)
+			next;
+
+		mes .npc_nm$;
+		.@plen = callsub( Sub_PartyCount, .@partyid );
+		if( .s != .@plen ) {
+			mes "All party members must be online to register your party!";
+			close;
+		}
+
+		.@message$ = callsub( Sub_PartyCheck, .@partyid );
+		explode( .@message$, .@message$, "|" );
+		
+		switch ( callsub( Sub_Requirements, .@partyid ) ) {
+			case 1:
+				mes "All party members must be in the same guild!";
+				close;
+				break;
+				
+			case 2:
+				mes "All party members must be at least level "+.level_r+".";
+				close;
+				break;
+				
+			case 3:
+				mes "You must have at least "+.pl_zeny+"z to enter.";
+				close;
+				break;
+				
+			case 4:
+				mes "The entire party needs at least "+.tm_zeny+"z to enter.";
+				close;
+				break;
+				
+			case 5:
+				mes "You need these items before you may enter: "+.items_m$;
+				close;
+				break;
+				
+			case 6:
+				mes "You and your party need these items before you may enter: "+.items2_m$;
+				close;
+				break;
+				
+			case 7:
+				mes "Either you or one of your party members has done this event and is still in delay.";
+				close;
+				break;
+				
+			default:
+		}
+		
+		callsub( Sub_RequirementsTake, .@partyid );
+
+		if( .@plen == $RWCPartyMem && !getarraysize( .@message$ ) ) {
+		
+	Sub_InsertParty:
+			set .@partyid, getcharid(1);
+			query_sql( "INSERT INTO `party_queue` VALUES ( "+.@partyid+", '"+escape_sql(getpartyname(.@partyid))+"', "+getcharid(0)+", 0, 0, "+( getstrlen(.@challenge_party$) ? "'"+escape_sql(.@challenge_party$)+"'" : "''" )+""+( .mac_address ? ", '"+callsub( Sub_SetMac, .@partyid )+"'" : "")+" );" );
+			if( getstrlen(.@challenge_party$) ) {
+				@challenge = 1;
+				mes "^30ad23Your challenge has been sent!";
+				query_sql( "SELECT `leader_id`, `leader_char` FROM `party` WHERE `name` = '"+escape_sql(.@challenge_party$)+"';", .@o_aid, .@o_cid );
+				if( isloggedin( .@o_aid, .@o_cid ) )
+					if( getpartyname( getcharid( 1, rid2name( .@o_aid ) ) ) == .@challenge_party$ )
+						message rid2name( .@o_aid ), "You and your party have been challenge to a RWC match by "+strcharinfo(0)+".";
+			} else mes "^30ad23Your party has been added to the queue!";
+			announce strnpcinfo(1)+" -- "+getpartyname(.@partyid)+" -- has registered. Register now to join the battle.",bc_all,0x0054ff;
+			@pvp_range = 0;
+			callsub OnMatchmaking;
+		} else {
+			mes "You need exactly "+$RWCPartyMem+" party members to join! Your team must consist of a ^0000ffPaladin, Professor, High Wizard, Champion, High Priest, Clown, and a Sniper, Lord Knight, Stalker, Creator, Assassin Cross, or Whitesmith.";
+			if( getstrlen(.@message$[0]) > 0 ) {
+				next;
+				mes .npc_nm$;
+				mes "The classes you're missing are ^0000ff"+.@message$+".";
+				close;
+			} else if( getstrlen(.@message$[1]) > 0 ) {
+				next;
+				mes .npc_nm$;
+				mes .@message$[1];
+				close;
+			}
+		}
+		close2;
+		end;
+		
+	Sub_PartyMake:
+		copyarray .@auto_party, .que_players, $RWCPartyMem;
+		deletearray .que_players, $RWCPartyMem;
+		do {
+			.@party_name$ = "rwc"+substr(md5(""+gettimetick(0)),0,20);
+			dispbottom "party..."+.@party_name$;
+		} while( query_sql("SELECT `name` FROM `party` WHERE `name` = '"+.@party_name$+"';", .@str$ ) > 0 );
+		switch( party_create(.@party_name$) ) {
+			case 0:
+				debugmes "RWC: Unknown error party not created!";
+				return;
+			case -1:
+				debugmes "RWC: No player attached!";
+				return;
+			case -2:
+				debugmes "RWC: Last player entering queue already has a party...";
+				return;
+			case -3:
+				debugmes "RWC: Party name already exists?";
+				return;
+		}
+		.@partyid = $@party_create_id;
+		sleep2(100);
+		for( .@a = 0; .@a <  $RWCPartyMem; .@a++ ) {
+			set @rwcreg, 0, .@auto_party[.@a];
+			if(.@auto_party[.@a] != getcharid(0)) {
+				.@pid = getcharid( 1, strcharinfo( 0, .@auto_party[.@a] ) );
+				if( .@pid ) {
+					party_delmember( .@auto_party[.@a], .@pid );
+					sleep2(1);
+				}
+				party_addmember(.@partyid, .@auto_party[.@a]);
+			}
+		}
+		return .@partyid;
+
+	OnViewRank:
+		function sf2 {
+			function s2;
+			.@a = getarg(2);
+			.@len = getarg(3);
+			return (
+					sprintf( getarg(0),
+						s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)),
+						s2(.@a++, .@len, getarg(1), getarg(4), getarg(5)), s2(.@a++, .@len, getarg(1), getarg(4), getarg(5))
+					)
+				+(( .@a+1 < .@len )?":Next":":")
+				+(( .@a-11 > 0 )?":Back":":")
+				+":Cancel"
+			);
+			function s2 {
+				if( getarg(0) >= getarg(1) ) return "";
+				else {
+					.@name$ = getguildname(getelementofarray(getarg(2),getarg(0)));
+					return .@name$=="null"?"":(getarg(0)+1)+". Guild [^0054ff"+.@name$+"^000000] "+getelementofarray(getarg(3),getarg(0))+"W|"+getelementofarray(getarg(4),getarg(0))+"L";
+				}
+			};
+		};
+		function nex2 { return((getarg(0)+10)<getarg(1)?getarg(0)+10:getarg(1)-(getarg(1)%10)); };
+		function bac2 { return((getarg(0)-10)>=0?getarg(0)-10:0); };
+
+		.@g_list = query_sql( "SELECT DISTINCT `guild_id`,`wins`,`loses` FROM `guild_stats` WHERE `wins` > 0 ORDER BY `wins` / `loses` DESC LIMIT 100;", .@gid, .@wins, .@loses );
+		next;
+		mes .npc_nm$;
+		mes "Here they are...";
+		.@format$ = "%s:%s:%s:%s:%s:%s:%s:%s:%s:%s";
+		next;
+		while( 1 ) {
+			select( sf2( .@format$, .@gid, .@a, .@g_list, .@wins, .@loses ) );
+			switch( @menu ) {
+				case 11: .@a = nex2( .@a, .@a_len ); break;
+				case 12: .@a = bac2( .@a ); break;
+				case 13: end;
+				default:
+			}
+		}
+		close;
+
+	OnMatchmaking:
+		@pvp_range++;
+		.@partyid = getcharid(1);
+		.@plen = callsub( Sub_PartyCount, .@partyid );
+		.@mlen = getarraysize(.maps$);
+		if( .@plen > $RWCPartyMem ) {
+			delete_queue( .@partyid );
+			message strcharinfo(0),.npc_$+": Party too large matchmaking canceled...";
+			end;
+		} else if( .@plen < $RWCPartyMem ) {
+			delete_queue( .@partyid );
+			message strcharinfo(0),.npc_$+": Party too small matchmaking canceled...";
+			end;
+		} else if( .s != .@plen ) {
+			delete_queue( .@partyid );
+			message strcharinfo(0),.npc_$+": Not all party members active matchmaking canceled...";
+			end;
+		}
+
+		if( !@challenge ) {
+			if(.mac_address)
+				.@len = query_sql(
+					"SELECT * "+
+					"FROM `party_queue` "+
+					"WHERE `active` <> 1 "+
+					"AND `party_id` <> "+.@partyid+" "+
+					"AND `challenge_party` = '' "+
+					"AND `party_mac` NOT LIKE '%"+callsub( Sub_GetMac, .@partyid )+"%';",
+					.@pid, .@name$, .@lid, .@rating, .@active, .@cp$, .@mac$
+				);
+			else
+				.@len = query_sql(
+					"SELECT * "+
+					"FROM `party_queue` "+
+					"WHERE `active` <> 1 "+
+					"AND `party_id` <> "+.@partyid+" "+
+					"AND `challenge_party` = '';",
+					.@pid, .@name$, .@lid, .@rating, .@active, .@cp$
+				);
+			.@enemy = .@pid[rand(.@len)];
+		}
+
+		for( .@a = 0; .@a < .@mlen; .@a++ )
+			if( !getmapusers(.maps$[.@a]) )
+				.@tmp_maps$[getarraysize(.@tmp_maps$)] = ""+.@a;
+		.@tmp_mlen = getarraysize(.@tmp_maps$);
+
+		if( !.@tmp_mlen ) {
+			.@mes$ = .@len?" Party found but no maps available... Searching...":" No maps open... Searching...";
+			.@len = 0;
+			if( @c_accept )
+				if( getargcount() ) {
+					sleep2(30000);
+					if( playerattached() )
+						callsub OnMatchmaking, getarg(0);
+				}
+		}
+		if( @c_accept ) {
+			if( getargcount() ) {
+				.@len = 1;
+				.@enemy = getarg(0);
+			}
+		}
+
+		if( !.@len ) {
+			deltimer strnpcinfo(1)+"::OnMatchmaking";
+			addtimer 30000,strnpcinfo(1)+"::OnMatchmaking";
+			addrid(2,0,getcharid(1));
+			message strcharinfo(0), .npc_$+":"+( .@mes$!="" ? .@mes$ : ( @challenge ? " Waiting for opponent to accept...":" Searching for party..." ) );
+		} else {
+			query_sql(
+				"UPDATE `party_queue` "+
+				"SET `active` = 1 "+
+				"WHERE `party_id` = "+.@partyid+" "+
+				"OR `party_id` = "+.@enemy+";"
+			);
+			callsub OnRWCStart, atoi(.@tmp_maps$[rand(.@tmp_mlen)]), .@partyid, .@enemy, .@total, .@rating;
+		}
+		end;
+
+	OnRestrict:
+		next;
+		mes .npc_nm$;
+		mes "Here some items that ^FF0000cannot^000000 be used.";
+		for (.@i = 0; .@i < getarraysize(.restricted); .@i++) {
+			mes "- "+getitemname(.restricted[.@i])+"";
+		}
+		close;
+
+	OnPCLogoutEvent:
+		if( @rwcreg ) {
+			.@len = getarraysize(.que_players);
+			for( .@a = 0; .@a <  .@len; .@a++ ) {
+				if(.que_players[.@a] == getcharid(0)) {
+					deletearray .que_players[.@a], 1;
+					end;
+				}
+			}
+		}
+		.@partyid = getcharid(1);
+		if( @pvp_range ) {
+			delete_queue( .@partyid );
+			addrid( 2,0,.@partyid );
+			if( playerattached() )
+				message strcharinfo(0),.npc_$+": Matchmaking disband...";
+		}
+		end;
+
+	OnRWCStart:
+		@pvp_range = 0;
+		.@event = getarg(0)+1;
+		callsub Sub_PartyFound, getarg(1), .@instance_id, getarg(0)+1, 0, getarg(2);
+		callsub Sub_PartyFound, getarg(2), .@instance_id, getarg(0)+1, 1, getarg(1);
+		sleep2(4000);
+
+		party_warp( "Team Warper#"+.@event+"|1", getarg(1) );
+		party_warp( "Team Warper#"+.@event+"|2", getarg(2) );
+
+		sleep(2000);
+		setarray .teams, getarg(1), getarg(2);
+		donpcevent( "D#"+.@event+"::On" );
+		end;
+
+
+	OnPartyCount:
+		.s = 0;
+		getpartymember(.pid);
+		addrid(2,0,.pid);
+		.s++;
+		end;
+
+	Sub_PartyCount:
+		.pid = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnPartyCount";
+		return $@partymembercount;
+
+	OnPartyCheck:
+		deletearray .jobs$;
+		addrid( 2, 0, .pid );
+		.jobs$[getarraysize(.jobs$)] = "|"+eaclass()+"|";
+		end;
+
+	Sub_PartyCheck:
+		.pid = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnPartyCheck";
+		.@jobsf$ = implode( .jobs$, "" );
+		copyarray .@jobs$[0], .jobs$[0], getarraysize(.jobs$);
+		.@len = getarraysize( .@jobs$ );
+		if( .class_r ) {
+			if( !compare(.@jobsf$,"|4609|") ) .@message$[ getarraysize(.@message$) ] = " Paladin";
+			if( !compare(.@jobsf$,"|4612|") ) .@message$[ getarraysize(.@message$) ] = " Champion";
+			if( !compare(.@jobsf$,"|4610|") ) .@message$[ getarraysize(.@message$) ] = " Professor";
+			if( !compare(.@jobsf$,"|4611|") ) .@message$[ getarraysize(.@message$) ] = " Clown/Gypsy";
+			if( !compare(.@jobsf$,"|4356|") ) .@message$[ getarraysize(.@message$) ] = " High Priest";
+			if( !compare(.@jobsf$,"|4354|") ) .@message$[ getarraysize(.@message$) ] = " High Wizard";
+			if(	 compare(.@jobsf$,"|4355|")
+			||   compare(.@jobsf$,"|4353|")
+			||   compare(.@jobsf$,"|4613|")
+			||   compare(.@jobsf$,"|4358|")
+			||   compare(.@jobsf$,"|4357|")
+			||   compare(.@jobsf$,"|4614|") ) {}
+			else .@message$[ getarraysize(.@message$) ] = " Sniper/Lord Knight/Stalker/Creator/Assassin Cross/Whitesmith";
+			if( getarraysize(.@message$) > 1 ) .@message$ = implode(.@message$,",");
+		}
+		if( .dup_class_r ) {
+			for( .@a = 0; .@a < .@len; .@a++ ) {
+				if( countstr( .@jobsf$, .@jobs$[.@a], 0 ) > 1 ) {
+					.@message$ = .@message$+"|You're not allowed to have more than one of the same class at a time.";
+				}
+			}
+		}
+		return .@message$;
+
+	Sub_PartyFound:
+		setarray .pid, getarg(0), getarg(1), getarg(2), getarg(3), getarg(4);
+		donpcevent strnpcinfo(1)+"::OnPartyFound";
+		return;
+
+	OnPartyFound:
+		addrid( 2,0,.pid );
+		if( playerattached() ) {
+			copyarray @pid, .pid, 5;
+			@pvp_range = 0;
+			@challenge = 0;
+			@c_accept = 0;
+			bg_leave;
+			message strcharinfo(0), .npc_$+": Party found!!! Warping...";
+			if(getcharid(0)==getpartyleader(.pid,2))
+				deltimer strnpcinfo(1)+"::OnMatchmaking";
+		}
+		end;
+		
+	OnRequirementCheck:
+		.warning = 0;
+		addrid( 2, 0, .pid );
+		if( .guild_r )
+			if( getguildname( getcharid( 2, getpartyleader(.pid) ) ) != getguildname( getcharid(2) ) )
+				.warning = 1;
+		if( BaseLevel < .level_r )
+			.warning = 2;
+		if( getpartyleader( .pid, 2 ) == getcharid(0) ) {
+			if( Zeny < .pl_zeny )
+				.warning = 3;
+			.@len = getarraysize(.pl_requirments);
+			for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+				if( countitem( .pl_requirments[.@a] ) < .pl_requirments[.@a+1] )
+					.warning = 5;
+		}
+		if( Zeny < .tm_zeny )
+			.warning = 4;
+		.@len = getarraysize(.tm_requirments);
+		for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+			if( countitem( .tm_requirments[.@a] ) < .tm_requirments[.@a+1] )
+				.warning = 6;
+		if( RWC_bg_delay > gettimetick(2) && .delay )
+			.warning = 7;
+		end;
+
+	Sub_Requirements:
+		.pid = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnRequirementCheck";
+		return .warning;
+		
+	OnRequirementTake:
+		addrid( 2, 0, .pid );
+		if( getpartyleader( .pid, 2 ) == getcharid(0) ) {
+			if( Zeny > .pl_zeny )
+				Zeny = Zeny - .pl_zeny;
+			.@len = getarraysize(.pl_requirments);
+			for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+				if( countitem( .pl_requirments[.@a] ) >= .pl_requirments[.@a+1] )
+					delitem( .pl_requirments[.@a], .pl_requirments[.@a+1] );
+		}
+		if( Zeny > .tm_zeny )
+			Zeny = Zeny - .tm_zeny;
+		.@len = getarraysize(.tm_requirments);
+		for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+			if( countitem( .tm_requirments[.@a] ) >= .tm_requirments[.@a+1] )
+				delitem( .tm_requirments[.@a], .tm_requirments[.@a+1] );
+		RWC_bg_delay = gettimetick(2) + .delay;
+		end;
+
+	Sub_RequirementsTake:
+		.pid = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnRequirementTake";
+		return;
+		
+	OnSetMac:
+		addrid( 2, 0, .pid );
+		query_sql( "SELECT `last_"+.abuse_protect$+"` FROM `login` WHERE `account_id` = "+getcharid(3)+";", .@mac$ );
+		.mac$[getarraysize(.mac$)] = .@mac$;
+		end;
+
+	Sub_SetMac:
+		.pid = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnSetMac";
+		copyarray .@mac$[0], .mac$[0], getarraysize(.mac$);
+		deletearray( .mac$ );
+		.@mac$ = implode( .@mac$, "|" );
+		return .@mac$;
+
+	OnGetMac:
+		addrid( 2, 0, .pid );
+		query_sql( "SELECT `last_"+.abuse_protect$+"` FROM `login` WHERE `account_id` = "+getcharid(3)+";", .@mac$ );
+		.mac[ getarraysize(.mac) ] = .@mac;
+		end;
+
+	Sub_GetMac:
+		.pid = getarg(0);
+		donpcevent strnpcinfo(1)+"::OnSetMac";
+		copyarray .@mac$[0], .mac$[0], getarraysize(.mac$);
+		deletearray( .mac$ );
+		.@mac$ = implode( .@mac$, "%' AND `party_mac` NOT LIKE '%" );
+		return .@mac$;
+		
+	OnTimer180000:
+		.@len = query_sql( "SELECT `party_id` FROM `party_queue` WHERE `active` <> 1;", .@pid );
+		if( .@len > 0 )
+			announce strnpcinfo(1)+" -- "+.@len+" Party's -- are waiting for opponents.",bc_all,0x0054ff;
+		initnpctimer;
+		end;
+		
+	L_Main:
+		.@menu = 0;
+		mes "Select the option you'd like to modify.";
+		while( 1 ) {
+			switch(
+				.@menu ? .@menu : .@menu = select(
+					"Party Size:"+
+					"Rounds:"+
+					"Draw Times:"+
+					"Game Mode"
+				) ) {
+					case 1:
+						setarray .@r, 1, 8;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWCPartyMem+" )";
+						next;
+						mes "Size of party members.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWCPartyMem = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+						
+					case 2:
+						setarray .@r, 0, 100;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWC_MaxRound+" )";
+						next;
+						mes "Required wins to win the match.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWC_MaxRound = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+
+					case 3:
+						setarray .@r, 1, 100;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWC_DrawOut+" )";
+						next;
+						mes "If the two teams have this x draw times the match will end.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWC_DrawOut = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+						
+					case 4:
+						setarray .@r, 0, 1;
+						mes "Select a number between "+.@r+" and "+.@r[1]+".";
+						mes "( Current Value = "+$RWC_GM+" )";
+						next;
+						mes "This changes the game mode... 1 = Best of Max round while 0 = First to max round.";
+						next;
+						if( !input( .@input, .@r, .@r[1] ) )
+							$RWC_GM = .@input;
+						else {
+							mes "The number must be between "+.@r+" and "+.@r[1]+".";
+							next;
+							continue;
+						}
+						break;
+			}
+			break;
+		}
+		end;
+		
+	OnLeave:
+		.@partyid = getcharid(1);
+
+		if( getcharid(0) != getpartyleader(.@partyid,2) ) {
+			dispbottom "Only the party leader may use this command!";
+			end;
+		} else if( @rwcreg ) {
+			@rwcreg = 0;
+			.@len = getarraysize(.que_players);
+			for( .@a = 0; .@a <  .@len; .@a++ ) {
+				if(.que_players[.@a] == getcharid(0)) {
+					deletearray .que_players[.@a], 1;
+					end;
+				}
+			}
+			dispbottom "You've been removed from the pre-party queue.";
+			end;
+		}
+		
+		.@exist = query_sql( "SELECT `party_id`, `name`, `leader_id`, `guild_rating`, `active`, `challenge_party` FROM `party_queue` WHERE `party_id` = "+.@partyid+";", .@pid, .@name, .@lid, .@rating, .@active, .@c_pname$ );
+		
+		if( .@exist && !.@active ) {
+			@challenge = 0;
+			delete_queue( .@partyid );
+			deltimer strnpcinfo(1)+"::OnMatchmaking";
+			dispbottom "Your party has been removed from the queue!";
+		}
+		end;
+	
+	OnCommandEvent:
+		if ( !compare( .c_maps$, "|"+strcharinfo(3)+"|" ) || getgmlevel() >= 99 )
+			atcommand .@atcmd_command$+" "+ implode( .@atcmd_parameters$," " );
+		else message strcharinfo(0), "You're not allowed to use that command here!";
+		end;
+
+	OnInit:
+		initnpctimer;
+		
+		//=================Default Settings=================
+		.npc_nm$ = "[ ^ee9f00RWC^000000 ]";
+		.@pty_count = 1;									//How many party members allowed?
+		.@max_round = 2;									//How many rounds per game?
+		.@draw_cout = 3;									//Max amount of draw matches before exit?
+		.@game_mode = 1;									//1 = Best of max round; 0 = First to max round.
+		.@npc_name$ = "RWC "+.@pty_count+"v"+.@pty_count;	//What would you like the npc to be called?
+		.@mgm_menu$ = "60";									//What is the minimum GM level you allow to use GM Menu?
+		setarray .usableblock, 14601;						//Blocked usable items list.
+		.@permanent_ingame_changes = 0;						//If this is enabled in-game settings will override script settings, and persist even after reload.
+		
+		setarray .maps$,	"2012rwc_01", "2012rwc_02", "2012rwc_03", "2012rwc_04", "2012rwc_05", "2012rwc_06", "2012rwc_07", "2012rwc_08"; //Maps Allowed.
+		setarray .party,	2           , 2           , 2           , 2           , 2           , 2           , 2           , 2           ; //Max Parties Allowed.
+		setarray .nwall,	2           , 2           , 2           , 2           , 2           , 2           , 2           , 2           ; //Number of walls.
+		//             |             |             |             |             |             |             |             |             |
+		setarray .mtm1x,	99          , 121         , 46          , 63          , 99          , 121         , 46          , 63          ; //Team #1 x cords
+		setarray .mtm1y,	112         , 159         , 80          , 92          , 112         , 159         , 80          , 92          ; //Team #1 y cords
+		//             |             |             |             |             |             |             |             |             |
+		setarray .mtm2x,	242         , 232         , 153         , 195         , 242         , 232         , 153         , 195         ; //Team #2 x cords
+		setarray .mtm2y,	111         , 158         , 80          , 92          , 111         , 158         , 80          , 92          ; //Team #2 y cords
+
+		//Walls:::      	#1| 	#2|
+		setarray .xwal1,	110,	230; //Wall x cord       |
+		setarray .ywal1,	113,	113; //Wall y cord       | Room
+		setarray .dwal1,	4  ,	4  ; //Wall direction.   |      1x
+		setarray .lwal1,	8  ,	8  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal2,	135,	217; //Wall x cord       |
+		setarray .ywal2,	161,	158; //Wall y cord       | Room
+		setarray .dwal2,	4  ,	4  ; //Wall direction.   |      2x
+		setarray .lwal2,	9  ,	7 ; //Wall length        |
+		//::::::::      	#1| 	#2|
+		setarray .xwal3,	57, 	144; //Wall x cord       |
+		setarray .ywal3,	81, 	81 ; //Wall y cord       | Room
+		setarray .dwal3,	4 , 	4  ; //Wall direction.   |      3x
+		setarray .lwal3,	4 , 	4  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal4,	72, 	185; //Wall x cord       |
+		setarray .ywal4,	95, 	95 ; //Wall y cord       | Room
+		setarray .dwal4,	4 , 	4  ; //Wall direction.   |      4x
+		setarray .lwal4,	8 , 	8  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal5,	110,	230; //Wall x cord       |
+		setarray .ywal5,	113,	113; //Wall y cord       | Room
+		setarray .dwal5,	4  ,	4  ; //Wall direction.   |      5x
+		setarray .lwal5,	8  ,	8  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal6,	135,	217; //Wall x cord       |
+		setarray .ywal6,	161,	158; //Wall y cord       | Room
+		setarray .dwal6,	4  ,	4  ; //Wall direction.   |      6x
+		setarray .lwal6,	9  ,	7 ; //Wall length        |
+		//::::::::      	#1| 	#2|
+		setarray .xwal7,	57, 	144; //Wall x cord       |
+		setarray .ywal7,	81, 	81 ; //Wall y cord       | Room
+		setarray .dwal7,	4 , 	4  ; //Wall direction.   |      7x
+		setarray .lwal7,	4 , 	4  ; //Wall length       |
+		//::::::::      	#1| 	#2|
+		setarray .xwal8,	72, 	185; //Wall x cord       |
+		setarray .ywal8,	95, 	95 ; //Wall y cord       | Room
+		setarray .dwal8,	4 , 	4  ; //Wall direction.   |      8x
+		setarray .lwal8,	8 , 	8  ; //Wall length       |
+
+		//::Directional Key:::
+		//NW:::::::N::::::::NE
+		//1::::::::0:::::::::7
+		//2::::::::::::::::::6
+		//3::::::::4:::::::::5
+		
+		//Rewards
+		$@BGR_Point$[0] = "#BGPOINTS";
+		$@BGR_Point$[1] = "BG Points";
+
+		//Rewards Points Winner
+		$@BGR_Point0 = 1;
+		setarray $@l_0_team_rewards, 607, 5, 7227, 10; //Wining leader rewards.
+		setarray $@t_0_team_rewards, 607, 5, 7227, 10; //Wining all members including leader rewards.
+
+		//Rewards Points Loser
+		$@BGR_Point1 = 0;
+		setarray $@l_1_team_rewards, 607, 5, 7227, 10; //Losing leader rewards.
+		setarray $@t_1_team_rewards, 607, 5, 7227, 10; //Losing all members including leader rewards.
+
+		//Rewards Points Draw
+		$@BGR_Point2 = 0;
+		setarray $@l_2_team_rewards, 607, 5, 7227, 10; //Draw leaders rewards.
+		setarray $@t_2_team_rewards, 607, 5, 7227, 10; //Draw all members including leader rewards.
+		
+		//Requirements
+		
+		//Zeny
+		.pl_zeny = 1000; //Party leader required zeny. 0 = disabled
+		//.tm_zeny = 1000; //Amount of zeny taken from every member of the party to join. 0 = disabled
+		
+		//Mac Address
+		//Enable this if using Mac or IP restriction.
+		.mac_address = 0; //Restrict same mac address? Only works for harmony clients. If .abuse_protect$ is set to ip can be used with other clients.
+		.abuse_protect$ = "ip";	//Set this to mac or ip.
+		
+		//Items
+		//setarray .pl_requirments, 607, 5, 7227, 10; //Party leader required items. Comment out to disable.
+		//setarray .tm_requirments, 607, 5, 7227, 10; //Amount of item taken from every member of the party to join. Comment out to disable.
+		
+		//Cooldown
+		//.delay = 300; //Delay in seconds before re-entering the event.
+		
+		//Class Restrictions
+		//.class_r = 1; //Restricted classes? ( 1 = Yes | 0 = No ) Note: Find Sub_PartyCheck to modify the restricted classes.
+		//.dup_class_r = 1; //Restrict duplicate classes? ( 1 = Yes | 0 = No )
+		
+		//Disabled commands. ( Remove comments to disable the respective commands. )
+		//bindatcmd  "storage",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "warp",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "savepoint",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "useskill",strnpcinfo(3)+"::OnCommandEvent";
+		//bindatcmd  "skillon",strnpcinfo(3)+"::OnCommandEvent";
+		bindatcmd  "rwcjoin",strnpcinfo(3)+"::OnJoin";
+		bindatcmd  "rwcleave",strnpcinfo(3)+"::OnLeave";
+		
+		//Base level restriction.
+		//.level_r = 99; //Base level should be at least this restriction. 0 = disabled.
+		
+		//Guild restriction.
+		//.guild_r = 1; //All members must be within the same guild. 1 = On | 0 = Off.
+		
+		//Setting Mapflags
+		.@mps_len = getarraysize(.maps$);
+		for( .@a = 0; .@a < .@mps_len; .@a++ ) {
+			setmapflag .maps$[.@a], mf_loadevent;
+			setmapflag .maps$[.@a], mf_restricted, 8;
+			setmapflag .maps$[.@a], mf_nosave;
+			setmapflag .maps$[.@a], mf_nomemo;
+			setmapflag .maps$[.@a], mf_noteleport;
+			setmapflag .maps$[.@a], mf_nowarp;
+			setmapflag .maps$[.@a], mf_nogo;
+			setmapflag .maps$[.@a], mf_nobranch;
+			setmapflag .maps$[.@a], mf_nopenalty;
+			setmapflag .maps$[.@a], mf_nozenypenalty;
+			setmapflag .maps$[.@a], mf_noicewall;
+			setmapflag .maps$[.@a], mf_partylock;
+			setmapflag .maps$[.@a], mf_guildlock;
+			setmapflag .maps$[.@a], mf_nocommand, 80;
+			setmapflag .maps$[.@a], mf_battleground;
+		}
+		
+		//Event type mapflag.
+		.mapflag = 0; // 0 = pvp | 1 = gvg
+
+		.@ub_len = getarraysize(.usableblock);
+		for( .@a = 0; .@a < .@ub_len; .@a++ ) {
+			query_sql(
+				"(SELECT `script` "+
+				"FROM `item_db"+(checkre(0)?"_re":"")+"` "+
+				"WHERE `id` = "+.usableblock[.@a]+") "+
+				"UNION ALL ("+
+					"SELECT `script` "+
+					"FROM `item_db2` "+
+					"WHERE `id` = "+.usableblock[.@a]+" "+
+					"LIMIT 1"+
+				");",.@a$
+			);
+			setitemscript( .usableblock[.@a],
+				"{ "+
+					"set(.@a$,strcharinfo(3)); "+
+					"if(\""+implode(.maps$,"\"==.@a$||\"")+"\"==.@a$)"+
+						" end; "+
+					.@a$+" "+
+				"}", 0
+			);
+		}
+		
+		query_sql( "DELETE FROM `party_queue`;" );
+		if(.@permanent_ingame_changes) {
+			$RWCPartyMem	= $RWCPartyMem ? $RWCPartyMem : .@pty_count;
+			$RWC_MaxRound	= $RWC_MaxRound ? $RWC_MaxRound : .@max_round;
+			$RWC_DrawOut	= $RWC_DrawOut ? $RWC_DrawOut : .@draw_cout;
+			$RWC_GM			= $RWC_GM ? $RWC_GM : .@game_mode;
+			$RWC_Save$		= getstrlen($RWC_Save$) ? $RWC_Save$ : .@npc_name$;
+			$RWC_Save$[1]	= getstrlen($RWC_Save$[1]) ? $RWC_Save$[1] : .@mgm_menu$;
+		} else {
+			$RWCPartyMem	= .@pty_count;
+			$RWC_MaxRound	= .@max_round;
+			$RWC_DrawOut	= .@draw_cout;
+			$RWC_GM			= .@game_mode;
+			$RWC_Save$		= .@npc_name$;
+			$RWC_Save$[1]	= .@mgm_menu$;
+		}
+		.gmallowed		= atoi($RWC_Save$[1]);
+		.npc_$			= $RWC_Save$;
+		.c_maps$ = "|"+ implode( .maps$, "|" ) +"|";
+		
+		.@len = getarraysize(.pl_requirments);
+		for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+			.items_m$ = .items_m$ +""+getitemname( .pl_requirments[.@a] )+" x"+.pl_requirments[.@a+1]+( (.@a+2) < .@len ? ", " : "." );
+			
+		.@len = getarraysize(.tm_requirments);
+		for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+			.items2_m$ = .items2_m$ +""+getitemname( .tm_requirments[.@a] )+" x"+.tm_requirments[.@a+1]+( (.@a+2) < .@len ? ", " : "." );
+
+		/**************************************
+				 Restricted Item Info
+				   Put the item ID
+		 **************************************/
+
+		.restricted[0] = 2410;
+		.restricted[1] = 5135;
+		.restricted[2] = 1599;
+		.restricted[3] = 2199;
+		//.restricted[4] = etc;
+		
+}
+
+2012rwc_01,0,0,0	script	D#1	139,{
+	On:
+		deletearray getd(".teams"+strnpcinfo(2));
+		copyarray getd(".teams"+strnpcinfo(2)), getvariableofnpc(.teams, "RWC Battleground"), 2;
+		donpcevent("Team Warper#"+strnpcinfo(2)+"|1::OnReset");
+		setd( ".score"+getd(".teams"+strnpcinfo(2)), 0 );
+		setd( ".score"+getd(".teams"+strnpcinfo(2)+"[1]"), 0 );
+		bg_updatescore strnpcinfo(4),0,0;
+		setd( ".round"+strnpcinfo(2), 0 );
+
+	OnRound:
+		.@id$ = strnpcinfo(2);
+		.@map_name$ = strnpcinfo(4);
+		initnpctimer;
+		callsub Sub_ShowDigit, (60*5);
+		setd( ".round"+.@id$, getd(".round"+.@id$)+1 );
+		donpcevent("Team Warper#"+.@id$+"|1::OnEnable");
+		donpcevent("Team Warper#"+.@id$+"|2::OnEnable");
+		.@len = getvariableofnpc( .nwall[atoi(.@id$)-1], "RWC Battleground" );
+		copyarray .@xwal, getvariableofnpc( getd(".xwal"+.@id$), "RWC Battleground"), .@len;
+		copyarray .@ywal, getvariableofnpc( getd(".ywal"+.@id$), "RWC Battleground"), .@len;
+		copyarray .@lwal, getvariableofnpc( getd(".lwal"+.@id$), "RWC Battleground"), .@len;
+		copyarray .@dwal, getvariableofnpc( getd(".dwal"+.@id$), "RWC Battleground"), .@len;
+		for( .@a = 0; .@a < .@len; .@a++ )
+			setwall .@map_name$, .@xwal[.@a], .@ywal[.@a], .@lwal[.@a], .@dwal[.@a], 0, .@map_name$+"|"+.@a;
+		end;
+
+	Sub_GiveReward:
+		if (getarg(0) < 0 || getarg(0) > 2)
+			return;
+		.pid = getarg(1);
+		.point = getd("$@BGR_Point"+getarg(0));
+		.rewards$ = getarg(0)+"_team_rewards";
+		getpartymember .pid,2,.@party_aid;
+		for(.@g = 0; .@g < getarraysize(.@party_aid); .@g++) {
+			attachrid(.@party_aid[.@g],1);
+			if(playerattached()) {
+				setd $@BGR_Point$[0], getd($@BGR_Point$[0])+.point;
+				message strcharinfo(0),"You received "+.point+" "+$@BGR_Point$[1]+".";
+				copyarray .@rewards[0], getd( "$@t_"+.rewards$ ), getarraysize( getd("$@t_"+.rewards$) );
+				.@len = getarraysize(.@rewards);
+				for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+					getitem .@rewards[.@a], .@rewards[.@a+1];
+				if( getpartyleader( getcharid(1), 2 ) == getcharid(0) ) {
+					copyarray .@l_rewards[0], getd( "$@l_"+.rewards$ ), getarraysize( getd( "$@l_"+.rewards$ ) );
+					.@len = getarraysize(.@l_rewards);
+					for( .@a = 0; .@a < .@len; .@a = .@a + 2 )
+						getitem .@l_rewards[.@a], .@l_rewards[.@a+1];
+				}
+			}
+		}
+		return;
+		
+	OnEnd:
+		.@winner = getarg(0);
+		.@loser = getarg(1);
+		.@id$ = strnpcinfo(2);
+		if( getargcount() < 3 ) {
+			announce "RWC Battleground -- "+getpartyname(.@winner)+" -- won against -- "+getpartyname(.@loser)+" --!",bc_all|bc_blue;
+			setmapflag strnpcinfo(4), mf_fireworks;
+			
+			query_sql( "SELECT `guild_id` FROM `char` WHERE `name` = '"+escape_sql(getpartyleader(.@loser))+"';", .@gid );
+			.@gm_cid = getguildmasterid( .@gid );
+			.@gname$ = getguildname( .@gid );
+			.@stats = query_sql( 
+				"SELECT `loses` "+
+				"FROM `guild_stats` "+
+				"WHERE `guild_id` = "+.@gid+";",
+				.@loses
+			);
+			.@loses++;
+			if( .@stats ) {
+				query_sql(
+					"UPDATE `guild_stats` "+
+					"SET `loses` = "+.@loses+" "+
+					"WHERE `guild_id` = "+.@gid+";"
+				);
+			}
+			else {
+				query_sql(
+					"INSERT INTO `guild_stats` "+
+					"VALUES ( "+.@gid+", "+.@gm_cid+", '"+escape_sql(.@gname$)+"', 0, 0, "+.@loses+" );"
+				);
+			}
+			
+			query_sql( "SELECT `guild_id` FROM `char` WHERE `name` = '"+escape_sql(getpartyleader(.@winner))+"';", .@gid );
+			.@gm_cid = getguildmasterid( .@gid );
+			.@gname$ = getguildname( .@gid );
+			.@stats = query_sql( 
+				"SELECT `rating`, `wins` "+
+				"FROM `guild_stats` "+
+				"WHERE `guild_id` = "+.@gid+";",
+				.@rating, .@wins
+			);
+			.@wins++;
+			.@rating++;
+			if( .@stats ) {
+				query_sql(
+					"UPDATE `guild_stats` "+
+					"SET `wins` = "+.@wins+", `rating` = "+.@rating+" "+
+					"WHERE `guild_id` = "+.@gid+";"
+				);
+			}
+			else {
+				query_sql(
+					"INSERT INTO `guild_stats` "+
+					"VALUES ( "+.@gid+", "+.@gm_cid+", '"+escape_sql(.@gname$)+"', "+.@rating+", "+.@wins+", 0 );"
+				);
+			}
+			callsub(Sub_GiveReward,0,.@winner);
+			callsub(Sub_GiveReward,1,.@loser);
+			callsub Sub_ShowMessage, "Your rank has increased!!", .@winner;
+		} else {
+			announce "RWC Battleground -- "+getpartyname(.@winner)+" -- draw game against -- "+getpartyname(.@loser)+" --!",bc_all|bc_blue;
+			setmapflag strnpcinfo(4), mf_fireworks;
+			callsub(Sub_GiveReward,2,.@winner);
+			callsub(Sub_GiveReward,2,.@loser);
+		}
+		sleep(5000);
+		callsub Sub_LeaveBG;
+		bg_destroy getd(".teams"+.@id$+"[2]");
+		bg_destroy getd(".teams"+.@id$+"[3]");
+		delete_queue( .@loser, .@winner );
+		stopnpctimer;
+		setd(".round"+.@id$, 0);
+		setd( ".score"+.@loser, 0 );
+		setd( ".score"+.@winner, 0 );
+		deletearray( getd(".users"+.@id$) );
+		deletearray( getd(".q_users"+.@id$) );
+		deletearray( getd(".teams"+.@id$) );
+		mapwarp strnpcinfo(4),"prontera",156,191;
+		removemapflag strnpcinfo(4),mf_fireworks;
+		end;
+		
+	OnQuit: .a = 0; .in$ = "";
+		deletearray( .pid );
+		addrid(1);
+		.@id$ = strnpcinfo(2);
+		.@map_name$ = strnpcinfo(4);
+		copyarray .@teams, getd(".teams"+.@id$ ), 2;
+		if( Hp && getarraysize(@pid)
+		&&  !compare("|"+.in$, "|"+@pid+"|") ) {
+			.in$ = .in$ + @pid + "|";
+			.pid[ getarraysize( .pid ) ] = @pid;
+		} .a++;
+		if( getarraysize(.pid) == 1
+		&&  !getd(".win"+.@id$)
+		&& .a == getmapusers(.@map_name$) ) {
+			.@winner = .pid;
+			.@loser = ( .pid!=.@teams ? .@teams : .@teams[1] );
+			callsub(Sub_GiveReward,0,.@winner);
+			mapannounce .@map_name$,"Team "+getpartyname(.@winner)+" wins round "+getd(".round"+.@id$)+".",bc_map|bc_blue;
+			setd( ".score"+.@winner, getd(".score"+.@winner)+1 );
+			if( .@winner == .@teams )
+				bg_updatescore .@map_name$, getd(".score"+.@winner), getd(".score"+.@loser);
+			else bg_updatescore .@map_name$, getd(".score"+.@loser), getd(".score"+.@winner);
+			if( getd(".round"+.@id$) == $RWC_MaxRound && !$RWC_GM
+			||  getd( ".round"+.@id$ ) == ( $RWC_MaxRound / 2 ) + 1 && $RWC_GM == 1 )
+				callsub Sub_CheckWinner, .@id$, .@winner, .@loser;
+			callsub Sub_RestartRound, .@map_name$, .@id$;
+		}
+		end;
+
+	OnGo:
+		.@id$ = strnpcinfo(2);
+		setd ".users"+.@id$, getvariableofnpc( getd(".users"+.@id$ ), "Team Warper#"+.@id$+"|1" );
+		setd ".users"+.@id$+"[1]", getvariableofnpc( getd(".users"+.@id$+"[1]" ), "Team Warper#"+.@id$+"|1" );
+		setd ".q_users"+.@id$, getvariableofnpc( getd(".q_users"+.@id$ ), "Team Warper#"+.@id$+"|1" );
+		setd ".q_users"+.@id$+"[1]", getvariableofnpc( getd(".q_users"+.@id$+"[1]" ), "Team Warper#"+.@id$+"|1" );
+		stopnpctimer("D#"+.@id$);
+		sleep(2000);
+		callsub Sub_ShowMessage, "You have 1 minute to buff and prepare for the onslaught!!";
+		callsub Sub_ShowDigit, 50;
+		sleep(10000);
+		callsub Sub_ShowMessage, "Each round will last 6 minutes.";
+		sleep(29000);
+		callsub Sub_ShowMessage, "Get Ready!";
+		sleep(10000);
+		callsub Sub_ShowDigit;
+		.@nwall = getelementofarray( getvariableofnpc(.nwall,"RWC Battleground"), atoi(.@id$)-1 );
+		.@map_name$ = strnpcinfo(4);
+		for( .@a = 0; .@a < .@nwall; .@a++ )
+			delwall .@map_name$+"|"+.@a;
+		mapannounce .@map_name$,"GO!!!!!!!!!!!",bc_map|bc_blue;
+		sleep(1000);
+		setnpctimer 300001, "D#"+.@id$;
+		startnpctimer("D#"+.@id$);
+		if( !.mapflag )
+			setmapflag .@map_name$, mf_pvp;
+		else
+			setmapflag .@map_name$, mf_gvg;
+		end;
+		
+	Sub_CheckWinner:
+		setd( ".win"+getarg(0), 1 );
+		if( getd(".score"+getarg(1)) > getd(".score"+getarg(2)) )
+			callsub OnEnd, getarg(1), getarg(2);
+		else if( getd(".score"+getarg(1)) < getd(".score"+getarg(2)) )
+			callsub OnEnd, getarg(2), getarg(1);
+		else callsub OnEnd, getarg(1), getarg(2), 1;
+		end;
+		
+	Sub_RestartRound:
+		.@map_name$ = getarg(0);
+		.@id$ = getarg(1);
+		if( !.mapflag )
+			removemapflag .@map_name$, mf_pvp;
+		else
+			removemapflag .@map_name$, mf_gvg;
+		sleep(500);
+		party_warp( "Team Warper#"+.@id$+"|1", getd(".teams"+.@id$ ) );
+		sleep(500);
+		party_warp( "Team Warper#"+.@id$+"|2", getd(".teams"+.@id$+"[1]" ) );
+		donpcevent strnpcinfo(0)+"::OnHeal";
+		sleep(2000); //Wait for players to load.
+		goto OnRound;
+		
+	OnHeal:
+		atcommand "@heal";
+		end;
+		
+	Sub_ShowDigit:
+		.digit = getarg(0,0);
+		donpcevent strnpcinfo(0)+"::OnShowDigit";
+		return;
+	OnShowDigit:
+		if( .digit ) {
+			addrid(1);
+			showdigit -.digit,2;
+		} else {
+			addrid(1);
+			showdigit 0,0;
+		}
+		end;
+		
+	Sub_ShowMessage:
+		.message$ = getarg(0,"");
+		.target_party = getarg(1,0);
+		donpcevent strnpcinfo(0)+"::OnShowMessage";
+		return;
+	OnShowMessage:
+		if(.target_party) {
+			addrid(2,0,.target_party);
+			.target_party = 0;
+		} else
+			addrid(1);
+		message strcharinfo(0),.message$;
+		end;
+		
+	Sub_LeaveBG:
+		donpcevent strnpcinfo(0)+"::OnLeaveBG";
+		return;
+	OnLeaveBG:
+		addrid(1);
+		bg_leave;
+		end;
+		
+	OnPartyCount:
+		.s = 0;
+		addrid( 2, 0, .pid );
+		if( .pcnt ) {
+			if( Hp && strcharinfo(3) == strnpcinfo(4) )
+				.s++;
+		} else { .s++; }
+		end;
+
+	Sub_PartyCount:
+		.pcnt = 0;
+		.pid = getarg(0);
+		if( getargcount() > 1 )
+			.pcnt = 1;
+		donpcevent strnpcinfo(0)+"::OnPartyCount";
+		return .s;
+		
+	OnBGQuit1: bg_leave;
+		setd ".q_users"+.@id$, getd( ".q_users"+.@id$ )-1;
+		
+	OnBGDie1:
+		.@id$ = strnpcinfo(2);
+		.@map_name$ = strnpcinfo(4);
+		copyarray .@teams, getd(".teams"+.@id$ ), 2;
+		setd ".users"+.@id$, getd( ".users"+.@id$ )-1;
+		if( !getd( ".users"+.@id$ ) ) {
+			.@winner = .@teams[1];
+			.@loser = .@teams;
+			callsub(Sub_GiveReward,0,.@winner);
+			mapannounce .@map_name$,"Team "+getpartyname(.@winner)+" wins round "+getd(".round"+.@id$)+".",bc_map|bc_blue;
+			setd( ".score"+.@winner, getd(".score"+.@winner)+1 );
+			if( .@winner == .@teams )
+				bg_updatescore .@map_name$, getd(".score"+.@winner), getd(".score"+.@loser);
+			else bg_updatescore .@map_name$, getd(".score"+.@loser), getd(".score"+.@winner);
+			if( getd(".round"+.@id$ ) == $RWC_MaxRound && !$RWC_GM
+			||  getd( ".round"+.@id$ ) == ( $RWC_MaxRound / 2 ) + 1 && $RWC_GM == 1
+			||  !getd( ".q_users"+.@id$ ) )
+				callsub Sub_CheckWinner, .@id$, .@winner, .@loser;
+			callsub Sub_RestartRound, .@map_name$, .@id$;
+		}
+		end;
+	
+	OnBGQuit2: bg_leave;
+		setd ".q_users"+.@id$+"[1]", getd( ".q_users"+.@id$+"[1]" )-1;
+		
+	OnBGDie2: 
+		.@id$ = strnpcinfo(2);
+		.@map_name$ = strnpcinfo(4);
+		copyarray .@teams, getd(".teams"+.@id$ ), 2;
+		setd ".users"+.@id$+"[1]", getd( ".users"+.@id$+"[1]" )-1;
+		if( !getd( ".users"+.@id$+"[1]" ) ) {
+			.@winner = .@teams;
+			.@loser = .@teams[1];
+			callsub(Sub_GiveReward,0,.@winner);
+			mapannounce .@map_name$,"Team "+getpartyname(.@winner)+" wins round "+getd(".round"+.@id$)+".",bc_map|bc_blue;
+			setd( ".score"+.@winner, getd(".score"+.@winner)+1 );
+			if( .@winner == .@teams )
+				bg_updatescore .@map_name$, getd(".score"+.@winner), getd(".score"+.@loser);
+			else bg_updatescore .@map_name$, getd(".score"+.@loser), getd(".score"+.@winner);
+			if( getd(".round"+.@id$ ) == $RWC_MaxRound && !$RWC_GM
+			||  getd( ".round"+.@id$ ) == ( $RWC_MaxRound / 2 ) + 1 && $RWC_GM == 1
+			|| !getd( ".q_users"+.@id$+"[1]" ) )
+				callsub Sub_CheckWinner, .@id$, .@winner, .@loser;
+			callsub Sub_RestartRound, .@map_name$, .@id$;
+		}
+		end;
+		
+	OnTimer300000:
+		copyarray .@teams, getd(".teams"+strnpcinfo(2)), 2;
+		delete_queue( .@teams, .@teams[1] );
+		callsub Sub_ShowDigit;
+		setd( ".score"+.@teams, 0 );
+		setd( ".score"+.@teams[1], 0 );
+		mapwarp strnpcinfo(4),"prontera",156,191;
+		stopnpctimer;
+		end;
+		
+	OnTimer660000:
+		.@id$ = strnpcinfo(2);
+		.@map_name$ = strnpcinfo(4);
+		copyarray .@teams, getd(".teams"+.@id$ ), 2;
+		.@team1 = callsub(Sub_PartyCount, .@teams, 1);
+		.@team2 = callsub(Sub_PartyCount, .@teams[1], 1);
+		if( .@team1 > .@team2 ) {
+			setd( ".score"+.@teams, getd(".score"+.@teams)+1 );
+			mapannounce .@map_name$,"Team "+getpartyname(.@team1)+" wins round "+getd(".round"+.@id$)+".",bc_map|bc_blue;
+		} else if( .@team1 < .@team2 ) {
+			setd( ".score"+.@teams[1], getd(".score"+.@teams[1])+1 );
+			mapannounce .@map_name$,"Team "+getpartyname(.@teams[1])+" wins round "+getd(".round"+.@id$)+".",bc_map|bc_blue;
+		} else {
+			mapannounce .@map_name$,"Round "+getd(".round"+.@id$)+" is a draw.",bc_map|bc_blue;
+			.draw++;
+			if( .draw >= $RWC_DrawOut ) {
+				mapannounce .@map_name$,"Too many draws game ended.",bc_map|bc_blue;
+				callsub Sub_CheckWinner, .@id$, .@teams, .@teams[1];
+			}
+		}
+		if( getd( ".round"+.@id$ ) == $RWC_MaxRound && !$RWC_GM
+		||  getd( ".round"+.@id$ ) == ( $RWC_MaxRound / 2 ) + 1 && $RWC_GM == 1 )
+			callsub Sub_CheckWinner, .@id$, .@teams, .@teams[1];
+		stopnpctimer;
+		callsub Sub_RestartRound, .@map_name$, .@id$;
+		end;
+}
+
+2012rwc_01,15,71,4	script	Team Warper#1|1	973,{
+	explode( .@str$, strnpcinfo(2), "|" );
+	.@round = getvariableofnpc( getd(".round"+.@str$), "D#"+.@str$)
+	.@x = getelementofarray( getvariableofnpc( getd(".mtm"+.@str$[1]+"x"), "RWC Battleground" ), atoi(.@str$)-1 );
+	.@y = getelementofarray( getvariableofnpc( getd(".mtm"+.@str$[1]+"y"), "RWC Battleground" ), atoi(.@str$)-1 );
+	.@pid = getcharid(1);
+	
+	if( getpartyleader( .@pid, 2 ) != getcharid(0)
+	&& isloggedin( getpartyleader( .@pid, 1 ), getpartyleader( .@pid, 2 ) )
+	&& getpartyleader( .@pid, 4 ) == strnpcinfo(4) ) {
+		mes "[ Team Warper ]";
+		mes "Join the waiting room to warp in.";
+		close;
+	} else {
+		mes "[ Team Warper ]";
+		mes "Would you like to "/*"be warped in or "*/+"cancel the match or refresh the room?";
+		next;
+		getpartymember .@pid,0;
+		.@ptcnt = $@partymembercount;
+		.@on_ptcnt = callsub( Sub_PartyCount, .@pid );
+		.@on_offmap_ptcnt = callsub( Sub_PartyCount, .@pid, 1 );
+		switch(
+			select(/*"Warp"*/":"+
+				(( .@round > 1 ) ? "" : "Cancel Match" )+":"+
+				(( !getwaitingroomstate(3) && .@on_offmap_ptcnt == .@on_ptcnt && .@on_ptcnt < .@ptcnt || !getwaitingroomstate(3) && .@ptcnt < $RWCPartyMem ) ? "Refresh Room" : "" )+":"+
+				(( !getwaitingroomstate(3) && .@on_offmap_ptcnt < .@on_ptcnt && (.@on_ptcnt-.@on_offmap_ptcnt)+.@on_offmap_ptcnt <= $RWCPartyMem ) ? "Recall Party Members" : "" )+":Close"
+			) ) {
+				case 4:
+					getpartymember .@pid,0;
+					.@ptcnt2 = $@partymembercount;
+					if( callsub( Sub_PartyCount, .@pid ) != .@on_ptcnt
+					||  callsub( Sub_PartyCount, .@pid, 1 ) != .@on_offmap_ptcnt
+					||  .@ptcnt2 != .@ptcnt
+					|| getwaitingroomstate(3) ) {
+						mes "[ Team Warper ]";
+						mes "An error has occurred please try again.";
+						close;
+					}
+					getmapxy( .@map$, .@x, .@y, BL_PC );
+					warpparty .@map$, .@x, .@y, .@pid;
+					close;
+					
+				case 3:
+					getpartymember .@pid,0;
+					.@ptcnt2 = $@partymembercount;
+					if( callsub( Sub_PartyCount, .@pid ) != .@on_ptcnt
+					||  callsub( Sub_PartyCount, .@pid, 1 ) != .@on_offmap_ptcnt
+					||  .@ptcnt2 != .@ptcnt
+					|| getwaitingroomstate(3) ) {
+						mes "[ Team Warper ]";
+						mes "An error has occurred please try again.";
+						close;
+					}
+					donpcevent strnpcinfo(0)+"::OnEnable";
+					close;
+					
+				case 2: 
+					mes "[ Team Warper ]";
+					mes "Are you sure?";
+					if( select("Yes:No")==1 ) {
+						delete_queue( @pid, @pid[4] );
+						announce "RWC Battleground -- "+getpartyname(.@pid)+" -- has cancelled the match!",bc_all|bc_blue;
+						addrid(1);
+						showdigit 0,0;
+						mapwarp strnpcinfo(4),"prontera",156,191;
+					}
+					end;
+					
+				default:
+			}
+	}
+	end;
+	
+OnReset:
+	explode( .@str$, strnpcinfo(2), "|" );
+	deletearray getd( ".teams"+.@str$ );
+	end;
+
+OnPartyCount: .s = 0;
+	addrid( 2, 0, .pid );
+	if( playerattached() ) .s++;
+	if( playerattached() && .p_count && strcharinfo(3) != strnpcinfo(4) ) .s--;
+	end;
+Sub_PartyCount:
+	.pid = getarg(0);
+	.p_count = getarg(1,0);
+	donpcevent strnpcinfo(0)+"::OnPartyCount";
+	return .s;
+
+OnEnable:
+	disablenpc( strnpcinfo(0) );
+	delwaitingroom;
+	explode( .@str$, strnpcinfo(2), "|" );
+	.@round = getvariableofnpc( getd(".round"+.@str$), "D#"+.@str$);
+	.@team = getvariableofnpc( getd(".teams"+.@str$+"["+(atoi(.@str$[1])-1)+"]"), "D#"+.@str$);
+	.@count = callsub( Sub_PartyCount, .@team );
+	.@score = getvariableofnpc( getd(".score"+.@team), "D#"+.@str$);
+	enablenpc( strnpcinfo(0) ); //.@count+1
+	waitingroom "Round "+.@round+" | Points "+.@score, 2, strnpcinfo(0)+"::OnQueueUp"+.@str$[1], 1;
+	end;
+
+OnQueueUp1: callsub Sub_QueueUp, 1, 2, 3, 2; end;
+	
+OnQueueUp2: callsub Sub_QueueUp, 2, 3, 2, 1; end;
+
+Sub_QueueUp:
+	explode( .@str$, strnpcinfo(2), "|" );
+	.@id$ = .@str$;
+	.@map_name$ = strnpcinfo(4);
+	.@team = getvariableofnpc( getd(".teams"+.@str$+"["+(atoi(.@str$[1])-1)+"]"), "D#"+.@str$);
+	if( getd(".teams"+.@id$+"["+getarg(1)+"]") == 0 ) {
+		getmapxy( .@map_name$, .@x, .@y, BL_NPC, "Team Warper#"+.@id$+"|"+getarg(0) );
+		explode( .@loc$, loc_find( .@map_name$, .@x, .@y, 5 ), "|" );
+		.@bg_number = bg_create( .@map_name$, atoi(.@loc$), atoi(.@loc$[1]), "D#"+.@str$+"::OnBGQuit"+getarg(0), "D#"+.@str$+"::OnBGDie"+getarg(0)/*, "Team Warper#"+.@id$+"|"+getarg(0)*/ );
+		if(!.@bg_number) {
+			removemapflag .@map_name$, mf_nowarp;
+			debugmes "RWC NPC: [Fatal Error] Failed to create Battleground!";
+			deletearray getd(".users"+.@id$);
+			deletearray getd(".q_users"+.@id$);
+			deletearray getd(".teams"+.@id$);
+			disablewaitingroomevent "Team Warper#"+.@id$+"|"+getarg(0);
+			setd ".signed"+strnpcinfo(2), 0;
+			warpwaitingpc "prontera",156,191;
+			mapwarp .@map_name$,"prontera",156,191;
+			setmapflag .@map_name$, mf_nowarp;
+			end;
+		}
+		setd ".teams"+.@id$+"["+getarg(1)+"]", .@bg_number;
+	}
+	removemapflag .@map_name$, mf_nowarp;
+	.@x = getelementofarray( getvariableofnpc( getd(".mtm"+getarg(0)+"x"), "RWC Battleground" ), atoi(.@id$)-1 );
+	.@y = getelementofarray( getvariableofnpc( getd(".mtm"+getarg(0)+"y"), "RWC Battleground" ), atoi(.@id$)-1 );
+	waitingroom2bg_single(getd(".teams"+.@id$+"["+getarg(1)+"]"),.@map_name$,.@x,.@y,"Team Warper#"+.@id$+"|"+getarg(0));
+	warpwaitingpc .@map_name$,.@x,.@y;
+	setd ".signed"+strnpcinfo(2), getd(".signed"+strnpcinfo(2)) + 1;
+	if( getd(".signed"+strnpcinfo(2)) == callsub( Sub_PartyCount, .@team, 1 )
+	||  getd(".signed"+strnpcinfo(2)) == $RWCPartyMem ) {
+		setd ".users"+.@id$+"["+(getarg(0)-1)+"]", getd(".signed"+strnpcinfo(2));
+		setd ".q_users"+.@id$+"["+(getarg(0)-1)+"]", getd(".signed"+strnpcinfo(2));
+		disablewaitingroomevent "Team Warper#"+.@id$+"|"+getarg(0);
+		setd ".signed"+strnpcinfo(2), 0;
+	}
+	setmapflag .@map_name$, mf_nowarp;
+	if( getwaitingroomstate(3,"Team Warper#"+.@id$+"|"+getarg(0))
+	&&  getwaitingroomstate(3,"Team Warper#"+.@id$+"|"+getarg(3)) )
+		donpcevent "D#"+.@str$+"::OnGo";
+	return;
+}
+
+2012rwc_01,319,137,4	duplicate(Team Warper#1|1)	Team Warper#1|2	974
+
+2012rwc_01,18,69,4	script	Healer Fredrick	97,{
+
+	if(@h_last>gettimetick(2)) end;
+	
+	set @h_last, gettimetick(2)+rand(3,5);
+	percentheal 100,100;
+	specialeffect 312;
+	skilleffect 28,32767;
+	sc_end SC_STONE;
+	sc_end SC_FREEZE;
+	sc_end SC_STUN;
+	sc_end SC_SLEEP;
+	sc_end SC_POISON;
+	sc_end SC_CURSE;
+	sc_end SC_SILENCE;
+	sc_end SC_CONFUSION;
+	sc_end SC_BLIND;
+	sc_end SC_BLEEDING;
+	sc_end SC_DPOISON;
+	skilleffect 29,0;
+	sc_start SC_INCREASEAGI,240000,10;
+	skilleffect 34,0;
+	sc_start SC_BLESSING,240000,10;
+	dispbottom "HP/SP fully restored.";
+	end;
+}
+
+2012rwc_01,16,70,4	script	Repairman Celica	757,{
+	//atcommand "@repairall " + strcharinfo(0);
+	repairall;
+	end;
+}
+
+2012rwc_01,320,135,4	duplicate(Repairman Celica)	Repairman Emi 	745
+2012rwc_01,322,134,4	duplicate(Healer Fredrick)	Healer Clive	632
+
+
+2012rwc_02,0,0,0	duplicate(D#1)	D#2	139
+2012rwc_02,37,156,4	duplicate(Team Warper#1|1)	Team Warper#2|1	973
+2012rwc_02,296,133,4	duplicate(Team Warper#1|1)	Team Warper#2|2	974
+
+2012rwc_02,40,155,4	duplicate(Repairman Celica)	Repairman Kaia	529
+2012rwc_02,42,154,4	duplicate(Healer Fredrick)	Healer Ryker	798
+
+2012rwc_02,299,132,4	duplicate(Repairman Celica)	Repairman Quin	579
+2012rwc_02,300,129,5	duplicate(Healer Fredrick)	Healer Warren	843
+
+
+2012rwc_03,0,0,0	duplicate(D#1)	D#3	139
+2012rwc_03,20,127,4	duplicate(Team Warper#1|1)	Team Warper#3|1	973
+2012rwc_03,181,40,4	duplicate(Team Warper#1|1)	Team Warper#3|2	974
+
+2012rwc_03,23,127,4	duplicate(Repairman Celica)	Repairman Talli	940
+2012rwc_03,25,126,4	duplicate(Healer Fredrick)	Healer Jaegar	731
+
+2012rwc_03,184,40,4	duplicate(Repairman Celica)	Repairman Olive	951
+2012rwc_03,186,39,4	duplicate(Healer Fredrick)	Healer Jason	755
+
+
+2012rwc_04,0,0,0	duplicate(D#1)	D#4	139
+2012rwc_04,228,39,4	duplicate(Team Warper#1|1)	Team Warper#4|1	973
+2012rwc_04,28,38,4	duplicate(Team Warper#1|1)	Team Warper#4|2	974
+
+2012rwc_04,231,39,4	duplicate(Repairman Celica)	Repairman Paisley	611
+2012rwc_04,233,39,4	duplicate(Healer Fredrick)	Healer Tim	704
+
+2012rwc_04,32,39,4	duplicate(Repairman Celica)	Repairman Sarai	641
+2012rwc_04,34,39,4	duplicate(Healer Fredrick)	Healer Eric	707
+
+
+2012rwc_05,0,0,0	duplicate(D#1)	D#5	139
+2012rwc_05,13,71,4	duplicate(Team Warper#1|1)	Team Warper#5|1	973
+2012rwc_05,317,135,4	duplicate(Team Warper#1|1)	Team Warper#5|2	974
+
+2012rwc_05,16,70,4	duplicate(Repairman Celica)	Repairman Ayla	629
+2012rwc_05,18,69,4	duplicate(Healer Fredrick)	Healer Jeckle	686
+
+2012rwc_05,320,135,4	duplicate(Repairman Celica)	Repairman Mabel	747
+2012rwc_05,322,134,4	duplicate(Healer Fredrick)	Healer Clyde	615
+
+
+2012rwc_06,0,0,0	duplicate(D#1)	D#6	139
+2012rwc_06,37,156,4	duplicate(Team Warper#1|1)	Team Warper#6|1	973
+2012rwc_06,296,133,4	duplicate(Team Warper#1|1)	Team Warper#6|2	974
+
+2012rwc_06,40,155,4	duplicate(Repairman Celica)	Repairman Violet	803
+2012rwc_06,42,154,4	duplicate(Healer Fredrick)	Healer Jack	630
+
+2012rwc_06,299,132,4	duplicate(Repairman Celica)	Repairman Ada	793
+2012rwc_06,300,129,5	duplicate(Healer Fredrick)	Healer Rick	407
+
+
+2012rwc_07,0,0,0	duplicate(D#1)	D#7	139
+2012rwc_07,20,127,4	duplicate(Team Warper#1|1)	Team Warper#7|1	973
+2012rwc_07,181,40,4	duplicate(Team Warper#1|1)	Team Warper#7|2	974
+
+2012rwc_07,23,127,4	duplicate(Repairman Celica)	Repairman Oliviann	581
+2012rwc_07,25,126,4	duplicate(Healer Fredrick)	Healer Ace	975
+
+2012rwc_07,184,40,4	duplicate(Repairman Celica)	Repairman Cynthia	601
+2012rwc_07,186,39,4	duplicate(Healer Fredrick)	Healer Atlas	603
+
+
+2012rwc_08,0,0,0	duplicate(D#1)	D#8	139
+2012rwc_08,228,39,4	duplicate(Team Warper#1|1)	Team Warper#8|1	973
+2012rwc_08,28,38,4	duplicate(Team Warper#1|1)	Team Warper#8|2	974
+
+2012rwc_08,231,39,4	duplicate(Repairman Celica)	Repairman Alma	609
+2012rwc_08,233,39,4	duplicate(Healer Fredrick)	Healer Caleb	106
+
+2012rwc_08,32,39,4	duplicate(Repairman Celica)	Repairman Stella	726
+2012rwc_08,34,39,4	duplicate(Healer Fredrick)	Healer Leo	119

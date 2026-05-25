@@ -1,0 +1,8 @@
+-	script	#high	-1,{
+	OnPCLoginEvent:
+	if (getgmlevel() == 99) {
+		atcommand "@speed 0";
+//		atcommand "@hide";
+		end;
+	}
+}

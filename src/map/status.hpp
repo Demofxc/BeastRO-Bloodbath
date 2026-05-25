@@ -1446,7 +1446,17 @@ enum sc_type : int16 {
 	SC_WATER_CHARM_POWER,
 	SC_WIND_CHARM_POWER,
 	SC_GROUND_CHARM_POWER,
-	SC_VIPSTATE, // VIP Status Icon
+	SC_VIPSTATUS = 1701, // VIP Status Icon
+	SC_AWAKENED_LV1,
+	SC_AWAKENED_LV2,
+	SC_AWAKENED_LV3,
+	SC_AWAKENED_LV4,
+	SC_AWAKENED_LV5,
+	SC_AWAKENED_LV6,
+	SC_AWAKENED_LV7,
+	SC_AWAKENED_LV8,
+	SC_AWAKENED_LV9,
+	SC_AWAKENED_LV10,
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 };
 
@@ -2929,7 +2939,17 @@ enum efst_type : int16{
 	EFST_C_BUFF_9,	// 1517
 
 	EFST_VIPSTATE = 1500, // VIP Status Icon
-	
+	EFST_AWAKENED_LV1 = 1501, // Awakened Level 1
+	EFST_AWAKENED_LV2 = 1502, // Awakened Level 2
+	EFST_AWAKENED_LV3 = 1503, // Awakened Level 3
+	EFST_AWAKENED_LV4 = 1504, // Awakened Level 4
+	EFST_AWAKENED_LV5 = 1505, // Awakened Level 5
+	EFST_AWAKENED_LV6 = 1506, // Awakened Level 6
+	EFST_AWAKENED_LV7 = 1507, // Awakened Level 7
+	EFST_AWAKENED_LV8 = 1508, // Awakened Level 8
+	EFST_AWAKENED_LV9 = 1509, // Awakened Level 9
+	EFST_AWAKENED_LV10 = 1510, // Awakened Level 10
+
 	EFST_CHASING = 1560,
 
 	EFST_MYSTERY_POWDER = 1665,
@@ -3732,6 +3752,30 @@ int get_pet_egg_index(map_session_data *sd);
 int8 assign_pet_refine(map_session_data *sd, int index);
 int8 assign_pet_grade(map_session_data *sd, int index);
 std::string pet_grade_text(int grade);
+
+struct s_vip_bonus {
+	uint16 id;
+	struct script_code *script;	//Default script for everything.
+
+	~s_vip_bonus() {
+		if (this->script){
+			script_free_code(this->script);
+			this->script = nullptr;
+		}
+	}
+};
+
+class VipBonusDatabase : public TypesafeYamlDatabase<uint16, s_vip_bonus> {
+public:
+	VipBonusDatabase() : TypesafeYamlDatabase( "VIP_BONUS_DB", 1 ){
+
+	}
+
+	const std::string getDefaultLocation();
+	uint64 parseBodyNode(const ryml::NodeRef& node);
+};
+
+extern VipBonusDatabase vip_bonus_db;
 
 void status_readdb( bool reload = false );
 void do_init_status(void);

@@ -1915,6 +1915,48 @@ Body:
         Hp: 7824
       - Level: 99
         Hp: 7978
+      - Level: 100
+        Hp: 8134
+      - Level: 101
+        Hp: 8292
+      - Level: 102
+        Hp: 8452
+      - Level: 103
+        Hp: 8614
+      - Level: 104
+        Hp: 8778
+      - Level: 105
+        Hp: 8944
+      - Level: 106
+        Hp: 9112
+      - Level: 107
+        Hp: 9282
+      - Level: 108
+        Hp: 9454
+      - Level: 109
+        Hp: 9628
+      - Level: 110
+        Hp: 9804
+      - Level: 111
+        Hp: 9982
+      - Level: 112
+        Hp: 10162
+      - Level: 113
+        Hp: 10344
+      - Level: 114
+        Hp: 10528
+      - Level: 115
+        Hp: 10714
+      - Level: 116
+        Hp: 10902
+      - Level: 117
+        Hp: 11092
+      - Level: 118
+        Hp: 11284
+      - Level: 119
+        Hp: 11478
+      - Level: 120
+        Hp: 11674
   - Jobs:
       Priest: true
       High_Priest: true
@@ -2118,6 +2160,48 @@ Body:
         Hp: 4175
       - Level: 99
         Hp: 4254
+      - Level: 100
+        Hp: 4335
+      - Level: 101
+        Hp: 4417
+      - Level: 102
+        Hp: 4500
+      - Level: 103
+        Hp: 4584
+      - Level: 104
+        Hp: 4669
+      - Level: 105
+        Hp: 4755
+      - Level: 106
+        Hp: 4842
+      - Level: 107
+        Hp: 4930
+      - Level: 108
+        Hp: 5019
+      - Level: 109
+        Hp: 5109
+      - Level: 110
+        Hp: 5200
+      - Level: 111
+        Hp: 5292
+      - Level: 112
+        Hp: 5385
+      - Level: 113
+        Hp: 5479
+      - Level: 114
+        Hp: 5574
+      - Level: 115
+        Hp: 5670
+      - Level: 116
+        Hp: 5767
+      - Level: 117
+        Hp: 5865
+      - Level: 118
+        Hp: 5964
+      - Level: 119
+        Hp: 6064
+      - Level: 120
+        Hp: 6165
   - Jobs:
       Wizard: true
       High_Wizard: true
@@ -2321,6 +2405,48 @@ Body:
         Hp: 3195
       - Level: 99
         Hp: 3254
+      - Level: 100
+        Hp: 3315
+      - Level: 101
+        Hp: 3377
+      - Level: 102
+        Hp: 3440
+      - Level: 103
+        Hp: 3504
+      - Level: 104
+        Hp: 3569
+      - Level: 105
+        Hp: 3635
+      - Level: 106
+        Hp: 3702
+      - Level: 107
+        Hp: 3770
+      - Level: 108
+        Hp: 3839
+      - Level: 109
+        Hp: 3909
+      - Level: 110
+        Hp: 3980
+      - Level: 111
+        Hp: 4052
+      - Level: 112
+        Hp: 4125
+      - Level: 113
+        Hp: 4199
+      - Level: 114
+        Hp: 4274
+      - Level: 115
+        Hp: 4350
+      - Level: 116
+        Hp: 4427
+      - Level: 117
+        Hp: 4505
+      - Level: 118
+        Hp: 4584
+      - Level: 119
+        Hp: 4664
+      - Level: 120
+        Hp: 4745
   - Jobs:
       Blacksmith: true
       Whitesmith: true
@@ -2524,6 +2650,48 @@ Body:
         Hp: 4895
       - Level: 99
         Hp: 4989
+      - Level: 100
+        Hp: 5148
+      - Level: 101
+        Hp: 5241
+      - Level: 102
+        Hp: 5336
+      - Level: 103
+        Hp: 5433
+      - Level: 104
+        Hp: 5532
+      - Level: 105
+        Hp: 5633
+      - Level: 106
+        Hp: 5736
+      - Level: 107
+        Hp: 5841
+      - Level: 108
+        Hp: 5948
+      - Level: 109
+        Hp: 6057
+      - Level: 110
+        Hp: 6168
+      - Level: 111
+        Hp: 6281
+      - Level: 112
+        Hp: 6396
+      - Level: 113
+        Hp: 6513
+      - Level: 114
+        Hp: 6632
+      - Level: 115
+        Hp: 6753
+      - Level: 116
+        Hp: 6876
+      - Level: 117
+        Hp: 7001
+      - Level: 118
+        Hp: 7128
+      - Level: 119
+        Hp: 7257
+      - Level: 120
+        Hp: 7388
   - Jobs:
       Hunter: true
       Sniper: true
@@ -2727,6 +2895,48 @@ Body:
         Hp: 4650
       - Level: 99
         Hp: 4739
+      - Level: 100
+        Hp: 5148
+      - Level: 101
+        Hp: 5241
+      - Level: 102
+        Hp: 5336
+      - Level: 103
+        Hp: 5433
+      - Level: 104
+        Hp: 5532
+      - Level: 105
+        Hp: 5633
+      - Level: 106
+        Hp: 5736
+      - Level: 107
+        Hp: 5841
+      - Level: 108
+        Hp: 5948
+      - Level: 109
+        Hp: 6057
+      - Level: 110
+        Hp: 6168
+      - Level: 111
+        Hp: 6281
+      - Level: 112
+        Hp: 6396
+      - Level: 113
+        Hp: 6513
+      - Level: 114
+        Hp: 6632
+      - Level: 115
+        Hp: 6753
+      - Level: 116
+        Hp: 6876
+      - Level: 117
+        Hp: 7001
+      - Level: 118
+        Hp: 7128
+      - Level: 119
+        Hp: 7257
+      - Level: 120
+        Hp: 7388
   - Jobs:
       Assassin: true
       Assassin_Cross: true
@@ -2930,6 +3140,48 @@ Body:
         Hp: 5865
       - Level: 99
         Hp: 5979
+      - Level: 100
+        Hp: 6100
+      - Level: 101
+        Hp: 6223
+      - Level: 102
+        Hp: 6348
+      - Level: 103
+        Hp: 6475
+      - Level: 104
+        Hp: 6604
+      - Level: 105
+        Hp: 6735
+      - Level: 106
+        Hp: 6868
+      - Level: 107
+        Hp: 7003
+      - Level: 108
+        Hp: 7140
+      - Level: 109
+        Hp: 7279
+      - Level: 110
+        Hp: 7420
+      - Level: 111
+        Hp: 7563
+      - Level: 112
+        Hp: 7708
+      - Level: 113
+        Hp: 7855
+      - Level: 114
+        Hp: 8004
+      - Level: 115
+        Hp: 8155
+      - Level: 116
+        Hp: 8308
+      - Level: 117
+        Hp: 8463
+      - Level: 118
+        Hp: 8620
+      - Level: 119
+        Hp: 8779
+      - Level: 120
+        Hp: 8940
   - Jobs:
       Crusader: true
       Crusader2: true
@@ -3136,6 +3388,48 @@ Body:
         Hp: 6061
       - Level: 99
         Hp: 6177
+      - Level: 100
+        Hp: 6301
+      - Level: 101
+        Hp: 6427
+      - Level: 102
+        Hp: 6555
+      - Level: 103
+        Hp: 6685
+      - Level: 104
+        Hp: 6817
+      - Level: 105
+        Hp: 6951
+      - Level: 106
+        Hp: 7087
+      - Level: 107
+        Hp: 7225
+      - Level: 108
+        Hp: 7365
+      - Level: 109
+        Hp: 7507
+      - Level: 110
+        Hp: 7651
+      - Level: 111
+        Hp: 7797
+      - Level: 112
+        Hp: 7945
+      - Level: 113
+        Hp: 8095
+      - Level: 114
+        Hp: 8247
+      - Level: 115
+        Hp: 8401
+      - Level: 116
+        Hp: 8557
+      - Level: 117
+        Hp: 8715
+      - Level: 118
+        Hp: 8875
+      - Level: 119
+        Hp: 9037
+      - Level: 120
+        Hp: 9201
   - Jobs:
       Monk: true
       Champion: true
@@ -3339,6 +3633,48 @@ Body:
         Hp: 5042
       - Level: 99
         Hp: 5137
+      - Level: 100
+        Hp: 5148
+      - Level: 101
+        Hp: 5241
+      - Level: 102
+        Hp: 5336
+      - Level: 103
+        Hp: 5433
+      - Level: 104
+        Hp: 5532
+      - Level: 105
+        Hp: 5633
+      - Level: 106
+        Hp: 5736
+      - Level: 107
+        Hp: 5841
+      - Level: 108
+        Hp: 5948
+      - Level: 109
+        Hp: 6057
+      - Level: 110
+        Hp: 6168
+      - Level: 111
+        Hp: 6281
+      - Level: 112
+        Hp: 6396
+      - Level: 113
+        Hp: 6513
+      - Level: 114
+        Hp: 6632
+      - Level: 115
+        Hp: 6753
+      - Level: 116
+        Hp: 6876
+      - Level: 117
+        Hp: 7001
+      - Level: 118
+        Hp: 7128
+      - Level: 119
+        Hp: 7257
+      - Level: 120
+        Hp: 7388
   - Jobs:
       Sage: true
       Professor: true
@@ -3542,6 +3878,48 @@ Body:
         Hp: 4175
       - Level: 99
         Hp: 4254
+      - Level: 100
+        Hp: 4335
+      - Level: 101
+        Hp: 4417
+      - Level: 102
+        Hp: 4500
+      - Level: 103
+        Hp: 4584
+      - Level: 104
+        Hp: 4669
+      - Level: 105
+        Hp: 4755
+      - Level: 106
+        Hp: 4842
+      - Level: 107
+        Hp: 4930
+      - Level: 108
+        Hp: 5019
+      - Level: 109
+        Hp: 5109
+      - Level: 110
+        Hp: 5200
+      - Level: 111
+        Hp: 5292
+      - Level: 112
+        Hp: 5385
+      - Level: 113
+        Hp: 5479
+      - Level: 114
+        Hp: 5574
+      - Level: 115
+        Hp: 5670
+      - Level: 116
+        Hp: 5767
+      - Level: 117
+        Hp: 5865
+      - Level: 118
+        Hp: 5964
+      - Level: 119
+        Hp: 6064
+      - Level: 120
+        Hp: 6165
   - Jobs:
       Rogue: true
       Stalker: true
@@ -3745,6 +4123,48 @@ Body:
         Hp: 4650
       - Level: 99
         Hp: 4739
+      - Level: 100
+        Hp: 4834
+      - Level: 101
+        Hp: 4929
+      - Level: 102
+        Hp: 5026
+      - Level: 103
+        Hp: 5125
+      - Level: 104
+        Hp: 5226
+      - Level: 105
+        Hp: 5329
+      - Level: 106
+        Hp: 5434
+      - Level: 107
+        Hp: 5541
+      - Level: 108
+        Hp: 5650
+      - Level: 109
+        Hp: 5761
+      - Level: 110
+        Hp: 5874
+      - Level: 111
+        Hp: 5989
+      - Level: 112
+        Hp: 6106
+      - Level: 113
+        Hp: 6225
+      - Level: 114
+        Hp: 6346
+      - Level: 115
+        Hp: 6469
+      - Level: 116
+        Hp: 6594
+      - Level: 117
+        Hp: 6721
+      - Level: 118
+        Hp: 6850
+      - Level: 119
+        Hp: 6981
+      - Level: 120
+        Hp: 7114
   - Jobs:
       Alchemist: true
       Creator: true
@@ -3948,6 +4368,48 @@ Body:
         Hp: 4895
       - Level: 99
         Hp: 4989
+      - Level: 100
+        Hp: 5148
+      - Level: 101
+        Hp: 5241
+      - Level: 102
+        Hp: 5336
+      - Level: 103
+        Hp: 5433
+      - Level: 104
+        Hp: 5532
+      - Level: 105
+        Hp: 5633
+      - Level: 106
+        Hp: 5736
+      - Level: 107
+        Hp: 5841
+      - Level: 108
+        Hp: 5948
+      - Level: 109
+        Hp: 6057
+      - Level: 110
+        Hp: 6168
+      - Level: 111
+        Hp: 6281
+      - Level: 112
+        Hp: 6396
+      - Level: 113
+        Hp: 6513
+      - Level: 114
+        Hp: 6632
+      - Level: 115
+        Hp: 6753
+      - Level: 116
+        Hp: 6876
+      - Level: 117
+        Hp: 7001
+      - Level: 118
+        Hp: 7128
+      - Level: 119
+        Hp: 7257
+      - Level: 120
+        Hp: 7388
   - Jobs:
       Bard: true
       Clown: true
@@ -4151,6 +4613,48 @@ Body:
         Hp: 3979
       - Level: 99
         Hp: 4056
+      - Level: 100
+        Hp: 4134
+      - Level: 101
+        Hp: 4213
+      - Level: 102
+        Hp: 4294
+      - Level: 103
+        Hp: 4377
+      - Level: 104
+        Hp: 4462
+      - Level: 105
+        Hp: 4549
+      - Level: 106
+        Hp: 4638
+      - Level: 107
+        Hp: 4729
+      - Level: 108
+        Hp: 4822
+      - Level: 109
+        Hp: 4917
+      - Level: 110
+        Hp: 5014
+      - Level: 111
+        Hp: 5113
+      - Level: 112
+        Hp: 5214
+      - Level: 113
+        Hp: 5317
+      - Level: 114
+        Hp: 5422
+      - Level: 115
+        Hp: 5529
+      - Level: 116
+        Hp: 5638
+      - Level: 117
+        Hp: 5749
+      - Level: 118
+        Hp: 5862
+      - Level: 119
+        Hp: 5977
+      - Level: 120
+        Hp: 6094
   - Jobs:
       Dancer: true
       Gypsy: true
@@ -4354,6 +4858,48 @@ Body:
         Hp: 3979
       - Level: 99
         Hp: 4056
+      - Level: 100
+        Hp: 4134
+      - Level: 101
+        Hp: 4213
+      - Level: 102
+        Hp: 4294
+      - Level: 103
+        Hp: 4377
+      - Level: 104
+        Hp: 4462
+      - Level: 105
+        Hp: 4549
+      - Level: 106
+        Hp: 4638
+      - Level: 107
+        Hp: 4729
+      - Level: 108
+        Hp: 4822
+      - Level: 109
+        Hp: 4917
+      - Level: 110
+        Hp: 5014
+      - Level: 111
+        Hp: 5113
+      - Level: 112
+        Hp: 5214
+      - Level: 113
+        Hp: 5317
+      - Level: 114
+        Hp: 5422
+      - Level: 115
+        Hp: 5529
+      - Level: 116
+        Hp: 5638
+      - Level: 117
+        Hp: 5749
+      - Level: 118
+        Hp: 5862
+      - Level: 119
+        Hp: 5977
+      - Level: 120
+        Hp: 6094
   - Jobs:
       Gunslinger: true
     BaseHp:
@@ -6991,6 +7537,48 @@ Body:
         Sp: 304
       - Level: 99
         Sp: 307
+      - Level: 100
+        Sp: 311
+      - Level: 101
+        Sp: 315
+      - Level: 102
+        Sp: 319
+      - Level: 103
+        Sp: 323
+      - Level: 104
+        Sp: 327
+      - Level: 105
+        Sp: 331
+      - Level: 106
+        Sp: 335
+      - Level: 107
+        Sp: 339
+      - Level: 108
+        Sp: 343
+      - Level: 109
+        Sp: 347
+      - Level: 110
+        Sp: 351
+      - Level: 111
+        Sp: 355
+      - Level: 112
+        Sp: 359
+      - Level: 113
+        Sp: 363
+      - Level: 114
+        Sp: 367
+      - Level: 115
+        Sp: 371
+      - Level: 116
+        Sp: 375
+      - Level: 117
+        Sp: 379
+      - Level: 118
+        Sp: 383
+      - Level: 119
+        Sp: 387
+      - Level: 120
+        Sp: 391
   - Jobs:
       Priest: true
       High_Priest: true
@@ -7194,6 +7782,48 @@ Body:
         Sp: 794
       - Level: 99
         Sp: 802
+      - Level: 100
+        Sp: 810
+      - Level: 101
+        Sp: 818
+      - Level: 102
+        Sp: 826
+      - Level: 103
+        Sp: 834
+      - Level: 104
+        Sp: 842
+      - Level: 105
+        Sp: 851
+      - Level: 106
+        Sp: 860
+      - Level: 107
+        Sp: 869
+      - Level: 108
+        Sp: 878
+      - Level: 109
+        Sp: 887
+      - Level: 110
+        Sp: 897
+      - Level: 111
+        Sp: 907
+      - Level: 112
+        Sp: 917
+      - Level: 113
+        Sp: 927
+      - Level: 114
+        Sp: 937
+      - Level: 115
+        Sp: 948
+      - Level: 116
+        Sp: 959
+      - Level: 117
+        Sp: 970
+      - Level: 118
+        Sp: 981
+      - Level: 119
+        Sp: 992
+      - Level: 120
+        Sp: 1004
   - Jobs:
       Wizard: true
       High_Wizard: true
@@ -7397,6 +8027,48 @@ Body:
         Sp: 892
       - Level: 99
         Sp: 901
+      - Level: 100
+        Sp: 910
+      - Level: 101
+        Sp: 919
+      - Level: 102
+        Sp: 928
+      - Level: 103
+        Sp: 937
+      - Level: 104
+        Sp: 946
+      - Level: 105
+        Sp: 955
+      - Level: 106
+        Sp: 964
+      - Level: 107
+        Sp: 973
+      - Level: 108
+        Sp: 982
+      - Level: 109
+        Sp: 991
+      - Level: 110
+        Sp: 1000
+      - Level: 111
+        Sp: 1009
+      - Level: 112
+        Sp: 1018
+      - Level: 113
+        Sp: 1027
+      - Level: 114
+        Sp: 1036
+      - Level: 115
+        Sp: 1045
+      - Level: 116
+        Sp: 1054
+      - Level: 117
+        Sp: 1063
+      - Level: 118
+        Sp: 1072
+      - Level: 119
+        Sp: 1081
+      - Level: 120
+        Sp: 1090
   - Jobs:
       Blacksmith: true
       Whitesmith: true
@@ -7600,6 +8272,48 @@ Body:
         Sp: 402
       - Level: 99
         Sp: 406
+      - Level: 100
+        Sp: 411
+      - Level: 101
+        Sp: 416
+      - Level: 102
+        Sp: 421
+      - Level: 103
+        Sp: 426
+      - Level: 104
+        Sp: 431
+      - Level: 105
+        Sp: 436
+      - Level: 106
+        Sp: 441
+      - Level: 107
+        Sp: 446
+      - Level: 108
+        Sp: 451
+      - Level: 109
+        Sp: 456
+      - Level: 110
+        Sp: 461
+      - Level: 111
+        Sp: 466
+      - Level: 112
+        Sp: 471
+      - Level: 113
+        Sp: 476
+      - Level: 114
+        Sp: 481
+      - Level: 115
+        Sp: 486
+      - Level: 116
+        Sp: 491
+      - Level: 117
+        Sp: 496
+      - Level: 118
+        Sp: 501
+      - Level: 119
+        Sp: 506
+      - Level: 120
+        Sp: 511
   - Jobs:
       Hunter: true
       Sniper: true
@@ -7803,6 +8517,48 @@ Body:
         Sp: 402
       - Level: 99
         Sp: 406
+      - Level: 100
+        Sp: 411
+      - Level: 101
+        Sp: 416
+      - Level: 102
+        Sp: 421
+      - Level: 103
+        Sp: 426
+      - Level: 104
+        Sp: 431
+      - Level: 105
+        Sp: 436
+      - Level: 106
+        Sp: 441
+      - Level: 107
+        Sp: 446
+      - Level: 108
+        Sp: 451
+      - Level: 109
+        Sp: 456
+      - Level: 110
+        Sp: 461
+      - Level: 111
+        Sp: 466
+      - Level: 112
+        Sp: 471
+      - Level: 113
+        Sp: 476
+      - Level: 114
+        Sp: 481
+      - Level: 115
+        Sp: 486
+      - Level: 116
+        Sp: 491
+      - Level: 117
+        Sp: 496
+      - Level: 118
+        Sp: 501
+      - Level: 119
+        Sp: 506
+      - Level: 120
+        Sp: 511
   - Jobs:
       Assassin: true
       Assassin_Cross: true
@@ -8006,6 +8762,48 @@ Body:
         Sp: 402
       - Level: 99
         Sp: 406
+      - Level: 100
+        Sp: 411
+      - Level: 101
+        Sp: 416
+      - Level: 102
+        Sp: 421
+      - Level: 103
+        Sp: 426
+      - Level: 104
+        Sp: 431
+      - Level: 105
+        Sp: 436
+      - Level: 106
+        Sp: 441
+      - Level: 107
+        Sp: 446
+      - Level: 108
+        Sp: 451
+      - Level: 109
+        Sp: 456
+      - Level: 110
+        Sp: 461
+      - Level: 111
+        Sp: 466
+      - Level: 112
+        Sp: 471
+      - Level: 113
+        Sp: 476
+      - Level: 114
+        Sp: 481
+      - Level: 115
+        Sp: 486
+      - Level: 116
+        Sp: 491
+      - Level: 117
+        Sp: 496
+      - Level: 118
+        Sp: 501
+      - Level: 119
+        Sp: 506
+      - Level: 120
+        Sp: 511
   - Jobs:
       Crusader: true
       Crusader2: true
@@ -8212,6 +9010,48 @@ Body:
         Sp: 470
       - Level: 99
         Sp: 475
+      - Level: 100
+        Sp: 482
+      - Level: 101
+        Sp: 489
+      - Level: 102
+        Sp: 496
+      - Level: 103
+        Sp: 503
+      - Level: 104
+        Sp: 510
+      - Level: 105
+        Sp: 517
+      - Level: 106
+        Sp: 524
+      - Level: 107
+        Sp: 531
+      - Level: 108
+        Sp: 538
+      - Level: 109
+        Sp: 545
+      - Level: 110
+        Sp: 552
+      - Level: 111
+        Sp: 559
+      - Level: 112
+        Sp: 566
+      - Level: 113
+        Sp: 573
+      - Level: 114
+        Sp: 580
+      - Level: 115
+        Sp: 587
+      - Level: 116
+        Sp: 594
+      - Level: 117
+        Sp: 601
+      - Level: 118
+        Sp: 608
+      - Level: 119
+        Sp: 615
+      - Level: 120
+        Sp: 622
   - Jobs:
       Monk: true
       Champion: true
@@ -8415,6 +9255,48 @@ Body:
         Sp: 470
       - Level: 99
         Sp: 475
+      - Level: 100
+        Sp: 411
+      - Level: 101
+        Sp: 416
+      - Level: 102
+        Sp: 421
+      - Level: 103
+        Sp: 426
+      - Level: 104
+        Sp: 431
+      - Level: 105
+        Sp: 436
+      - Level: 106
+        Sp: 441
+      - Level: 107
+        Sp: 446
+      - Level: 108
+        Sp: 451
+      - Level: 109
+        Sp: 456
+      - Level: 110
+        Sp: 461
+      - Level: 111
+        Sp: 466
+      - Level: 112
+        Sp: 471
+      - Level: 113
+        Sp: 476
+      - Level: 114
+        Sp: 481
+      - Level: 115
+        Sp: 486
+      - Level: 116
+        Sp: 491
+      - Level: 117
+        Sp: 496
+      - Level: 118
+        Sp: 501
+      - Level: 119
+        Sp: 506
+      - Level: 120
+        Sp: 511
   - Jobs:
       Sage: true
       Professor: true
@@ -8618,6 +9500,48 @@ Body:
         Sp: 696
       - Level: 99
         Sp: 703
+      - Level: 100
+        Sp: 711
+      - Level: 101
+        Sp: 719
+      - Level: 102
+        Sp: 727
+      - Level: 103
+        Sp: 735
+      - Level: 104
+        Sp: 743
+      - Level: 105
+        Sp: 751
+      - Level: 106
+        Sp: 759
+      - Level: 107
+        Sp: 767
+      - Level: 108
+        Sp: 775
+      - Level: 109
+        Sp: 783
+      - Level: 110
+        Sp: 791
+      - Level: 111
+        Sp: 799
+      - Level: 112
+        Sp: 807
+      - Level: 113
+        Sp: 815
+      - Level: 114
+        Sp: 823
+      - Level: 115
+        Sp: 831
+      - Level: 116
+        Sp: 839
+      - Level: 117
+        Sp: 847
+      - Level: 118
+        Sp: 855
+      - Level: 119
+        Sp: 863
+      - Level: 120
+        Sp: 871
   - Jobs:
       Rogue: true
       Stalker: true
@@ -8821,6 +9745,48 @@ Body:
         Sp: 500
       - Level: 99
         Sp: 505
+      - Level: 100
+        Sp: 511
+      - Level: 101
+        Sp: 517
+      - Level: 102
+        Sp: 523
+      - Level: 103
+        Sp: 529
+      - Level: 104
+        Sp: 535
+      - Level: 105
+        Sp: 541
+      - Level: 106
+        Sp: 547
+      - Level: 107
+        Sp: 553
+      - Level: 108
+        Sp: 559
+      - Level: 109
+        Sp: 565
+      - Level: 110
+        Sp: 571
+      - Level: 111
+        Sp: 577
+      - Level: 112
+        Sp: 583
+      - Level: 113
+        Sp: 589
+      - Level: 114
+        Sp: 595
+      - Level: 115
+        Sp: 601
+      - Level: 116
+        Sp: 607
+      - Level: 117
+        Sp: 613
+      - Level: 118
+        Sp: 619
+      - Level: 119
+        Sp: 625
+      - Level: 120
+        Sp: 631
   - Jobs:
       Alchemist: true
       Creator: true
@@ -9024,6 +9990,48 @@ Body:
         Sp: 402
       - Level: 99
         Sp: 406
+      - Level: 100
+        Sp: 411
+      - Level: 101
+        Sp: 416
+      - Level: 102
+        Sp: 421
+      - Level: 103
+        Sp: 426
+      - Level: 104
+        Sp: 431
+      - Level: 105
+        Sp: 436
+      - Level: 106
+        Sp: 441
+      - Level: 107
+        Sp: 446
+      - Level: 108
+        Sp: 451
+      - Level: 109
+        Sp: 456
+      - Level: 110
+        Sp: 461
+      - Level: 111
+        Sp: 466
+      - Level: 112
+        Sp: 471
+      - Level: 113
+        Sp: 476
+      - Level: 114
+        Sp: 481
+      - Level: 115
+        Sp: 486
+      - Level: 116
+        Sp: 491
+      - Level: 117
+        Sp: 496
+      - Level: 118
+        Sp: 501
+      - Level: 119
+        Sp: 506
+      - Level: 120
+        Sp: 511
   - Jobs:
       Bard: true
       Clown: true
@@ -9227,6 +10235,48 @@ Body:
         Sp: 598
       - Level: 99
         Sp: 604
+      - Level: 100
+        Sp: 611
+      - Level: 101
+        Sp: 618
+      - Level: 102
+        Sp: 625
+      - Level: 103
+        Sp: 632
+      - Level: 104
+        Sp: 639
+      - Level: 105
+        Sp: 646
+      - Level: 106
+        Sp: 653
+      - Level: 107
+        Sp: 660
+      - Level: 108
+        Sp: 667
+      - Level: 109
+        Sp: 674
+      - Level: 110
+        Sp: 681
+      - Level: 111
+        Sp: 688
+      - Level: 112
+        Sp: 695
+      - Level: 113
+        Sp: 702
+      - Level: 114
+        Sp: 709
+      - Level: 115
+        Sp: 716
+      - Level: 116
+        Sp: 723
+      - Level: 117
+        Sp: 730
+      - Level: 118
+        Sp: 737
+      - Level: 119
+        Sp: 744
+      - Level: 120
+        Sp: 751
   - Jobs:
       Dancer: true
       Gypsy: true
@@ -9430,6 +10480,48 @@ Body:
         Sp: 598
       - Level: 99
         Sp: 604
+      - Level: 100
+        Sp: 611
+      - Level: 101
+        Sp: 618
+      - Level: 102
+        Sp: 625
+      - Level: 103
+        Sp: 632
+      - Level: 104
+        Sp: 639
+      - Level: 105
+        Sp: 646
+      - Level: 106
+        Sp: 653
+      - Level: 107
+        Sp: 660
+      - Level: 108
+        Sp: 667
+      - Level: 109
+        Sp: 674
+      - Level: 110
+        Sp: 681
+      - Level: 111
+        Sp: 688
+      - Level: 112
+        Sp: 695
+      - Level: 113
+        Sp: 702
+      - Level: 114
+        Sp: 709
+      - Level: 115
+        Sp: 716
+      - Level: 116
+        Sp: 723
+      - Level: 117
+        Sp: 730
+      - Level: 118
+        Sp: 737
+      - Level: 119
+        Sp: 744
+      - Level: 120
+        Sp: 751
   - Jobs:
       Gunslinger: true
     BaseSp:

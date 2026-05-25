@@ -58,6 +58,7 @@
 #include "storage.hpp"
 #include "unit.hpp"
 #include "vending.hpp"
+#include "pc_battle_stats.hpp"
 
 using namespace rathena;
 
@@ -2052,6 +2053,19 @@ void clif_move( struct unit_data& ud )
 
 	if (bl == nullptr || vd == nullptr)
 		return;
+
+	switch (bl->type) {
+	case BL_PET:
+		if (reinterpret_cast<pet_data*>(bl)->state.hidden_by_master)
+			return;
+		break;
+	case BL_HOM:
+		if (reinterpret_cast<homun_data*>(bl)->hidden_by_master)
+			return;
+		break;
+	default:
+		break;
+	}
 
 	// This performance check is needed to keep GM-hidden objects from being notified to bots.
 	if (vd->look[LOOK_BASE] == JT_INVISIBLE)
@@ -4215,36 +4229,53 @@ void clif_arrow_create_list( map_session_data& sd ){
 
 	int32 count = 0;
 
-	for (const auto &it : skill_arrow_db) {
-		t_itemid nameid = it.second->nameid;
+	if(sd.state.open_extended_vending){
+		for (const auto &it : extended_vending_lists) {
+			t_itemid nameid = it.nameid;
 
-		if( !item_db.exists( nameid ) ){
-			continue;
+			if( !item_db.exists( nameid ) ){
+				continue;
+			}
+
+			p->items[count].itemId = client_nameid( nameid );
+			p->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->items[0] ) );
+			count++;
 		}
+	}else{
+		for (const auto &it : skill_arrow_db) {
+			t_itemid nameid = it.second->nameid;
 
-		int32 index = pc_search_inventory( &sd, nameid );
+			if( !item_db.exists( nameid ) ){
+				continue;
+			}
 
-		if( index < 0 ){
-			continue;
+			int32 index = pc_search_inventory( &sd, nameid );
+
+			if( index < 0 ){
+				continue;
+			}
+
+			if( sd.inventory.u.items_inventory[index].equip ){
+				continue;
+			}
+
+			if( !sd.inventory.u.items_inventory[index].identify ){
+				continue;
+			}
+
+			p->items[count].itemId = client_nameid( nameid );
+			p->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->items[0] ) );
+			count++;
 		}
-
-		if( sd.inventory.u.items_inventory[index].equip ){
-			continue;
-		}
-
-		if( !sd.inventory.u.items_inventory[index].identify ){
-			continue;
-		}
-
-		p->items[count].itemId = client_nameid( nameid );
-		p->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->items[0] ) );
-		count++;
 	}
 
 	clif_send( p, p->packetLength, &sd, SELF );
 
 	if( count > 0 ){
-		sd.menuskill_id = AC_MAKINGARROW;
+		if (sd.state.open_extended_vending)
+			sd.menuskill_id = MC_VENDING;
+		else
+			sd.menuskill_id = AC_MAKINGARROW;
 		sd.menuskill_val = count;
 	}
 }
@@ -5863,6 +5894,68 @@ void clif_skill_scale( struct block_list *bl, int32 src_id, int32 x, int32 y, ui
 #endif
 }
 
+static uint16 clif_awaken_visual_skill(uint16 skill_id) {
+	switch (skill_id) {
+		case LK_AW_BOWLING_BASH: return KN_BOWLINGBASH;
+		case LK_AW_BRANDISH:     return KN_BRANDISHSPEAR;
+
+		case AC_AW_DOUBLE:       return AC_DOUBLE;
+		case AC_AW_BLITZBEAT:    return HT_BLITZBEAT;
+
+		case WZ_AW_STORMGUST:    return WZ_STORMGUST;
+		case WZ_AW_VERMILION:    return WZ_VERMILION;
+		case WZ_AW_METEOR:       return WZ_METEOR;
+
+		case AS_AW_SONICBLOW:       return AS_SONICBLOW;
+		case ASC_AW_METEORASSAULT:       return ASC_METEORASSAULT;
+
+		case PA_AW_SACRIFICE:       return PA_SACRIFICE;
+		case CR_AW_GRANDCROSS:       return CR_GRANDCROSS;
+
+		case MO_AW_EXTREMITYFIST:       return MO_EXTREMITYFIST;
+		case MO_AW_FINGEROFFENSIVE:       return MO_FINGEROFFENSIVE;
+
+		case CR_AW_ACIDDEMONSTRATION:       return CR_ACIDDEMONSTRATION;
+		case CR_AW_SLIMPITCHER:       return CR_SLIMPITCHER;
+
+		case WZ_AW_HEAVENDRIVE:       return WZ_HEAVENDRIVE;
+		case SA_AW_DISPELL:       return SA_DISPELL;
+
+		case WS_AW_CARTTERMINATION:       return WS_CARTTERMINATION;
+		case BS_AW_HAMMERFALL:       return BS_HAMMERFALL;
+
+		case ST_AW_FULLSTRIP:       return ST_FULLSTRIP;
+
+		case PR_AW_MAGNUS:       return PR_MAGNUS;
+
+		case BA_AW_POEMBRAGI:       return BA_POEMBRAGI;
+		case BA_AW_APPLEIDUN:       return BA_APPLEIDUN;
+
+		case DC_AW_FORTUNEKISS:       return DC_FORTUNEKISS;
+		case DC_AW_SERVICEFORYOU:       return DC_SERVICEFORYOU;
+
+		default:                 return skill_id;
+	}
+}
+
+static uint16 clif_awaken_visual_level(uint16 skill_id, uint16 skill_lv) {
+	switch (skill_id) {
+		case WZ_AW_STORMGUST:
+		case WZ_AW_VERMILION:
+		case WZ_AW_METEOR:
+		case CR_AW_SLIMPITCHER:
+		case WS_AW_CARTTERMINATION:
+		case BA_AW_POEMBRAGI:
+		case BA_AW_APPLEIDUN:
+		case DC_AW_FORTUNEKISS:
+		case DC_AW_SERVICEFORYOU:
+			return 10;
+	
+		default:
+			return skill_lv;
+	}
+}
+
 /// Notifies clients in area, that an object is about to use a skill.
 /// 013e <src id>.L <dst id>.L <x>.W <y>.W <skill id>.W <property>.L <delaytime>.L (ZC_USESKILL_ACK)
 /// 07fb <src id>.L <dst id>.L <x>.W <y>.W <skill id>.W <property>.L <delaytime>.L <is disposable>.B (ZC_USESKILL_ACK2)
@@ -5880,6 +5973,8 @@ void clif_skill_scale( struct block_list *bl, int32 src_id, int32 x, int32 y, ui
 ///     1 = no text
 void clif_skillcasting(struct block_list* bl, int32 src_id, int32 dst_id, int32 dst_x, int32 dst_y, uint16 skill_id, uint16 skill_lv, int32 property, int32 casttime)
 {
+	uint16 visual_id = clif_awaken_visual_skill(skill_id);
+
 #if PACKETVER < 20091124
 	const int32 cmd = 0x13e;
 #else
@@ -5892,7 +5987,8 @@ void clif_skillcasting(struct block_list* bl, int32 src_id, int32 dst_id, int32 
 	WBUFL(buf,6) = dst_id;
 	WBUFW(buf,10) = dst_x;
 	WBUFW(buf,12) = dst_y;
-	WBUFW(buf,14) = skill_id;
+	//WBUFW(buf,14) = skill_id;
+	WBUFW(buf,14) = visual_id;
 	WBUFL(buf,16) = property<0?0:property; //Avoid sending negatives as element [Skotlex]
 	WBUFL(buf,20) = casttime;
 #if PACKETVER >= 20091124
@@ -5991,6 +6087,7 @@ void clif_skill_cooldown( map_session_data &sd, uint16 skill_id, t_tick tick ){
 /// 0114 <skill id>.W <src id>.L <dst id>.L <tick>.L <src delay>.L <dst delay>.L <damage>.W <level>.W <div>.W <type>.B (ZC_NOTIFY_SKILL)
 /// 01de <skill id>.W <src id>.L <dst id>.L <tick>.L <src delay>.L <dst delay>.L <damage>.L <level>.W <div>.W <type>.B (ZC_NOTIFY_SKILL2)
 void clif_skill_damage( block_list& src, block_list& dst, t_tick tick, int32 sdelay, int32 ddelay, int64 sdamage, int16 div, uint16 skill_id, uint16 skill_lv, e_damage_type type ){
+	skill_id = clif_awaken_visual_skill(skill_id);
 	type = clif_calc_delay(dst, type, div, sdamage, ddelay, tick);
 	sdamage = clif_hallucination_damage( dst, sdamage );
 
@@ -6120,6 +6217,7 @@ void clif_parse_restore_animation(map_session_data* sd, block_list& target, uint
 		hit_count = 6;
 		break;
 #endif
+	case AS_AW_SONICBLOW:
 	case AS_SONICBLOW:
 		hit_count = 8;
 		break;
@@ -6174,8 +6272,8 @@ void clif_hit_frame(block_list& bl, int motion)
 /// 011a <skill id>.W <heal>.W <dst id>.L <src id>.L <result>.B (ZC_USE_SKILL)
 /// 09cb <skill id>.W <heal>.L <dst id>.L <src id>.L <result>.B (ZC_USE_SKILL2)
 bool clif_skill_nodamage( block_list* src, block_list& dst, uint16 skill_id, int32 heal, bool success ){
+	skill_id = clif_awaken_visual_skill(skill_id);
 	PACKET_ZC_USE_SKILL p{};
-
 	p.PacketType = HEADER_ZC_USE_SKILL;
 	p.SKID = skill_id;
 	p.level = std::min( static_cast<decltype(p.level)>( heal ), std::numeric_limits<decltype(p.level)>::max() );
@@ -6208,12 +6306,15 @@ bool clif_skill_nodamage( block_list* src, block_list& dst, uint16 skill_id, int
 /// Non-damaging ground skill effect.
 /// 0117 <skill id>.W <src id>.L <level>.W <x>.W <y>.W <tick>.L (ZC_NOTIFY_GROUNDSKILL)
 void clif_skill_poseffect( block_list& bl, uint16 skill_id, uint16 skill_lv, uint16 x, uint16 y, t_tick tick ){
+	uint16 visual_id = clif_awaken_visual_skill(skill_id);
+	uint16 visual_lv = clif_awaken_visual_level(skill_id, skill_lv);
 	PACKET_ZC_NOTIFY_GROUNDSKILL packet{};
-
 	packet.PacketType = HEADER_ZC_NOTIFY_GROUNDSKILL;
-	packet.SKID = skill_id;
+	//packet.SKID = skill_id;
+	packet.SKID = visual_id;
 	packet.AID = bl.id;
-	packet.level = skill_lv;
+	//packet.level = skill_lv;
+	packet.level = visual_lv;
 	packet.xPos = x;
 	packet.yPos = y;
 	packet.startTime = client_tick( tick );
@@ -7609,6 +7710,14 @@ void clif_cart_delitem( map_session_data& sd, int32 index, int32 amount ){
 /// num:
 ///     number of allowed item slots
 void clif_openvendingreq( map_session_data& sd, uint16 num ){
+
+	if(battle_config.enable_extended_vending && sd.state.open_extended_vending == false){
+		sd.state.prevend = 0;
+		sd.state.workinprogress = WIP_DISABLE_NONE;
+		sd.state.pending_vending_ui = false;
+		return;
+	}
+
 	PACKET_ZC_OPENSTORE packet{};
 
 	packet.packetType = HEADER_ZC_OPENSTORE;
@@ -10024,7 +10133,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			char refine_name[10] = { 0 };
 			char grade_name[10] = { 0 };
 			std::string new_name = "";
-			std::string ownertext = "à¨éÒ¢��§��Ñµ��ìàÅÕé��§";
+			std::string ownertext = "à¨éÒ¢��§��Ñµ��ìàÅÕé��§";
 
 			if(pd->refine)
 				sprintf(refine_name, "%d", pd->refine);
@@ -10047,7 +10156,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 			if (ssd) {
 				sprintf(owner_name, "%s", ssd->status.name);
 			} else {
-				sprintf(owner_name, "%s ä��è����é¨Ñ¡", ownertext.c_str());
+				sprintf(owner_name, "%s ä��è����é¨Ñ¡", ownertext.c_str());
 			}
 
 			bool use_new_name = false;
@@ -10221,8 +10330,8 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 						
 						if(strlen(ele_name))
 						{
-							safesnprintf(title,sizeof(title),"%s",md->name);
-							safesnprintf(output,sizeof(output),"%s [%s]",ele_name,  race_name);
+							safesnprintf(title,sizeof(title),"[Lv.%d] %s",md->level, md->name);
+							safesnprintf(output,sizeof(output),"%s [%s]",size_name, race_name);
 							safestrncpy(ud->title, title, NAME_LENGTH);
 							safestrncpy(packet.name, output, NAME_LENGTH);
 						}
@@ -10271,7 +10380,6 @@ void clif_slide(block_list& bl, int32 x, int32 y){
 		clif_send(&p, sizeof(p), &bl, SELF);
 	}
 }
-
 
 /// Public chat message (ZC_NOTIFY_CHAT). lordalfa/Skotlex - used by @me as well
 /// 008d <packet len>.W <id>.L <message>.?B
@@ -10892,6 +11000,115 @@ void clif_parse_WantToConnection(int32 fd, map_session_data* sd)
 	chrif_authreq(sd,false);
 }
 
+static bool clif_awaken_has_status(map_session_data* sd) {
+	if (sd == nullptr)
+		return false;
+
+	return (
+		sd->sc.getSCE(SC_AWAKENED_LV1)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV2)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV3)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV4)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV5)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV6)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV7)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV8)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV9)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV10)
+	);
+}
+
+void clif_awaken_clear_aura(map_session_data* sd) {
+	nullpo_retv(sd);
+
+	struct unit_data* ud = unit_bl2ud(sd);
+	if (!ud)
+		return;
+
+	bool changed = false;
+
+	auto remove_aura = [&](int16 aura_id) {
+		auto it = std::find(ud->hatEffects.begin(), ud->hatEffects.end(), aura_id);
+		if (it != ud->hatEffects.end()) {
+			ud->hatEffects.erase(it);
+			changed = true;
+		}
+	};
+
+	remove_aura(HAT_EF_AURA_RED);
+	remove_aura(HAT_EF_AURA_BLUE);
+	remove_aura(HAT_EF_AURA_GREEN);
+	remove_aura(HAT_EF_AURA_YELLOW);
+	remove_aura(HAT_EF_AURA_ORANGE);
+	remove_aura(HAT_EF_AURA_PURPLE);
+	remove_aura(HAT_EF_AURA_PINK);
+
+	if (!changed)
+		return;
+
+	clif_hat_effects(sd, sd, false, SELF);
+	clif_hat_effects(sd, sd, false, AREA_WOS);
+}
+
+static uint16 clif_awaken_get_aura(map_session_data* sd) {
+	if (sd == nullptr)
+		return 0;
+
+	switch (sd->status.class_) {
+		case JOB_LORD_KNIGHT:
+		case JOB_LORD_KNIGHT2:
+		case JOB_PALADIN:
+		case JOB_PALADIN2:
+			return HAT_EF_AURA_RED;
+
+		case JOB_HIGH_WIZARD:
+		case JOB_PROFESSOR:
+			return HAT_EF_AURA_BLUE;
+
+		case JOB_SNIPER:
+			return HAT_EF_AURA_GREEN;
+
+		case JOB_HIGH_PRIEST:
+		case JOB_CHAMPION:
+			return HAT_EF_AURA_YELLOW;
+
+		case JOB_WHITESMITH:
+		case JOB_CREATOR:
+			return HAT_EF_AURA_ORANGE;
+
+		case JOB_ASSASSIN_CROSS:
+		case JOB_STALKER:
+			return HAT_EF_AURA_PURPLE;
+
+		case JOB_CLOWN:
+		case JOB_GYPSY:
+			return HAT_EF_AURA_PINK;
+	}
+
+	return 0;
+}
+
+void clif_awaken_refresh_aura(map_session_data* sd) {
+	nullpo_retv(sd);
+
+	struct unit_data* ud = unit_bl2ud(sd);
+	if (!ud)
+		return;
+
+	clif_awaken_clear_aura(sd);
+
+	if (!clif_awaken_has_status(sd))
+		return;
+
+	int16 aura = clif_awaken_get_aura(sd);
+	if (aura <= 0)
+		return;
+
+	ud->hatEffects.push_back(aura);
+
+	clif_hat_effects(sd, sd, true, SELF);
+	clif_hat_effects(sd, sd, true, AREA_WOS);
+}
 
 /// Notification from the client, that it has finished map loading and is about to display player's character (CZ_NOTIFY_ACTORINIT).
 /// 007d
@@ -11000,6 +11217,8 @@ void clif_parse_LoadEndAck(int32 fd,map_session_data *sd)
 	else
 		clif_map_property(sd, MAPPROPERTY_NOTHING, SELF);
 
+	pc_refresh_follower_visibility(*sd);
+
 	// info about nearby objects
 	// must use foreachinarea (CIRCULAR_AREA interferes with foreachinrange)
 	map_foreachinallarea(clif_getareachar, sd->m, sd->x-AREA_SIZE, sd->y-AREA_SIZE, sd->x+AREA_SIZE, sd->y+AREA_SIZE, BL_ALL, sd);
@@ -11012,7 +11231,8 @@ void clif_parse_LoadEndAck(int32 fd,map_session_data *sd)
 		} else {
 			if(map_addblock(sd->pd))
 				return;
-			clif_spawn(sd->pd);
+			if( !sd->pd->state.hidden_by_master )
+				clif_spawn(sd->pd);
 			clif_send_petdata( sd, *sd->pd, CHANGESTATEPET_INIT );
 			clif_send_petstatus( *sd, *sd->pd );
 //			skill_unit_move(&sd->pd->bl,gettick(),1);
@@ -11023,7 +11243,8 @@ void clif_parse_LoadEndAck(int32 fd,map_session_data *sd)
 	if( hom_is_active(sd->hd) ) {
 		if(map_addblock(sd->hd))
 			return;
-		clif_spawn(sd->hd);
+		if( !sd->hd->hidden_by_master )
+			clif_spawn(sd->hd);
 		clif_send_homdata( *sd->hd, SP_ACK );
 		// For some reason, official servers send the homunculus info twice, then update the HP/SP again.
 		clif_hominfo(sd, sd->hd, 1);
@@ -11143,6 +11364,8 @@ void clif_parse_LoadEndAck(int32 fd,map_session_data *sd)
 		// Set facing direction before check below to update client
 		if (battle_config.spawn_direction)
 			unit_setdir(sd, sd->status.body_direction, false);
+
+			sd->state.recal_vip_time = 1; // Force VIP time recalculation
 	} else {
 		//For some reason the client "loses" these on warp/map-change.
 		clif_updatestatus(*sd,SP_STR);
@@ -11337,6 +11560,9 @@ void clif_parse_LoadEndAck(int32 fd,map_session_data *sd)
 	}
 #endif
 
+	clif_awaken_refresh_aura(sd);
+	pc_awaken_refresh_skills(sd);
+	
 	sd->state.connect_new = 0;
 	sd->state.changemap = false;
 }
@@ -13154,6 +13380,10 @@ void clif_parse_UseSkillToId( int32 fd, map_session_data *sd ){
 	// TODO: shuffle packet
 	struct s_packet_db* info = &packet_db[RFIFOW(fd, 0)];
 
+	uint16 skill_lv = RFIFOW(fd, info->pos[1]);
+	uint16 skill_id = RFIFOW(fd, info->pos[0]);
+	int32 target_id = RFIFOL(fd, info->pos[2]);
+
 	clif_parse_skill_toid( sd, RFIFOW(fd, info->pos[1]), RFIFOW(fd, info->pos[0]), RFIFOL(fd, info->pos[2]) );
 }
 
@@ -13162,7 +13392,7 @@ void clif_parse_UseSkillToId( int32 fd, map_session_data *sd ){
  *------------------------------------------*/
 static void clif_parse_UseSkillToPosSub( int32 fd, map_session_data& sd, uint16 skill_lv, uint16 skill_id, int16 x, int16 y, int32 skillmoreinfo ){
 	t_tick tick = gettick();
-
+	
 	if( !(skill_get_inf(skill_id)&INF_GROUND_SKILL) )
 		return; //Using a target skill on the ground? WRONG.
 
@@ -13626,6 +13856,16 @@ void clif_parse_SelectArrow(int32 fd,map_session_data *sd) {
 
 	const PACKET_CZ_REQ_MAKINGARROW* p = reinterpret_cast<PACKET_CZ_REQ_MAKINGARROW*>( RFIFOP( fd, 0 ) );
 
+	if(sd->state.open_extended_vending && p->itemId == -1){
+		sd->state.open_extended_vending = false;
+		sd->state.pending_vending_ui = false;
+		sd->state.prevend = 0;
+		sd->state.workinprogress = WIP_DISABLE_NONE;
+		clif_menuskill_clear(sd);
+		return;
+	}
+
+
 	switch (sd->menuskill_id) {
 		case AC_MAKINGARROW:
 			skill_arrow_create(sd,p->itemId);
@@ -13638,6 +13878,10 @@ void clif_parse_SelectArrow(int32 fd,map_session_data *sd) {
 			break;
 		case NC_MAGICDECOY:
 			skill_magicdecoy(*sd,p->itemId);
+			break;
+		case MC_VENDING:
+			sd->state.vending_item = p->itemId;
+			clif_openvendingreq(*sd,2+ sd->vend_skill_lv);
 			break;
 	}
 
@@ -14410,7 +14654,15 @@ void clif_parse_OpenVending(int32 fd, map_session_data* sd){
 	if( message[0] == '\0' ) // invalid input
 		return;
 
-	vending_openvending(*sd, message, data, len/8, nullptr);
+	if(sd->state.open_extended_vending){
+		std::shared_ptr<item_data> id = item_db.find(sd->state.vending_item);
+		std::string shop_type = "";
+
+		shop_type = "[" + id->ename + "] " + message;
+		vending_openvending(*sd, shop_type.c_str(), data, len/8, nullptr);
+	}else{
+		vending_openvending(*sd, message, data, len/8, nullptr);
+	}
 }
 
 
@@ -17924,7 +18176,16 @@ void clif_parse_ViewPlayerEquip(int32 fd, map_session_data* sd)
 
 	if (sd->m != tsd->m)
 		return;
-	else if( tsd->status.show_equip || pc_has_permission(sd, PC_PERM_VIEW_EQUIPMENT) )
+
+	if (sd->state.workinprogress != WIP_DISABLE_NONE)
+		return;
+
+	sd->ce_gid = tsd->status.account_id;
+	pcb_display_menu(sd);
+
+	return; // Early return intended
+	
+	if( tsd->status.show_equip || pc_has_permission(sd, PC_PERM_VIEW_EQUIPMENT) )
 		clif_viewequip_ack( *sd, *tsd );
 	else
 		clif_msg( *sd, MSI_OPEN_EQUIPEDITEM_REFUSED );
@@ -20069,6 +20330,10 @@ void clif_parse_SkillSelectMenu(int32 fd, map_session_data *sd) {
 		sd->state.workinprogress = WIP_DISABLE_NONE;
 		skill_autospell(sd, p->selectedSkillId);
 	} else if (sd->menuskill_id == SC_AUTOSHADOWSPELL) {
+		if (sd->state.check_equip_skill) {
+			pcb_process_selection(sd, p->selectedSkillId);
+			return;
+		}		
 		if (pc_istrading(sd)) {
 			clif_skill_fail( *sd, sd->ud.skill_id );
 			clif_menuskill_clear(sd);
@@ -21707,45 +21972,114 @@ void clif_navigateTo(map_session_data *sd, const char* mapname, uint16 x, uint16
 /// 0A3B <Length>.W <AID>.L <Status>.B { <HatEffectId>.W } (ZC_EQUIPMENT_EFFECT)
 void clif_hat_effects(struct block_list* src, struct block_list* bl, bool enable, enum send_target target ){
 #if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
-	struct unit_data* ud;
-	
-	if (!src || !bl || !(ud = unit_bl2ud(bl)))
-		return;
-	
-	if (ud->hatEffects.empty() || map_getmapdata(src->m)->getMapFlag(MF_NOCOSTUME)) {
- 		return;
- 	}
+    struct unit_data* ud;
+    
+    if (!src || !bl || !(ud = unit_bl2ud(bl)))
+        return;
+    
+    if (ud->hatEffects.empty() || map_getmapdata(bl->m)->getMapFlag(MF_NOCOSTUME)) {
+         return;
+     }
 
-	PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
- 
- 	p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
-	
-	p->packetLength = (int16)( sizeof( struct PACKET_ZC_EQUIPMENT_EFFECT ) + sizeof( int16 ) * ud->hatEffects.size() );
-	p->aid = bl->id;
-	p->status = enable;
-	
-	for (size_t i = 0; i < ud->hatEffects.size(); i++) {
-		p->effects[i] = ud->hatEffects[i];
- 	}
-	
-	clif_send(p, p->packetLength, src, target);
+    // Lambda function เพื่อช่วยในการส่ง Packet แบบมีเงื่อนไข (ลดการเขียนโค้ดซ้ำ)
+    // includeVoiceMic: true = ส่งทุกอย่างรวม Mic, false = ส่งทุกอย่างยกเว้น Mic
+    auto send_hat_effects_sub = [&]( enum send_target sendTarget, bool includeVoiceMic ){
+        PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
+
+        p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
+        p->packetLength = sizeof( *p );
+        p->aid = bl->id;
+        p->status = enable ? 1 : 0; // ใช้ค่าจาก argument 'enable'
+
+        size_t count = 0;
+        for( int16 effect : ud->hatEffects ){
+            // Logic ของ Voice Chat: ข้าม Effect Mic ถ้าไม่ต้องการแสดง
+            if( !includeVoiceMic && effect == HAT_EF_MIC ){
+                continue;
+            }
+
+            p->effects[count++] = effect;
+            p->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->effects[0] ) );
+        }
+
+        // ส่งเฉพาะเมื่อมี Effect อย่างน้อย 1 ตัว
+        if( count > 0 ){
+            clif_send( p, p->packetLength, src, sendTarget );
+        }
+    };
+
+    // Logic หลักสำหรับ Voice Chat
+    // ตรวจสอบว่าเป็นการส่งให้ตัวเองหรือไม่
+    bool is_self = (bl->id == src->id);
+
+    if( target == SELF ){
+        // กรณีส่งให้ตัวเอง (Refresh): ไม่แสดง Mic เพื่อไม่ให้เห็นไอคอนลอยบนหัวตัวเอง
+        send_hat_effects_sub( SELF, false );
+    }else if( is_self && target == AREA ){
+        // กรณี Spawn/Move: ส่งให้คนรอบข้าง
+        // 1. ส่งให้ตัวเอง (AREA แต่กรอง Mic ออก) -> ตัวเองจะเห็นแค่หมวกปกติ
+        send_hat_effects_sub( AREA, false );
+
+        // 2. ส่ง Mic ไปให้คนอื่น (AREA_WOS) -> คนอื่นจะเห็น Mic เหนือหัวเรา
+        // เช็คก่อนว่ามี Effect Mic อยู่ใน List ไหม
+        bool has_mic = false;
+        for( int16 effect : ud->hatEffects ){
+            if( effect == HAT_EF_MIC ){
+                has_mic = true;
+                break;
+            }
+        }
+
+        if( has_mic && enable ){
+            PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
+            p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
+            p->packetLength = sizeof( *p ) + sizeof( p->effects[0] );
+            p->aid = bl->id;
+            p->status = 1;
+            p->effects[0] = HAT_EF_MIC;
+            clif_send( p, p->packetLength, src, AREA_WOS );
+        }
+    }else{
+        // กรณีอื่นๆ (เช่น คนอื่นเดินเข้ามาในฉาก): ส่งทุกอย่างรวม Mic ไปให้เลย
+        send_hat_effects_sub( target, true );
+    }
 #endif
 }
 
 /// Send a single hat effect to the client.
 /// 0A3B <Length>.W <AID>.L <Status>.B { <HatEffectId>.W } (ZC_EQUIPMENT_EFFECT)
+// ฟังก์ชันนี้ไม่ต้องแก้ไขมาก ใช้ของเดิมได้เลย หรือจะใช้แบบด้านล่างก็ได้เหมือนกัน
+void clif_hat_effect_single_target( const block_list& bl, uint16 effectId, bool enable, enum send_target target ){
+#if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
+    if( map_data* mdata = map_getmapdata( bl.m ); mdata != nullptr && mdata->getMapFlag( MF_NOCOSTUME ) ){
+        return;
+    }
+
+    PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
+
+    p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
+    p->packetLength = sizeof( *p );
+    p->aid = bl.id;
+    p->status = enable;
+    p->effects[0] = effectId;
+    p->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->effects[0] ) );
+
+    clif_send( p, p->packetLength, const_cast<block_list*>( &bl ), target );
+#endif
+}
+
 void clif_hat_effect_single( struct block_list* bl, uint16 effectId, bool enable ){
 #if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
-	PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
-	nullpo_retv(bl);
+    PACKET_ZC_EQUIPMENT_EFFECT* p = reinterpret_cast<PACKET_ZC_EQUIPMENT_EFFECT*>( packet_buffer );
+    nullpo_retv(bl);
  
- 	p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
- 	p->packetLength = (int16)( sizeof( struct PACKET_ZC_EQUIPMENT_EFFECT ) + sizeof( int16 ) );
-	p->aid = bl->id;
- 	p->status = enable;
- 	p->effects[0] = effectId;
+     p->packetType = HEADER_ZC_EQUIPMENT_EFFECT;
+     p->packetLength = (int16)( sizeof( struct PACKET_ZC_EQUIPMENT_EFFECT ) + sizeof( int16 ) );
+    p->aid = bl->id;
+     p->status = enable;
+     p->effects[0] = effectId;
  
-	clif_send( p, p->packetLength, bl, AREA );
+    clif_send( p, p->packetLength, bl, AREA );
 #endif
 }
 

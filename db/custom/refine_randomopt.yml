@@ -1,0 +1,17 @@
+###########################################################################
+# Whispering Rain
+###########################################################################
+
+Header:
+  Type: REFINE_RANDOMOPT_DB
+  Version: 1
+
+Body:
+    - RefineLevel: 1
+#      DefaultGroup: 
+      Groups:
+        - GroupName: TEST
+          Option: Group_1
+          ItemsList:
+            - Item: Clothes_Of_The_Lord
+            - Item: Glittering_Clothes

@@ -1,11 +1,11 @@
-prontera,211,183,3	script	Homunculus	740,{
+ultia,226,178,3	script	Homunculus	740,{
 	mes "^738C5A[ Homunculus ]^000000";
 	mes "เลือกสิ่งที่เจ้าต้องการมาสิ";
 	next;
 menu
-"^738C5A•^000000 รับ Skill Homun",h1,
-"^738C5A•^000000 อัพ Lv. Homun",h2,
-"^738C5A•^000000 กลายร่าง Homun",h4;
+"^738C5Aÿ^000000 รับ Skill Homun",h1,
+"^738C5Aÿ^000000 อัพ Lv. Homun",h2,
+"^738C5Aÿ^000000 กลายร่าง Homun",h4;
 
 
 
@@ -76,6 +76,10 @@ close;
 
 
 OnInit:
-waitingroom "  บริการโฮมุนครุส",0;
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 122); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Homunculus Service");  //คลาย ๆ ชื่อกิลด์
+	waitingroom "[#] บริการโฮมุน", 0;
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 end;
 }

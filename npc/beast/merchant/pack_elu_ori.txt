@@ -3,8 +3,12 @@ callshop "Pack_Elu_Ori";
 end;
 
 OnInit:
-	waitingroom " แพคกล่อง Elu Ori",0;
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 115); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Pack Elunium/Oridecon");  //คลาย ๆ ชื่อกิลด์	
+	waitingroom "[#] แพ็คอีรู/โอริ", 0;
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
 	end;
 }
 
-prontera,184,162,5	duplicate(Pack_Elu_Ori_Npc)	อัดกล่อง	804
+ultia,245,193,3	duplicate(Pack_Elu_Ori_Npc)	อัดกล่อง	804

@@ -1,0 +1,142 @@
+/*
+=================== TERMS OF SERVICES. ===================
+1. ALL RIGHT RESERVED RE-SELLER OR SHARE SCRIPT TO PUBLISH.
+2. BUT YOU RE-SELLER OR SHARE SCRIPT WITH OUT UNAUTHORIZRD
+   I WILL ALL CANCEL MY SUPPORT FOR YOU.
+3. MAINTENANCE SCRIPTS WILL BE FREE SERVICES.
+4. I WILL NOT KEEP ANY INFORMATIONS FROMS YOU SERVER THAT
+   YOU SEND FOR ME.
+5. I HOPE YOU WILL ALL ACCEPT TERMS OF SERVICES.
+==========================================================
+Script. Hourly Point																				 
+Create By. [Eddga-Studio]
+Translator By. Eddga Studio
+Bug Report. Dollaporn Naraphan [ FB ]																					 
+Contact Us. Dollaporn Naraphan [ FB ]																					 																				 
+==========================================================
+*/
+
+
+-	script	hourly_point	-1,{
+    
+    OnInit:
+        .max_hour = 10;
+        .duration = 3600;
+        .npc_name$ = strnpcinfo(3);
+		.min_lv = 70;	//เลเวลขั้นต่ำ
+		.vending_not_allow = 1;	//1 = ตั้งร้านไม่ได้ , 0 = ตั้งร้านก็ได้พ้อย
+		bindatcmd "check",    .npc_name$ + "::OnCheck";
+		
+    end;
+        		
+	OnClock0000:
+		query_sql("DELETE FROM `acc_reg_num` WHERE `key` = '#daily_hour_count'");
+		addrid(0);
+		#daily_hour_count = 0;	
+	end;
+    	
+    OnUpdate:
+		
+		deltimer .npc_name$+"::OnUpdate";
+		
+		if(.min_lv && BaseLevel < .min_lv ){
+			addtimer ( .duration * 1000 ), .npc_name$+"::OnUpdate";
+			if(@alert < 3){
+				@alert += 1;
+				dispbottom "[ Hourly Rewards ] เลเวลต่ำกว่า "+.min_lv+" ไม่ได้รับพ้อย";
+			}
+			end;
+		}
+		
+		if(.vending_not_allow && checkvending()){
+			addtimer ( .duration * 1000 ), .npc_name$+"::OnUpdate";
+			if(@alert < 3){
+				@alert += 1;
+				dispbottom "[ Hourly Rewards ] ไม่ได้รับพ้อย เนื่องจากตั้งร้านอยู่";
+			}
+			end;
+		}
+		@alert = 0;
+        #daily_hour_count++;
+				
+        switch ( #daily_hour_count ) {
+            case 1:
+				set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+            case 2:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+            case 3:
+				set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+            case 4:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+            case 5:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+			case 6:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+			case 7:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+			case 8:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+			case 9:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+			case 10:
+                set #ONLINEPOINTS,#ONLINEPOINTS += 10;
+				dispbottom "[ Hourly Rewards ] คุณได้รับ Online Bonus จำนวน 10 Points";
+                break;
+            default: break;
+        }
+	@timer = gettimetick(2) + .duration;
+    addtimer ( .duration * 1000 ), .npc_name$+"::OnUpdate";
+	end;
+        
+    OnPCLoginEvent:
+		
+		if ( #daily_hour_count ){  
+			dispbottom "[ Hourly Rewards ] สามารถเช็คคะแนนออนไลน์ได้ โดยพิมคำสั่ง @check เท่านั้น";
+			dispbottom "[ Hourly Rewards ] คุณมี Online Bonus ทั้งหมด "+ callfunc("F_InsertComma",#ONLINEPOINTS) +" Points";
+			dispbottom "[ Hourly Rewards ] คุณเข้าเล่นเกมส์มาแล้ว ทั้งหมด " + #daily_hour_count + " ชั่วโมง สูงสุด " + .max_hour + " ชั่วโมง" + ((#daily_hour_count < .max_hour)?" ":"") + "";
+		}
+        if ( #daily_hour_count < .max_hour ) {
+            @timer = gettimetick(2) + .duration;
+            addtimer ( .duration * 1000 ), .npc_name$+"::OnUpdate";
+        }
+	end;
+        
+    OnCheck:
+	
+        .@min = (@timer - gettimetick(2))/60;
+        .@sec = (@timer - gettimetick(2))%60;
+		
+		if(.min_lv && BaseLevel < .min_lv ){
+			dispbottom "[ Hourly Rewards ] เลเวลต่ำกว่า "+.min_lv+" ไม่ได้รับพ้อย";
+			end;
+		}
+		if(.vending_not_allow && checkvending()){
+			dispbottom "[ Hourly Rewards ] ไม่ได้รับพ้อย เนื่องจากตั้งร้านอยู่";
+			end;
+		}
+		@alert = 0;
+        dispbottom "[ Hourly Rewards ] คุณต้องรออีก " +
+        ((.@min)?            "[ " + .@min + " ] นาที"         + ((.@min > 1)?" ":""):"") +
+        ((.@min && .@sec)?    "":"") +
+        ((.@sec)?            "[ " + .@sec + " ] วินาที"    + ((.@sec > 1)?" ":""):"") +
+        "จึงจะได้รับ Online Bonus 10 Points.";
+    end;            
+}

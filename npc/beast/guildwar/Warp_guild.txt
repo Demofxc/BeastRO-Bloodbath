@@ -41,13 +41,13 @@ function	script	Warp_GuildWar_old	{
 }
 
 -	script	guild_main	FAKE_NPC,{		
-	mes "^738C5A[ Guild War ]^000000";
-	mes "สวัสดีคุณ^738C5A "+strcharinfo(0)+" ^000000"; 
+	mes "^FF0000[ War of Emperium ]^000000";
+	mes "สวัสดีคุณ^FF0000 "+strcharinfo(0)+" ^000000"; 
 	mes "ต้องการเข้าสู่กิลด์วอร์ไหม";
 	mes "วาร์ปชั้นที่ 2 เปิดนาทีที่ 45";
-	mes "^738C5A# ^000000ต้องใส่รูปกิลด์ก่อนเข้าแมพกิลด์วอร์ทุกครั้ง";
+	mes "^FF0000# ^000000ต้องใส่รูปกิลด์ก่อนเข้าแมพกิลด์วอร์ทุกครั้ง";
 	next;
-	switch(select("^738C5A•^000000 ["+(getmapusers("guild_vs2"))+"] คน สงคราม GvG:^738C5A•^000000 เรียกรวมปาร์ตี้:^738C5A•^000000 เรียกรวมกิลด์:^738C5A•^000000 ออก")){
+	switch(select("^FF0000[#]^000000 ["+(getmapusers("guild_vs2"))+"] คน สงคราม GvG:^FF0000[#]^000000 เรียกรวมปาร์ตี้:^FF0000[#]^000000 เรียกรวมกิลด์:^FF0000[#]^000000 ออก")){
 	case 1:
 		sc_end SC_ASSUMPTIO;
 		sc_end SC_POEMBRAGI;
@@ -87,5 +87,5 @@ end;
 
 //====================================================
 //morocc,152,81,5	duplicate(guild_main)	วาร์ปกิลด์วอร์#00	461 
-prontera,162,189,5	duplicate(guild_main)	สงครามชิงปราสาท#101	966 
-ultia,205,155,3	duplicate(guild_main)	สงครามชิงปราสาท#102	966 
+//prontera,162,189,5	duplicate(guild_main)	สงครามชิงปราสาท#101	966 
+ultia,205,155,3	duplicate(guild_main)	สงครามชิงปราสาท#102	10572 

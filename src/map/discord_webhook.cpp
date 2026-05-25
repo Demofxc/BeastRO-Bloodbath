@@ -196,7 +196,7 @@ static long discord_send_embed(const WBJob& job) {
     }
 
     payload += "}";
-    ShowDebug("[Webhook] Payload = %s\n", payload.c_str());
+    //ShowDebug("[Webhook] Payload = %s\n", payload.c_str());
 
     // ส่งด้วย libcurl (เหมือนเดิม)
     CURL* curl = curl_easy_init();

@@ -464,6 +464,7 @@ public:
 		// Bitmask of e_pcblock_action_flag values
 		uint16 block_action;
 		bool refineui_open;
+		bool check_equip_skill;
 		t_itemid inventory_expansion_confirmation;
 		uint16 inventory_expansion_amount;
 		t_itemid laphine_synthesis;
@@ -471,7 +472,10 @@ public:
 		bool roulette_open;
 		t_itemid item_reform;
 		uint64 item_enchant_index;
+		bool open_extended_vending;
+		t_itemid vending_item;
 		int16 pet_index;
+		bool recal_vip_time;
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;
@@ -942,6 +946,8 @@ public:
 
 	int16 setlook_head_top, setlook_head_mid, setlook_head_bottom, setlook_robe; ///< Stores 'setlook' script command values.
 
+	int ce_gid;
+	
 #if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
 	std::vector<int16> hatEffects;
 #endif
@@ -967,6 +973,8 @@ public:
 	int32 goldpc_tid;
 
 	void update_look( _look look );
+
+	int vip_timer_tid;
 };
 
 extern struct eri *pc_sc_display_ers; /// Player's SC display table
@@ -1580,6 +1588,14 @@ int32 pc_stop_following(map_session_data*);
 
 uint32 pc_maxbaselv(map_session_data *sd);
 uint32 pc_maxjoblv(map_session_data *sd);
+
+uint8 pc_awaken_get_lv(map_session_data* sd);
+void pc_awaken_refresh_skills(map_session_data* sd);
+
+bool pc_is_roc_awaken_job(map_session_data* sd);
+bool pc_is_awakened_player(map_session_data* sd);
+bool pc_has_awaken_privilege(map_session_data* sd);
+
 bool pc_is_maxbaselv(map_session_data *sd);
 bool pc_is_maxjoblv(map_session_data *sd);
 int32 pc_checkbaselevelup(map_session_data *sd);
@@ -1632,6 +1648,8 @@ bool pc_setcart(map_session_data* sd, int32 type);
 void pc_setfalcon(map_session_data* sd, int32 flag);
 void pc_setriding(map_session_data* sd, int32 flag);
 void pc_setmadogear(map_session_data* sd, bool flag, e_mado_type type = MADO_ROBOT);
+void pc_set_follower_visibility(map_session_data& sd, bool hidden);
+void pc_refresh_follower_visibility(map_session_data& sd);
 void pc_changelook(map_session_data *,int32,int32);
 void pc_equiplookall(map_session_data *sd);
 void pc_set_costume_view(map_session_data *sd);
@@ -1854,6 +1872,7 @@ struct e_animation_info{
 };
 
 static std::unordered_map<uint16,e_animation_info> mapedanimation  {
+	{AS_AW_SONICBLOW,{180,220,150,180}},
 	{AS_SONICBLOW,{180,220,150,180}},
 	{GC_CROSSIMPACT,{180,220,150,180}},
 	{CG_ARROWVULCAN,{200,220,100,120}}
@@ -1913,7 +1932,7 @@ public:
 	}
 
 	bool is_katar() const {
-		return (this->get_skillid() == AS_SONICBLOW || this->get_skillid() == GC_CROSSIMPACT);
+		return (this->get_skillid() == AS_SONICBLOW || this->get_skillid() == AS_AW_SONICBLOW || this->get_skillid() == GC_CROSSIMPACT);
 	}
 
 	int recalculate_motion(intptr_t data) const {
@@ -1957,5 +1976,10 @@ public:
 		clif_hit_frame(src, this->motion);
 	}
 };
+
+void vip_bonus(map_session_data *sd);
+void clean_vip_bonus(map_session_data *sd);
+TIMER_FUNC(vip_bonus_timer);
+TIMER_FUNC(vip_delete_timer);
 
 #endif /* PC_HPP */

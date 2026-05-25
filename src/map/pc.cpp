@@ -63,6 +63,7 @@
 #include "storage.hpp"
 #include "unit.hpp" // unit_stop_attack(), unit_stop_walking()
 #include "vending.hpp" // struct s_vending
+#include "voice_bridge.hpp"
 
 using namespace rathena;
 
@@ -1356,6 +1357,13 @@ void pc_makesavestatus(map_session_data *sd) {
 		sd->status.body = 0;
 #endif
  	}
+	{
+#if PACKETVER >= 20231220
+ 		sd->status.body = sd->status.class_;
+#else
+		sd->status.body = 0;
+#endif
+ 	}
 	//Only copy the Cart/Peco/Falcon options, the rest are handled via
 	//status change load/saving. [Skotlex]
 #ifdef NEW_CARTS
@@ -2298,6 +2306,7 @@ bool pc_authok(map_session_data *sd, uint32 login_id2, time_t expiration_time, i
 
 	// Request all registries (auth is considered completed whence they arrive)
 	intif_request_registry(sd,7);
+	voice_bridge_send_map_pos(sd);
 	return true;
 }
 
@@ -8576,13 +8585,338 @@ uint32 JobDatabase::get_maxBaseLv(uint16 job_id) {
 	return job ? job->max_base_level : 0;
 }
 
+static bool pc_is_lordknight_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_LORD_KNIGHT ||
+		sd->status.class_ == JOB_LORD_KNIGHT2
+	);
+}
+
+static bool pc_is_sniper_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_SNIPER ||
+		sd->status.class_ == JOB_HUNTER
+	);
+}
+
+static bool pc_is_wizard_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_HIGH_WIZARD ||
+		sd->status.class_ == JOB_WIZARD
+	);
+}
+
+static bool pc_is_assassin_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_ASSASSIN_CROSS
+	);
+}
+
+static bool pc_is_paladin_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_PALADIN
+	);
+}
+
+static bool pc_is_champion_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_CHAMPION
+	);
+}
+
+static bool pc_is_creator_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_CREATOR
+	);
+}
+
+static bool pc_is_professor_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_PROFESSOR
+	);
+}
+
+static bool pc_is_whitesmith_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_WHITESMITH
+	);
+}
+
+static bool pc_is_stalker_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_STALKER
+	);
+}
+
+static bool pc_is_high_priest_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_HIGH_PRIEST
+	);
+}
+
+static bool pc_is_clown_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_CLOWN
+	);
+}
+
+static bool pc_is_gypsy_awaken_class(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->status.class_ == JOB_GYPSY
+	);
+}
+
+uint8 pc_awaken_get_lv(map_session_data* sd) {
+	nullpo_retr(0, sd);
+
+	if (sd->sc.getSCE(SC_AWAKENED_LV10)) return 10;
+	if (sd->sc.getSCE(SC_AWAKENED_LV9))  return 9;
+	if (sd->sc.getSCE(SC_AWAKENED_LV8))  return 8;
+	if (sd->sc.getSCE(SC_AWAKENED_LV7))  return 7;
+	if (sd->sc.getSCE(SC_AWAKENED_LV6))  return 6;
+	if (sd->sc.getSCE(SC_AWAKENED_LV5))  return 5;
+	if (sd->sc.getSCE(SC_AWAKENED_LV4))  return 4;
+	if (sd->sc.getSCE(SC_AWAKENED_LV3))  return 3;
+	if (sd->sc.getSCE(SC_AWAKENED_LV2))  return 2;
+	if (sd->sc.getSCE(SC_AWAKENED_LV1))  return 1;
+
+	return 0;
+}
+
+static void pc_awaken_clear_skills(map_session_data* sd) {
+	nullpo_retv(sd);
+
+	// Lord Knight
+	pc_skill(sd, LK_AW_BOWLING_BASH, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, LK_AW_BRANDISH, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Sniper
+	pc_skill(sd, AC_AW_DOUBLE, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, AC_AW_BLITZBEAT, 0, ADDSKILL_PERMANENT_GRANTED);
+	
+	// Wizard
+	pc_skill(sd, WZ_AW_STORMGUST, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, WZ_AW_VERMILION, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, WZ_AW_METEOR, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Asssasin
+	pc_skill(sd, AS_AW_SONICBLOW, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, ASC_AW_METEORASSAULT, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Paladin
+	pc_skill(sd, PA_AW_SACRIFICE, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, CR_AW_GRANDCROSS, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Champion
+	pc_skill(sd, MO_AW_EXTREMITYFIST, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, MO_AW_FINGEROFFENSIVE, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Creator
+	pc_skill(sd, CR_AW_ACIDDEMONSTRATION, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, CR_AW_SLIMPITCHER, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Professor
+	pc_skill(sd, WZ_AW_HEAVENDRIVE, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, SA_AW_DISPELL, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// WhiteSmith
+	pc_skill(sd, WS_AW_CARTTERMINATION, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, BS_AW_HAMMERFALL, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Stalker
+	pc_skill(sd, ST_AW_FULLSTRIP, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, AC_AW_DOUBLE, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// High Priest
+	pc_skill(sd, PR_AW_MAGNUS, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, HP_AW_MEDITATIO, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Clown
+	pc_skill(sd, BA_AW_POEMBRAGI, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, BA_AW_APPLEIDUN, 0, ADDSKILL_PERMANENT_GRANTED);
+
+	// Gypsy
+	pc_skill(sd, DC_AW_FORTUNEKISS, 0, ADDSKILL_PERMANENT_GRANTED);
+	pc_skill(sd, DC_AW_SERVICEFORYOU, 0, ADDSKILL_PERMANENT_GRANTED);
+
+}
+
+void pc_awaken_refresh_skills(map_session_data* sd) {
+	uint8 awake_lv;
+
+	nullpo_retv(sd);
+
+	awake_lv = pc_awaken_get_lv(sd);
+
+	// ลบก่อนทุกครั้ง
+	pc_awaken_clear_skills(sd);
+
+	// ไม่มี awaken ก็จบ
+	if (awake_lv == 0)
+		return;
+
+	// Lord Knight
+	if (pc_is_lordknight_awaken_class(sd)) {
+		pc_skill(sd, LK_AW_BOWLING_BASH, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, LK_AW_BRANDISH, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+	// Sniper
+	if (pc_is_sniper_awaken_class(sd)) {
+		pc_skill(sd, AC_AW_DOUBLE, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, AC_AW_BLITZBEAT, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+
+	// Wizard
+	if (pc_is_wizard_awaken_class(sd)) {
+		pc_skill(sd, WZ_AW_STORMGUST, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, WZ_AW_VERMILION, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, WZ_AW_METEOR, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+
+	// Assassin
+	if (pc_is_assassin_awaken_class(sd)) {
+		pc_skill(sd, AS_AW_SONICBLOW, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, ASC_AW_METEORASSAULT, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+
+	// Paladin
+	if (pc_is_paladin_awaken_class(sd)) {
+		pc_skill(sd, PA_AW_SACRIFICE, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, CR_AW_GRANDCROSS, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+
+	// Champion
+	if (pc_is_champion_awaken_class(sd)) {
+		pc_skill(sd, MO_AW_EXTREMITYFIST, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, MO_AW_FINGEROFFENSIVE, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+	// Creator
+	if (pc_is_creator_awaken_class(sd)) {
+		pc_skill(sd, CR_AW_ACIDDEMONSTRATION, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, CR_AW_SLIMPITCHER, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+	// Professor
+	if (pc_is_professor_awaken_class(sd)) {
+		pc_skill(sd, WZ_AW_HEAVENDRIVE, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, SA_AW_DISPELL, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+
+	// WhiteSmith
+	if (pc_is_whitesmith_awaken_class(sd)) {
+		pc_skill(sd, WS_AW_CARTTERMINATION, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, BS_AW_HAMMERFALL, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+
+	}
+
+	//Stalker
+	if (pc_is_stalker_awaken_class(sd)) {
+		pc_skill(sd, ST_AW_FULLSTRIP, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, AC_AW_DOUBLE, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+	// High Priest
+	if (pc_is_high_priest_awaken_class(sd)) {
+		pc_skill(sd, PR_AW_MAGNUS, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, HP_AW_MEDITATIO, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+
+	// Clown
+	if (pc_is_clown_awaken_class(sd)) {
+		pc_skill(sd, BA_AW_POEMBRAGI, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, BA_AW_APPLEIDUN, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+
+	// Gypsy
+	if (pc_is_gypsy_awaken_class(sd)) {
+		pc_skill(sd, DC_AW_FORTUNEKISS, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+		pc_skill(sd, DC_AW_SERVICEFORYOU, awake_lv, ADDSKILL_PERMANENT_GRANTED);
+	}
+}
+
 /**
  * Returns max base level for this character.
  * @param sd Player
  * @return Max Base Level
  **/
 uint32 pc_maxbaselv(map_session_data *sd){
+	nullpo_retr(0, sd);
+
+	if (pc_is_roc_awaken_job(sd)) {
+		if (pc_has_awaken_privilege(sd))
+			return 120;
+		return 99;
+	}
+
 	return job_db.get_maxBaseLv(sd->status.class_);
+}
+
+bool pc_is_roc_awaken_job(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	switch (sd->status.class_) {
+		case JOB_HIGH_PRIEST:
+		case JOB_CHAMPION:
+		case JOB_LORD_KNIGHT:
+		case JOB_PALADIN:
+		case JOB_SNIPER:
+		case JOB_CLOWN:
+		case JOB_GYPSY:
+		case JOB_WHITESMITH:
+		case JOB_CREATOR:
+		case JOB_ASSASSIN_CROSS:
+		case JOB_STALKER:
+		case JOB_HIGH_WIZARD:
+		case JOB_PROFESSOR:
+			return true;
+	}
+	return false;
+}
+
+bool pc_is_awakened_player(map_session_data* sd) {
+	nullpo_retr(false, sd);
+
+	return (
+		sd->sc.getSCE(SC_AWAKENED_LV1)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV2)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV3)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV4)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV5)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV6)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV7)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV8)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV9)  ||
+		sd->sc.getSCE(SC_AWAKENED_LV10)
+	);
+}
+
+bool pc_has_awaken_privilege(map_session_data* sd) {
+	nullpo_retr(false, sd);
+	return pc_is_roc_awaken_job(sd) && pc_is_awakened_player(sd);
 }
 
 /**
@@ -8602,6 +8936,14 @@ uint32 JobDatabase::get_maxJobLv(uint16 job_id) {
  * @return Max Job Level
  **/
 uint32 pc_maxjoblv(map_session_data *sd){
+	nullpo_retr(0, sd);
+
+	if (pc_is_roc_awaken_job(sd)) {
+		if (pc_has_awaken_privilege(sd))
+			return 75;
+		return 70;
+	}
+
 	return job_db.get_maxJobLv(sd->status.class_);
 }
 
@@ -10933,7 +11275,7 @@ bool pc_jobchange(map_session_data *sd,int32 job, char upper)
 	// Reset body style to 0 before changing job to avoid
 	// errors since not every job has a alternate outfit.
 #if PACKETVER >= 20231220
-	sd->status.body = job;
+ 	sd->status.body = job;
 #else
 	sd->status.body = 0;
 #endif
@@ -11027,6 +11369,7 @@ bool pc_jobchange(map_session_data *sd,int32 job, char upper)
 	//Update skill tree.
 	pc_calc_skilltree(sd);
 	clif_skillinfoblock(sd);
+	pc_awaken_refresh_skills(sd);
 
 	if (sd->ed)
 		elemental_delete(sd->ed);
@@ -11367,6 +11710,27 @@ void pc_setmadogear(map_session_data *sd, bool flag, e_mado_type type)
 	} else if (pc_ismadogear(sd)) {
 		pc_setoption(sd, sd->sc.option & ~OPTION_MADOGEAR);
 	}
+}
+
+static bool pc_should_hide_followers(map_session_data& sd) {
+	if (sd.sc.getSCE(SC_HIDING) || sd.sc.getSCE(SC_CLOAKING) || sd.sc.getSCE(SC_CLOAKINGEXCEED))
+		return true;
+	if (map_flag_vs(sd.m))
+		return true;
+	return false;
+}
+
+void pc_set_follower_visibility(map_session_data& sd, bool hidden)
+{
+	if( sd.pd != nullptr )
+		pet_set_hidden_by_master(*sd.pd, hidden);
+	if( hom_is_active(sd.hd) )
+		hom_set_hidden_by_master(*sd.hd, hidden);
+}
+
+void pc_refresh_follower_visibility(map_session_data& sd)
+{
+	pc_set_follower_visibility(sd, pc_should_hide_followers(sd));
 }
 
 /*==========================================
@@ -15656,6 +16020,15 @@ uint16 pc_maxparameter(map_session_data *sd, e_params param) {
 		return 0;
 	}
 
+	// ੾�Ф���൵����ѡ 6 ���
+	if (param >= PARAM_STR && param <= PARAM_LUK) {
+		if (pc_is_roc_awaken_job(sd)) {
+			if (pc_has_awaken_privilege(sd) && sd->status.base_level >= 100)
+				return 130;
+			return 99;
+		}
+	}
+
 	return job->max_param[param];
 }
 
@@ -15667,6 +16040,9 @@ uint16 pc_maxparameter(map_session_data *sd, e_params param) {
 int16 pc_maxaspd(map_session_data *sd) {
 	nullpo_ret(sd);
 
+	if (pc_has_awaken_privilege(sd))
+		return 140;
+	
 	return (( sd->class_&JOBL_THIRD) ? battle_config.max_third_aspd : (
 			((sd->class_&MAPID_UPPERMASK) == MAPID_KAGEROUOBORO || (sd->class_&MAPID_UPPERMASK) == MAPID_REBELLION) ? battle_config.max_extended_aspd : (
 			(sd->class_&MAPID_BASEMASK) == MAPID_SUMMONER) ? battle_config.max_summoner_aspd : 
@@ -16507,6 +16883,75 @@ uint64 CaptchaDatabase::parseBodyNode(const ryml::NodeRef &node) {
 		captcha_db.put(index, cd);
 
 	return 1;
+}
+
+/**
+ * Returns the VIP expiration timestamp for the player.
+ * In modern rAthena (2025), the login server sends the VIP time directly to the map?server,
+ * so it is available in sd->vip.time when the player logs in.  We no longer query the
+ * account database here.
+ * @param sd map session data
+ * @return expiration timestamp (Unix time in seconds) or 0 if VIP not active
+ */
+static time_t vip_remain_time(map_session_data *sd)
+{
+    if (!sd || !sd->vip.enabled)
+        return 0;
+    return sd->vip.time;
+}
+
+void vip_bonus(map_session_data *sd)
+{
+    if (!sd)
+        return;
+
+    time_t remain_time = vip_remain_time(sd);
+    time_t current_time = time(nullptr);
+
+    if (pc_isvip(sd)) {
+        // Schedule or refresh the VIP status buff if recalculation is required.
+        if (remain_time > current_time && sd->state.recal_vip_time) {
+            int64 new_tick = (remain_time - current_time) * 1000 + 2000;
+            int64 timer_tick = gettick() + new_tick;
+            // Apply our custom VIP status effect (SC_VIPSTATE) so the icon shows.
+            status_change_start(nullptr, sd, SC_VIPSTATUS, 10000, 1, 0, 0, 0, new_tick, SCSTART_NOAVOID);
+            if (sd->vip_timer_tid != INVALID_TIMER)
+                delete_timer(sd->vip_timer_tid, vip_delete_timer);
+            sd->vip_timer_tid = add_timer(timer_tick, vip_delete_timer, sd->id, 0);
+            sd->state.recal_vip_time = false;
+        }
+        // If VIP time expired, clean up the buff.
+        if (remain_time < current_time) {
+            status_change_end(sd, SC_VIPSTATUS);
+            return;
+        }
+        // Execute configured VIP script bonuses.
+        auto vip_bonus_entry = vip_bonus_db.find(1);
+        if (vip_bonus_entry && vip_bonus_entry->script != nullptr)
+            run_script(vip_bonus_entry->script, 0, sd->id, 0);
+    } else {
+        status_change_end(sd, SC_VIPSTATUS);
+        sd->vip_timer_tid = INVALID_TIMER;
+    }
+}
+
+TIMER_FUNC(vip_bonus_timer){
+	map_session_data *sd = map_id2sd(id);
+	if( sd == NULL )
+		return 1;
+
+	status_calc_pc(sd, SCO_NONE);
+	return 0;
+}
+
+TIMER_FUNC(vip_delete_timer){
+	map_session_data *sd = map_id2sd(id);
+	if( sd == NULL )
+		return 1;
+
+	status_calc_pc(sd, SCO_NONE);
+	sd->vip_timer_tid = INVALID_TIMER;
+	return 0;
 }
 
 /* Animation Force Related */

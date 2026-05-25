@@ -1,255 +1,338 @@
--	script	jobmaster	-1,{
-cutin "Tatsumaki.bmp", 2;
-mes "^738C5A[ เปลี่ยนอาชีพ ]^000000";
-mes "กรุณาเลือกอาชีพที่คุณต้องการเปลี่ยน";
-next;
-menu "^738C5A•^000000 เปลี่ยน Class Novice",classnovice,"^738C5A•^000000 เปลี่ยน Class 1",class1,"^738C5A•^000000 เปลี่ยน Class 2",class2,"^738C5A•^000000 เปลี่ยน Hi-Class",hicass,"^738C5A•^000000 เปลี่ยน Class Baby",classbaby,"^738C5A•^000000 เปลี่ยน Class New",classnew;
+//==============================================
+// - Script By : M-Ro Online
+// - Script City : Thailand 
+// - Script Support Server : Hercules & rAthena
+//==============================================
+-	script	JobAll	-1,{
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-classnovice:
-cutin "", 255;
-if(class !=0) goto cancelwa;
-menu "^738C5A•^000000 Super Novice",sn,"^738C5A•^000000 Hi Novice",hn,"^738C5A•^000000 Novice",novice;
+	set .@heading$, "^FF0000[ Job Master ]";
+	set .@giftzeny1, 0;	// ได้รับเงินตอนเปลี่ยน Novice High
+	set .@giftzeny2, 0;	// ได้รับเงินตอน เปลี่ยนเป็น 2-1
+	set .@giftzeny3, 0;	// ได้รับเงินเมื่อเป็น Hi Class แล้ว
 
-sn: jobchange 23;
-goto spn;
-hn: jobchange 4001;
-goto allskill;
-novice: jobchange 0;
-goto allskill;
-close;
+if (Class==0) goto L_is_novice;
+if (Class==1) goto L_is_sword;
+if (Class==2) goto L_is_mage;
+if (Class==3) goto L_is_archer;
+if (Class==4) goto L_is_acolyte;
+if (Class==5) goto L_is_merchant;
+if (Class==6) goto L_is_thief;
+if (Class==7) goto L_is_knight;
+if (Class==8) goto L_is_priest;
+if (Class==9) goto L_is_wizard;
+if (Class==10) goto L_is_blacksmith;
+if (Class==11) goto L_is_hunter;
+if (Class==12) goto L_is_assassin;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+High:
+	mes .@heading$;
+	mes "สวัสดีค่ะ คุณ ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "คุณได้มาถึงจุดสูงสุดแล้วค่ะ";
+	close;
 
-class1:
-cutin "", 255;
-if(class !=0) goto cancelwa;
-menu "Class 1",cs1,"Hi-Class 1",hc1;
-next;
+L_is_knight:
+	set jobsw,1;
+	goto High;
+L_is_priest:
+	set jobal,1;
+	goto High;
+L_is_wizard:
+	set jobmg,1;
+	goto High;
+L_is_blacksmith:
+	set jobmc,1;
+	goto High;
+L_is_hunter:
+	set jobac,1;
+	goto High;
+L_is_assassin:
+	set jobtf,1;
+	goto High;
+	close;
 
-cs1:
-menu "^738C5A•^000000 Swordman",sm1,"^738C5A•^000000 Mage",mg1,"^738C5A•^000000 Thief",tf1,"^738C5A•^000000 Merchant",mc1,"^738C5A•^000000 Acolyte",ay1,"^738C5A•^000000 Archer",ac1;
-sm1:
- jobchange 1;
-goto chiew;
-mg1: jobchange 2;
-goto chiew;
-tf1: jobchange 6;
-goto chiew;
-mc1: jobchange 5;
-goto chiew;
-ay1: jobchange 4;
-goto chiew;
-ac1: jobchange 3;
-goto chiew;
+L_is_novice:
+	if(JobLevel < 10) goto L_notJ10;
+	if(SkillPoint >0) goto L_notUseAll;
+	mes .@heading$;
+	mes "สวัสดีค่ะ ท่าน ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "ท่านมีอะไรให้ข้ารับใช้ค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 เปลื่ยนอาชีพ",-,"^FF0000[#]^000000 ยกเลิก",L_close;
+	mes .@heading$;
+	mes "ท่านต้องการเป็นอาชีพอะไรค่ะ";
+	next;
+	menu	"[^FF0000#^000000]^000000 Swordman",swordman,
+		"[^FF0000#^000000]^000000 Mage",mage,
+		"[^FF0000#^000000]^000000 Archer",archer,
+		"[^FF0000#^000000]^000000 Acolyte",acolyte,
+		"[^FF0000#^000000]^000000 Merchant",merchant,
+		"[^FF0000#^000000]^000000 Thief",thief,
+		"^FF0000[#]^000000 ยกเลิก",L_close;
 
-hc1:
-menu "^738C5A•^000000 Hi Swordman",hsm1,"^738C5A•^000000 Hi Mage",hmg1,"^738C5A•^000000 Hi Thief",htf1,"^738C5A•^000000 Hi Merchant",hmc1,"^738C5A•^000000 Hi Acolyte",hay1,"^738C5A•^000000 Hi Archer",hac1;
-hsm1: jobchange 4002;
-goto chiew;
-hmg1: jobchange 4003;
-goto chiew;
-htf1: jobchange 4007;
-goto chiew;
-hmc1: jobchange 4006;
-goto chiew;
-hay1: jobchange 4005;
-goto chiew;
-hac1: jobchange 4004;
-goto chiew;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+swordman:
+	mes .@heading$;
+	mes "ตกลง Swordman ใช่มั้ยค่ะ";
+	next;
+	menu	"[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 1;
+	mes "ท่านเป็น Swordman แล้วค่ะ";
+	close;
+mage:
+	mes .@heading$;
+	mes "ตกลง Mage ใช่มั้ยค่ะ";
+	next;
+	menu	"[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 2;
+	mes "ท่านเป็น Mage แล้วค่ะ";
+	close;
+archer:
+	mes .@heading$;
+	mes "ตกลง Archer ใช่มั้ยค่ะ";
+	next;
+	menu	"[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 3;
+	mes "ท่านเป็น Archer แล้วค่ะ";
+	close;
+acolyte:
+	mes .@heading$;
+	mes "ตกลง Acolyte ใช่มั้ยค่ะ";
+	next;
+	menu	"[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 4;
+	mes "ท่านเป็น Acolyte แล้วค่ะ";
+	close;
+merchant:
+	mes .@heading$;
+	mes "ตกลง Merchant ใช่มั้ยค่ะ";
+	next;
+	menu	"[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 5;
+	mes "ท่านเป็น Merchant แล้วค่ะ";
+	close;
+thief:
+	mes .@heading$;
+	mes "ตกลง Thief ใช่มั้ยค่ะ";
+	next;
+	menu	"[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 6;
+	mes "ท่านเป็น Thief แล้วค่ะ";
+	close;
 
-class2:
-cutin "", 255;
-if(class !=0) goto cancelwa;
-menu "^738C5A•^000000 Knight",kg01,"^738C5A•^000000 Crusader",csd01,"^738C5A•^000000 Wizard",wz01,"^738C5A•^000000 Sage",sg01,"^738C5A•^000000 Hunter",ht01,"^738C5A•^000000 Bard",bd01,"^738C5A•^000000 Dancer",dc01,"^738C5A•^000000 Priest",pri01,"^738C5A•^000000 Monk",mk01,"^738C5A•^000000 Backsmith",bsm01,"^738C5A•^000000 Alchemist",acm01,"^738C5A•^000000 Rogue",rg01;
+L_is_sword:
+	if(JobLevel < 40) goto L_notJ40;
+	if(SkillPoint >0) goto L_notUseAll;
+	mes .@heading$;
+	mes "สวัสดีค่ะ ท่าน ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "ท่านมีอะไรให้ข้ารับใช้ค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 เปลื่ยนอาชีพ",-,"^FF0000[#]^000000 ยกเลิก",L_close;
+	mes .@heading$;
+	mes "เลือกสายอาชีพของคุณค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 Knight",knight,"^FF0000[#]^000000 ยกเลิก",L_close;
+knight:
+	mes .@heading$;
+	mes "คิดว่าใช่แล้วนะค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 7;
+	getitem 1163,1;
+	mes .@heading$;
+	mes "เรียบร้อยค่ะ ยินดีให้บริการค่ะ";
+	close;
+L_is_mage:
+	if(JobLevel < 40) goto L_notJ40;
+	if(SkillPoint >0) goto L_notUseAll;
+	mes .@heading$;
+	mes "สวัสดีค่ะ ท่าน ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "ท่านมีอะไรให้ข้ารับใช้ค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 เปลื่ยนอาชีพ",-,"^FF0000[#]^000000 ยกเลิก",L_close;
+	mes .@heading$;
+	mes "เลือกสายอาชีพของคุณค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 Wizard",wizard,"^FF0000[#]^000000 ยกเลิก",L_close;
+wizard:
+	mes .@heading$;
+	mes "คิดว่าใช่แล้วนะค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 9;
+	getitem 505,6;
+	mes .@heading$;
+	mes "เรียบร้อยค่ะ ยินดีให้บริการค่ะ";
+	close;
 
-kg01: jobchange 13;
-goto chiew;
-csd01: jobchange 14;
-goto chiew;
-wz01: jobchange 9;
-goto chiew;
-sg01: jobchange 16;
-goto chiew;
-ht01: jobchange 11;
-goto chiew;
-bd01: jobchange 19;
-goto chiew;
-dc01: jobchange 20;
-goto chiew;
-pri01: jobchange 8;
-goto chiew;
-mk01: jobchange 15;
-goto chiew;
-bsm01: jobchange 10;
-goto chiew;
-acm01: jobchange 18;
-goto chiew;
-rg01: jobchange 17;
-goto chiew;
+L_is_archer:
+	if(JobLevel < 40) goto L_notJ40;
+	if(SkillPoint >0) goto L_notUseAll;
+	mes .@heading$;
+	mes "สวัสดีค่ะ ท่าน ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "ท่านมีอะไรให้ข้ารับใช้ค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 เปลื่ยนอาชีพ",-,"^FF0000[#]^000000 ยกเลิก",L_close;
+	mes .@heading$;
+	mes "เลือกสายอาชีพของคุณค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 Hunter",hunter,"^FF0000[#]^000000 ยกเลิก",L_close;
+hunter:
+	mes .@heading$;
+	mes "คิดว่าใช่แล้วนะค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 11;
+	getitem 1718,1;
+	mes .@heading$;
+	mes "เรียบร้อยค่ะ ยินดีให้บริการค่ะ";
+	close;
+L_is_acolyte:
+	if(JobLevel < 40) goto L_notJ40;
+	if(SkillPoint >0) goto L_notUseAll;
+	mes .@heading$;
+	mes "สวัสดีค่ะ ท่าน ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "ท่านมีอะไรให้ข้ารับใช้ค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 เปลื่ยนอาชีพ",-,"^FF0000[#]^000000 ยกเลิก",L_close;
+	mes .@heading$;
+	mes "เลือกสายอาชีพของคุณค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 Priest",priest,"^FF0000[#]^000000 ยกเลิก",L_close;
+priest:
+	mes .@heading$;
+	mes "คิดว่าใช่แล้วนะค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 8;
+	getitem 1551,1;
+	mes .@heading$;
+	mes "เรียบร้อยค่ะ ยินดีให้บริการค่ะ";
+	close;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+L_is_merchant:
+	if(JobLevel < 40) goto L_notJ40;
+	if(SkillPoint >0) goto L_notUseAll;
+	mes .@heading$;
+	mes "สวัสดีค่ะ ท่าน ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "ท่านมีอะไรให้ข้ารับใช้ค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 เปลื่ยนอาชีพ",-,"^FF0000[#]^000000 ยกเลิก",L_close;
+	mes .@heading$;
+	mes "เลือกสายอาชีพของคุณค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 Black Smith",blacksmith,"^FF0000[#]^000000 ยกเลิก",L_close;
+blacksmith:
+	mes .@heading$;
+	mes "คิดว่าใช่แล้วนะค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 10;
+	getitem 1360,1;
+	mes .@heading$;
+	mes "เรียบร้อยค่ะ ยินดีให้บริการค่ะ";
+	close;
 
-hicass:
-cutin "", 255;
-if(class !=0) goto cancelwa;
-menu "^738C5A•^000000 Lord Knight",lord,"^738C5A•^000000 Sniper",sni,"^738C5A•^000000 Paladin",pala,"^738C5A•^000000 High Priest",highp,"^738C5A•^000000 Assassin Cross",ac,"^738C5A•^000000 Champion",cp,"^738C5A•^000000 High Wizard",hw,"^738C5A•^000000 Stalker",sk,"^738C5A•^000000 Scholar",sl,"^738C5A•^000000 Master Smith",ms,"^738C5A•^000000 Biochermist",bc,"^738C5A•^000000 Minstrel",mt,"^738C5A•^000000 Gypsy",gp;
+L_is_thief:
+	if(JobLevel < 40) goto L_notJ40;
+	if(SkillPoint >0) goto L_notUseAll;
+	mes .@heading$;
+	mes "สวัสดีค่ะ ท่าน ^FF0000 "+ strcharinfo(0) +"^000000";
+	mes "ท่านมีอะไรให้ข้ารับใช้ค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 เปลื่ยนอาชีพ",-,"^FF0000[#]^000000 ยกเลิก",L_close;
+	mes .@heading$;
+	mes "เลือกสายอาชีพของคุณค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 Assassin",assassin,"^FF0000[#]^000000 ยกเลิก",L_close;
+assassin:
+	mes .@heading$;
+	mes "คิดว่าใช่แล้วนะค่ะ";
+	next;
+	menu "[^FF0000#^000000]^000000 ใช่",-,"^FF0000[#]^000000 ไม่ใช่",L_close;
+	mes .@heading$;
+	mes "ตกลง ตามนั้นค่ะ";
+	next;
+	jobchange 12;
+	getitem 1253,1;
+	mes .@heading$;
+	mes "เรียบร้อยค่ะ ยินดีให้บริการค่ะ";
+	close;
 
-lord: jobchange 4008;
-goto chiew;
-sni: jobchange 4012;
-goto chiew;
-pala: jobchange 4015;
-goto chiew;
-highp: jobchange 4009;
-goto chiew;
-ac: jobchange 4013;
-goto chiew;
-cp: jobchange 4016;
-goto chiew;
-hw: jobchange 4010;
-goto chiew;
-sk: jobchange 4018;
-goto chiew;
-sl: jobchange 4017;
-goto chiew;
-ms: jobchange 4011;
-goto chiew;
-bc: jobchange 4019;
-goto chiew;
-mt: jobchange 4020;
-goto chiew;
-gp: jobchange 4021;
-goto chiew;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-classbaby:
-cutin "", 255;
-if(class !=0) goto cancelwa;
-menu "^738C5A•^000000 Baby Novice Class",bnc1,"^738C5A•^000000 Baby Class 1",bc11,"^738C5A•^000000 Baby Class 2",bc22;
-
-bnc1:
-menu "Baby Novice",bbn01,"Baby SuperNovice",bbsn01;
-
-bbn01: jobchange 4023;
-goto chiew;
-bbsn01: jobchange 4045;
-goto chiew;
-
-bc11:
-menu "^738C5A•^000000 Baby Swordman",bbsm1,"^738C5A•^000000 Baby Mage",bbmg1,"^738C5A•^000000 Baby Thief",bbt1,"^738C5A•^000000 Baby Merchant",bbm1,"^738C5A•^000000 Baby Acolyte",bba1,"^738C5A•^000000 Baby Archer",bba001;
-
-bbsm1: jobchange 4024;
-goto chiew;
-bbmg1: jobchange 4025;
-goto chiew;
-bbt1: jobchange 4029;
-goto chiew;
-bbm1: jobchange 4028;
-goto chiew;
-bba1: jobchange 4027;
-goto chiew;
-bba001: jobchange 4026;
-goto chiew;
-
-bc22:
-menu "^738C5A•^000000 Baby Knight",bbk2,"^738C5A•^000000 Baby Crusader",bbc2,"^738C5A•^000000 Baby Wizard",bbw2,"^738C5A•^000000 Baby Sage",bbs2,"^738C5A•^000000 Baby Hunter",bbh2,"^738C5A•^000000 Baby Bard",bbb2,"^738C5A•^000000 Baby Dancer",bbd2,"^738C5A•^000000 Baby Priest",bbp2,"^738C5A•^000000 Baby Monk",bbm,"^738C5A•^000000 Baby Blacksmith",bbbs2,"^738C5A•^000000 Baby Alchemist",bba2,"^738C5A•^000000 Baby Assassin",bbaa2,"^738C5A•^000000 Baby Rogue",bbr2;
-
-bbk2: jobchange 4036;
-goto chiew;
-bbc2: jobchange 4037;
-goto chiew;
-bbw2: jobchange 4032;
-goto chiew;
-bbs2: jobchange 4039;
-goto chiew;
-bbh2: jobchange 4034;
-goto chiew;
-bbb2: jobchange 4042;
-goto chiew;
-bbd2: jobchange 4043;
-goto chiew;
-bbp2: jobchange 4031;
-goto chiew;
-bbm: jobchange 4038;
-goto chiew;
-bbbs2: jobchange 4033;
-goto chiew;
-bba2: jobchange 4041;
-goto chiew;
-bbaa2: jobchange 4035;
-goto chiew;
-bbr2: jobchange 4040;
-goto chiew;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-classnew:
-cutin "", 255;
-if(class !=0) goto cancelwa;
-menu "^738C5A•^000000 Taekwon",tk2,"^738C5A•^000000 Star Gladiator",stg2,"^738C5A•^000000 Soul Linker",slk2,"^738C5A•^000000 Gunslinger",gsg2,"^738C5A•^000000 Ninja",nja2;
-
-tk2: jobchange 4046;
-goto chiew;
-stg2: jobchange 4047;
-goto chiew;
-slk2: jobchange 4049;
-goto chiew;
-gsg2: jobchange 24;
-goto chiew;
-nja2: jobchange 25;
-goto chiew;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-cancel:
-cutin "", 255;
-close;
-
-chiew:
-cutin "", 255;
-atcommand "@lvup 99";
-atcommand "@joblvup 70";
-//atcommand "@allskill";
-
-resetstatus;
-close;
-
-allskill:
-cutin "", 255;
-atcommand "@lvup 99";
-atcommand "@joblvup 70";
-//atcommand "@allskill";
-
-resetstatus;
-close;
-
-spn:
-cutin "", 255;
-atcommand "@lvup 99";
-atcommand "@joblvup 69";
-//atcommand "@allskill";
-
-resetstatus;
-close;
-
-cancelwa:
-cutin "", 255;
-mes "^738C5A[ เปลี่ยนอาชีพ ]^000000";
-mes "ไม่สามารถเปลี่ยนได้อีก";
-close;
+L_notJ45:
+	mes .@heading$;
+	mes "Lv ของท่านยังไม่ถึง 45 ค่ะ";
+	close;
+L_notJ99:
+	mes .@heading$;
+	mes "Lv ของท่านยังไม่ถึง 99 ค่ะ";
+	close;
+L_notJ10:
+	mes .@heading$;
+	mes "Job Lv ของท่านยังไม่ถึง 10 ค่ะ";
+	close;
+L_notJ40:
+	mes .@heading$;
+	mes "Job Lv ของท่านยังไม่ถึง 40 ค่ะ";
+	close;
+L_notJ50:
+	mes .@heading$;
+	mes "Job Lv ของท่านยังไม่ถึง 50 ค่ะ";
+	close;
+L_notUseAll:
+	mes .@heading$;
+	mes "Skill Point ยังใช้ไม่หมดค่ะ";
+	close;
+L_close:
+	mes .@heading$;
+	mes "ยินดีให้บริการค่ะ";
+	close;
+	end;
 
 OnInit:
-	//waitingroom "   เปลี่ยนอาชีพ   ",0;
-	setunitdata (getnpcid(0), UNPC_GROUP_ID, 106); 
-    setunittitle(getnpcid(0), "Job master");  //คลาย ๆ ชื่อกิลด์	
+    setunitdata (getnpcid(0), UNPC_GROUP_ID, 106); // รูปกิลด์ ใส่เพิ่มเติมที่ data/texture/??????????????/group บอกโดย @- - - ?  ??????????  ? - - -#7251
+    setunittitle(getnpcid(0), "Job Master");  //คลาย ๆ ชื่อกิลด์	
+	waitingroom "[#] เปลี่ยนอาชีพ", 0;
 	.@npc_id = getnpcid(0);
 	hateffect 263, true, .@npc_id;
-end;
+    end;
 }
-
-ultia,196,163,4	duplicate(jobmaster)	เปลี่ยนอาชีพ#01	10368
+//==============================================
+//ที่ตั้งNPC
+//==============================================
+ultia,196,162,4	duplicate(JobAll)	เปลี่ยนอาชีพ#01	988
+//==============================================

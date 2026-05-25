@@ -46,7 +46,7 @@ Header:
   Version: 4
   
 Body:
-  - Status: VIPSTATE
+  - Status: Vipstatus
     Icon: EFST_VIPSTATE
     Flags:
       NoRemoveOnDead: true

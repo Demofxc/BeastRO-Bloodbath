@@ -92,6 +92,7 @@ struct homun_data : public block_list {
 	struct regen_data regen;
 	std::shared_ptr<s_homunculus_db> homunculusDB;	//[orn]
 	struct s_homunculus homunculus;	//[orn]
+	bool hidden_by_master = false;
 
 	int32 masterteleport_timer;
 	map_session_data *master; //pointer back to its master
@@ -223,6 +224,7 @@ void hom_reset_stats(struct homun_data *hd);
 int32 hom_shuffle(struct homun_data *hd); // [Zephyrus]
 void hom_save(struct homun_data *hd);
 bool hom_call(map_session_data *sd);
+void hom_set_hidden_by_master(homun_data& hd, bool hidden);
 bool hom_create_request(map_session_data *sd, int32 class_);
 void hom_menu(map_session_data *sd,int32 type);
 int32 hom_food(map_session_data *sd, struct homun_data *hd);

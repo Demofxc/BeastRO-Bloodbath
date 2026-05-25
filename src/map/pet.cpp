@@ -2019,6 +2019,22 @@ void pet_lootitem_drop( pet_data& pd, map_session_data* sd ){
 	}
 }
 
+void pet_set_hidden_by_master(pet_data& pd, bool hidden) {
+	if( hidden ) {
+		if( pd.state.hidden_by_master )
+			return;
+		pd.state.hidden_by_master = 1;
+		if( pd.prev != nullptr )
+			clif_clearunit_area(pd, CLR_OUTSIGHT);
+	} else {
+		if( !pd.state.hidden_by_master )
+			return;
+		pd.state.hidden_by_master = 0;
+		if( pd.prev != nullptr )
+			clif_spawn(&pd);
+	}
+}
+
 /**
  * Pet bonus giving skills.
  * @param tid : current timer value

@@ -37,6 +37,7 @@
 #include "pet.hpp"
 #include "storage.hpp"
 #include "trade.hpp"
+#include "voice_bridge.hpp"
 
 using namespace rathena;
 
@@ -313,6 +314,11 @@ int32 unit_walktoxy_sub(struct block_list *bl)
 	}
 
 	unit_walktoxy_nextcell(*bl, true, gettick());
+
+	if (bl->type == BL_PC) {
+		map_session_data* sd = BL_CAST(BL_PC, bl);
+		voice_bridge_send_map_pos(sd);
+	}
 
 	return 1;
 }
@@ -2377,11 +2383,13 @@ int32 unit_skilluse_id2(struct block_list *src, int32 target_id, uint16 skill_id
 				return 0; // Can't cast on non-dead characters.
 		break;
 #ifndef RENEWAL
+		case MO_AW_FINGEROFFENSIVE:
 		case MO_FINGEROFFENSIVE:
 			if(sd)
 				casttime += casttime * min(skill_lv, sd->spiritball);
 		break;
 #endif
+		case MO_AW_EXTREMITYFIST:
 		case MO_EXTREMITYFIST:
 			if (sc && sc->getSCE(SC_COMBO) &&
 			   (sc->getSCE(SC_COMBO)->val1 == MO_COMBOFINISH ||

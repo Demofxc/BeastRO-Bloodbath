@@ -994,6 +994,7 @@ void clif_playBGM( map_session_data& sd, const char* name );
 void clif_soundeffect( struct block_list& bl, const char* name, int32 type, enum send_target target );
 void clif_parse_ActionRequest_sub( map_session_data& sd, uint8 action_type, int32 target_id, t_tick tick );
 void clif_parse_LoadEndAck(int32 fd,map_session_data *sd);
+void clif_awaken_refresh_aura(map_session_data* sd);
 void clif_hotkeys_send(map_session_data *sd, int32 tab);
 
 // trade
@@ -1089,6 +1090,7 @@ void clif_item_damaged( map_session_data& sd, uint16 position );
 void clif_item_refine_list( map_session_data& sd );
 void clif_hat_effects(struct block_list* src, struct block_list* bl, bool enable, enum send_target target);
 void clif_hat_effect_single(struct block_list* bl, uint16 effectId, bool enable);
+void clif_hat_effect_single_target( const block_list& bl, uint16 effectId, bool enable, enum send_target target );
 
 void clif_item_skill(map_session_data *sd,uint16 skill_id,uint16 skill_lv);
 

@@ -4,21 +4,22 @@ function Go; function Disp; function Pick; function Restrict;
 // --------------------------------------------------
 //	Main Menu:
 // --------------------------------------------------
-	mes "^AF75FF[ Warper ]^000000";
-	mes "วันนี้วันที่ :^AF75FF "+ gettimestr("%d/%m/%y",19) +"^000000";
-	mes "เวลา :^AF75FF "+ gettimestr("%H:%M",19) +"^000000";
+	mes "^FF0000[ Warper ]^000000";
+	mes "วันนี้วันที่ :^FF0000 "+ gettimestr("%d/%m/%y",19) +"^000000";
+	mes "เวลา :^FF0000 "+ gettimestr("%H:%M",19) +"^000000";
 	mes "สวัสดีค่ะ ยินดีต้อนรับค่ะ";
 	mes "กรุณาเลือกเมนูที่คุณต้องการ";
-	mes "คุณสามารถใช้คำสั่ง ^AF75FF@load^000000";
+	mes "คุณสามารถใช้คำสั่ง ^FF0000@load^000000";
 	mes "เพื่อกลับไปยังจุดเซฟ นะค่ะ^_^";
 	setdialogsize(322, 200); // (x, y)
-menu	"^AF75FF•^000000 วาร์ปล่าสุด ^777777["+lastwarp$+"]^000000",-,
-    	"^AF75FF#^000000 ^FF7F50Main Town^000000",mainlounge,
-    	"^AF75FF•^000000 Town",Towns,
-    	"^AF75FF•^000000 Fields",Fields,
-    	"^AF75FF•^000000 Dungeons",Dungeons,
-    	"^AF75FF•^000000 ล่า Elu Ori",HuntEluOri,
-    	"^AF75FF•^000000 Guild Dungeons",Guild_Dungeons;
+menu	"[^FF0000#^000000]^000000 วาร์ปล่าสุด ^777777["+lastwarp$+"]^000000",-,
+    	"[^FF0000#^000000]^000000 Main Town^000000",mainlounge,
+    	"[^FF0000#^000000]^000000 Town",Towns,
+    	"[^FF0000#^000000]^000000 Fields",Fields,
+    	"[^FF0000#^000000]^000000 Dungeons",Dungeons,
+    	"[^FF0000#^000000]^000000 ล่า Elu Ori",HuntEluOri,
+    	"[^FF0000#^000000]^000000 Guild Dungeons",Guild_Dungeons;
+		
 
 	if (lastwarp$ == "")
 		message strcharinfo(0),"ขออภัยด้วยค่ะ แต่คุณยังไม่แผนที่วาร์ปล่าสุด.";
@@ -172,7 +173,7 @@ T37: Go("yuno",157,51);
 // --------------------------------------------------
     mainlounge:
 // --------------------------------------------------
-menu	"^FF7F50Main Town000000",Warpmainlounge;
+menu	"Main Town",Warpmainlounge;
 
 Warpmainlounge: Go("ultia",36,176);
 
@@ -285,7 +286,7 @@ menu	"Abyss Lakes",D1, "Amatsu Dungeon",D2, "Anthell",D3,
 		"Louyang Dungeon",D24, "Magma Dungeon",D25, "Malangdo Dungeon",D26,
 		"Moscovia Dungeon",D27, "Nidhogg's Dungeon",D28, "Odin Temple",D29,
 		"Orc Dungeon",D30, "Payon Dungeon",D31, "Pyramids",D32, "Rachel Sanctuary",D33,
-    	"Scaraba Hole ^AF75FF(การ์ดประดับ Atk+20)^000000",D34, "Sphinx",D35, "Sunken Ship",D36, "Thanatos Tower",D37,
+    	"Scaraba Hole ^FF0000(การ์ดประดับ Atk+20)^000000",D34, "Sphinx",D35, "Sunken Ship",D36, "Thanatos Tower",D37,
     	"Thor Volcano",D38, "Toy Factory",D39, "Turtle Dungeon",D40, "Umbala Dungeon",D41, "Nidhoggur's Nest Lv 2",D43;
 
 D1: setarray @c[2],261,272,275,270,116,27;
@@ -366,7 +367,7 @@ D32: Restrict("RE",7,8);
 D33: setarray @c[2],140,11,32,21,8,149,204,218,150,9;
 	 Disp("Rachel Sanctuary",1,5); Pick("ra_san");
 D34: setarray @c[2],364,44,101,141,137,196;
-	 Disp("Scaraba Hole ^AF75FF(การ์ดประดับดรอปทุกชั้น)^000000",1,3); Pick("dic_dun");
+	 Disp("Scaraba Hole ^FF0000(การ์ดประดับดรอปทุกชั้น)^000000",1,3); Pick("dic_dun");
 D35: setarray @c[2],288,9,149,81,210,54,10,222,100,99;
 	 Disp("Sphinx",1,5); Pick("","in_sphinx1","in_sphinx2","in_sphinx3","in_sphinx4","in_sphinx5");
 D36: setarray @c[2],69,24,102,27;

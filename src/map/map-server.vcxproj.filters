@@ -155,6 +155,9 @@
     <ClInclude Include="discord_webhook.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="pc_battle_stats.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>  
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="achievement.cpp">
@@ -284,6 +287,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="discord_webhook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pc_battle_stats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

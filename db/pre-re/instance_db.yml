@@ -81,3 +81,11 @@ Body:
       Y: 36
     AdditionalMaps:
       2@nyd: true
+  - Id: 50
+    Name: Arena PvP
+    TimeLimit: 900
+    IdleTimeOut: 60
+    Enter:
+      Map: guild_vs3
+      X: 50
+      Y: 50

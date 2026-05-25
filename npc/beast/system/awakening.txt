@@ -1,0 +1,274 @@
+ultia,208,104,4	script	เทพแห่งการปลุกพลัง	10028,{
+
+	mes "^FF0000[Grim Of Awakening]";
+	mes "จงเลือกสิ่งที่เจ้าต้องการ";
+	next;
+
+	switch(select("[^FF0000#^000000] ปลุกพลัง:[^FF0000#^000000] ร้านค้า:[^FF0000#^000000] รายละเอียด:[^FF0000#^000000] ยกเลิก")) {
+	case 1:
+		goto L_Awake;
+	case 2:
+		close2;
+		callshop "Awake_Shop",1;
+		end;
+	case 3:
+		goto L_Detail;
+	default:
+		close;
+	}
+
+L_Detail:
+	mes "^FF0000[Grim Of Awakening]";
+	.@char_id = getcharid(0);
+
+	.@rows = query_sql(
+		"SELECT `awake_lv` FROM `awake` WHERE `char_id` = " + .@char_id,
+		.@awake_data
+	);
+	.@lv = (.@rows > 0) ? .@awake_data[0] : 0;
+
+	mes "ระดับการปลุกพลังปัจจุบัน: ^FF0000" + .@lv + "^000000";
+
+	if (.@lv >= 10) {
+		mes "เจ้าปลุกพลังครบ ^FF000010/10^000000 แล้ว";
+		close;
+	}
+
+	.@next_lv = .@lv + 1;
+	.@need_amount = .NeedAmount[.@lv];
+	.@success_rate = .SuccessRate[.@lv];
+
+	.@eac = eaclass();
+	switch (.@eac & EAJ_BASEMASK) {
+		case EAJ_SWORDMAN: .@awake_item = 30313; break;
+		case EAJ_MAGE:     .@awake_item = 30314; break;
+		case EAJ_ARCHER:   .@awake_item = 30315; break;
+		case EAJ_ACOLYTE:  .@awake_item = 30316; break;
+		case EAJ_MERCHANT: .@awake_item = 30317; break;
+		case EAJ_THIEF:    .@awake_item = 30318; break;
+		default:
+			mes "อาชีพสายนี้ยังไม่สามารถปลุกพลังได้";
+			close;
+	}
+
+	mes "ระดับถัดไป: ^FF0000" + .@next_lv + "^000000";
+	mes "หินที่ต้องใช้: ^i["+.@awake_item+"] ^FF0000" + getitemname(.@awake_item) + "^000000";
+	mes "จำนวนที่ต้องใช้: ^FF0000" + .@need_amount + "^000000 ชิ้น";
+	mes "โอกาสสำเร็จ: ^FF0000" + .@success_rate + "%^000000";
+	close;
+
+L_Awake:
+	mes "^FF0000[Grim Of Awakening]";
+	.@char_id = getcharid(0);
+
+	.@rows = query_sql(
+		"SELECT `awake_lv` FROM `awake` WHERE `char_id` = " + .@char_id,
+		.@awake_data
+	);
+	.@lv = (.@rows > 0) ? .@awake_data[0] : 0;
+
+	if (.@lv >= 10) {
+		mes "เจ้าปลุกพลังครบ ^FF000010/10^000000 แล้ว";
+		close;
+	}
+
+	if (BaseLevel < .NeedBase || JobLevel < .NeedJob) {
+		mes "การปลุกพลังต้องมี";
+		mes "^FF0000Base Level " + .NeedBase + "^000000 และ ^FF0000Job Level " + .NeedJob + "^000000";
+		mes "ตอนนี้เจ้ามี";
+		mes "Base Level: ^FF0000" + BaseLevel + "^000000";
+		mes "Job Level: ^FF0000" + JobLevel + "^000000";
+		close;
+	}
+
+	.@next_lv = .@lv + 1;
+	.@need_amount = .NeedAmount[.@lv];
+	.@success_rate = .SuccessRate[.@lv];
+
+	.@eac = eaclass();
+	switch (.@eac & EAJ_BASEMASK) {
+		case EAJ_SWORDMAN: .@awake_item = 30313; break;
+		case EAJ_MAGE:     .@awake_item = 30314; break;
+		case EAJ_ARCHER:   .@awake_item = 30315; break;
+		case EAJ_ACOLYTE:  .@awake_item = 30316; break;
+		case EAJ_MERCHANT: .@awake_item = 30317; break;
+		case EAJ_THIEF:    .@awake_item = 30318; break;
+		default:
+			mes "อาชีพสายนี้ยังไม่สามารถปลุกพลังได้";
+			close;
+	}
+
+	mes "ระดับการปลุกพลังปัจจุบัน: ^FF0000" + .@lv + "^000000";
+	mes "ระดับถัดไป: ^FF0000" + .@next_lv + "^000000";
+	mes "ต้องใช้ ^i["+.@awake_item+"] ^FF0000" + getitemname(.@awake_item) + "^000000 จำนวน ^FF0000" + .@need_amount + "^000000 ชิ้น";
+	mes "โอกาสสำเร็จ: ^FF0000" + .@success_rate + "%^000000";
+
+	if (countitem(.@awake_item) < .@need_amount) {
+		mes "ไอเท็มไม่เพียงพอ";
+		close;
+	}
+
+	next;
+	mes "^FF0000[Grim Of Awakening]";
+	mes "หากล้มเหลว ไอเท็มจะหาย";
+	mes "แต่ ^FF0000ระดับการปลุกพลัง^000000 จะไม่ลด";
+	next;
+
+	switch(select("[^FF0000#^000000] ปลุกพลัง:[^FF0000#^000000] ยกเลิก")) {
+	case 1:
+		.@rows = query_sql(
+			"SELECT `awake_lv` FROM `awake` WHERE `char_id` = " + .@char_id,
+			.@awake_data2
+		);
+		.@lv = (.@rows > 0) ? .@awake_data2[0] : 0;
+
+		if (.@lv >= 10) {
+			mes "^FF0000[Grim Of Awakening]";
+			mes "เจ้าปลุกพลังครบแล้ว";
+			close;
+		}
+
+		if (BaseLevel < .NeedBase || JobLevel < .NeedJob) {
+			mes "^FF0000[Grim Of Awakening]";
+			mes "เงื่อนไขไม่ครบ";
+			close;
+		}
+
+		.@next_lv = .@lv + 1;
+		.@need_amount = .NeedAmount[.@lv];
+		.@success_rate = .SuccessRate[.@lv];
+
+		.@eac = eaclass();
+		switch (.@eac & EAJ_BASEMASK) {
+			case EAJ_SWORDMAN: .@awake_item = 30313; break;
+			case EAJ_MAGE:     .@awake_item = 30314; break;
+			case EAJ_ARCHER:   .@awake_item = 30315; break;
+			case EAJ_ACOLYTE:  .@awake_item = 30316; break;
+			case EAJ_MERCHANT: .@awake_item = 30317; break;
+			case EAJ_THIEF:    .@awake_item = 30318; break;
+			default:
+				mes "^FF0000[Grim Of Awakening]";
+				mes "อาชีพสายนี้ยังไม่สามารถปลุกพลังได้";
+				close;
+		}
+
+		if (countitem(.@awake_item) < .@need_amount) {
+			mes "^FF0000[Grim Of Awakening]";
+			mes "ไอเท็มไม่เพียงพอ";
+			close;
+		}
+
+		progressbar "ffff00",5;
+		delitem .@awake_item, .@need_amount;
+
+		.@roll = rand(1,100);
+
+		if (.@roll <= .@success_rate) {
+			query_sql(
+				"INSERT INTO `awake` (`char_id`,`awake_lv`,`unlocked_at`,`updated_at`) VALUES (" +
+				.@char_id + ",1,NOW(),NOW()) " +
+				"ON DUPLICATE KEY UPDATE " +
+				"`awake_lv` = LEAST(`awake_lv` + 1, 10), " +
+				"`updated_at` = NOW()"
+			);
+
+			query_sql(
+				"SELECT `awake_lv` FROM `awake` WHERE `char_id` = " + .@char_id,
+				.@new_lv
+			);
+
+			specialeffect2 EF_MAGNUS;
+			announce "[ปลุกพลัง] : ท่าน "+strcharinfo(0)+" ได้ปลุกพลังสำเร็จถึงระดับ "+.@new_lv[0]+"!", bc_all|bc_red;
+
+			callfunc "F_AwakeStatusSync", .@new_lv[0];	
+			// ปลุกครั้งแรก: พาไป Base 100 / Job 71 ทันที
+			if (.@lv == 0 && .@new_lv[0] == 1 && BaseLevel == 99 && JobLevel == 70) {
+				atcommand "@lvup 1";
+				atcommand "@joblevelup 1";
+			}			
+			// อัปเดตสเตตัสตามระดับการปลุกพลัง
+			mes "^FF0000[Grim Of Awakening]";
+			mes "^FF0000ปลุกพลังสำเร็จ!";
+			mes "ระดับการปลุกพลังปัจจุบัน: ^FF0000" + .@new_lv[0] + "^000000";
+			close;
+		} else {
+			specialeffect2 EF_TEMP_FAIL;
+			mes "^FF0000[Grim Of Awakening]";
+			mes "ปลุกพลังล้มเหลว";
+			mes "ระดับการปลุกพลังยังคงเป็น ^FF0000" + .@lv + "^000000";
+			close;
+		}
+
+	case 2:
+		mes "^FF0000[Grim Of Awakening]";
+		mes "จงกลับมาเมื่อเจ้าพร้อม";
+		close;
+	}
+
+OnInit:
+	.NeedBase = 99;
+	.NeedJob = 70;
+	setarray .NeedAmount[0], 1,2,3,4,5,6,8,10,12,15;
+	setarray .SuccessRate[0], 100,95,90,80,70,60,50,40,30,20;
+
+	setunitdata(getnpcid(0), UNPC_GROUP_ID, 133);
+	setunittitle(getnpcid(0), "Grim Of Awakening");
+	waitingroom "[#] เทพปลุกพลัง", 0;
+	.@npc_id = getnpcid(0);
+	hateffect 263, true, .@npc_id;
+	end;
+}
+
+// ร้านตัวอย่าง
+-	shop	Awake_Shop	-1,30313:1000000,30314:1000000,30315:1000000,30316:1000000,30317:1000000,30318:1000000
+
+// ฟังก์ชันซิงค์สเตตัสการปลุกพลัง
+function	script	F_AwakeStatusSync	{
+	.@lv = getarg(0);
+
+	sc_end SC_AWAKENED_LV1;
+	sc_end SC_AWAKENED_LV2;
+	sc_end SC_AWAKENED_LV3;
+	sc_end SC_AWAKENED_LV4;
+	sc_end SC_AWAKENED_LV5;
+	sc_end SC_AWAKENED_LV6;
+	sc_end SC_AWAKENED_LV7;
+	sc_end SC_AWAKENED_LV8;
+	sc_end SC_AWAKENED_LV9;
+	sc_end SC_AWAKENED_LV10;
+
+	switch (.@lv) {
+		case 1: sc_start SC_AWAKENED_LV1,  INFINITE_TICK, 1; break;
+		case 2: sc_start SC_AWAKENED_LV2,  INFINITE_TICK, 1; break;
+		case 3: sc_start SC_AWAKENED_LV3,  INFINITE_TICK, 1; break;
+		case 4: sc_start SC_AWAKENED_LV4,  INFINITE_TICK, 1; break;
+		case 5: sc_start SC_AWAKENED_LV5,  INFINITE_TICK, 1; break;
+		case 6: sc_start SC_AWAKENED_LV6,  INFINITE_TICK, 1; break;
+		case 7: sc_start SC_AWAKENED_LV7,  INFINITE_TICK, 1; break;
+		case 8: sc_start SC_AWAKENED_LV8,  INFINITE_TICK, 1; break;
+		case 9: sc_start SC_AWAKENED_LV9,  INFINITE_TICK, 1; break;
+		case 10: sc_start SC_AWAKENED_LV10, INFINITE_TICK, 1; break;
+	}
+	return;
+}
+
+// ซิงค์สเตตัสตอนล็อกอิน
+-	script	Awake_Login_Sync	-1,{
+OnPCLoginEvent:
+	.@rows = query_sql("SELECT `awake_lv` FROM `awake` WHERE `char_id` = " + getcharid(0), .@lv);
+	if (.@rows > 0 && .@lv[0] >= 1) {
+		callfunc "F_AwakeStatusSync", .@lv[0];
+	} else {
+		sc_end SC_AWAKENED_LV1;
+		sc_end SC_AWAKENED_LV2;
+		sc_end SC_AWAKENED_LV3;
+		sc_end SC_AWAKENED_LV4;
+		sc_end SC_AWAKENED_LV5;
+		sc_end SC_AWAKENED_LV6;
+		sc_end SC_AWAKENED_LV7;
+		sc_end SC_AWAKENED_LV8;
+		sc_end SC_AWAKENED_LV9;
+		sc_end SC_AWAKENED_LV10;
+	}
+	end;
+}

@@ -25,9 +25,6 @@ add_subdirectory( login )
 add_subdirectory( char )
 add_subdirectory( map )
 add_subdirectory( web )
+add_subdirectory( voice )
 add_subdirectory( tool )
-
-find_package(CURL REQUIRED)
-target_link_libraries(map-server ${GLOBAL_LIBRARIES} CURL::libcurl)  # plain style
-target_compile_definitions(map-server PRIVATE HAVE_CURL)
 

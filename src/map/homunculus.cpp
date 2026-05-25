@@ -29,6 +29,22 @@ using namespace rathena;
 
 static TIMER_FUNC(hom_hungry);
 
+void hom_set_hidden_by_master(homun_data& hd, bool hidden) {
+	if( hidden ) {
+		if( hd.hidden_by_master )
+			return;
+		hd.hidden_by_master = true;
+		if( hd.prev != nullptr )
+			clif_clearunit_area(hd, CLR_OUTSIGHT);
+	} else {
+		if( !hd.hidden_by_master )
+			return;
+		hd.hidden_by_master = false;
+		if( hd.prev != nullptr )
+			clif_spawn(&hd);
+	}
+}
+
 //For holding the view data of npc classes. [Skotlex]
 static struct view_data hom_viewdb[MAX_HOMUNCULUS_CLASS];
 

@@ -18,6 +18,14 @@
 #include "navi.hpp" // navi stuff
 
 struct block_list;
+/**
+ * Author: [royrdev]
+ * Enhanced MVP Tomb Structures
+ **/
+struct s_mvp_tomb_data;
+struct s_mvp_tomb_damage;
+struct s_mvp_tomb_drop;
+struct s_mvp_kill_history;
 struct npc_data;
 struct view_data;
 
@@ -210,7 +218,15 @@ struct npc_data : public block_list {
 			struct mob_data *md;
 			time_t kill_time;
 			char killer_name[NAME_LENGTH];
-			int32 spawn_timer;
+			uint32 killer_char_id;
+ 			int32 spawn_timer;
+			/**
+			 * Author: [royrdev]
+			 * Enhanced MVP Tomb Data
+			 **/
+			uint16 mob_id;
+			uint32 respawn_time;
+			s_mvp_tomb_data *data;
 		} tomb;
 		struct {
 			bool extended;
@@ -1566,6 +1582,11 @@ enum e_job_types
 	JT_ROZ_MQ_XAVIER = 13000,
 	JT_ROZ_MQ_MOCLORD,
 	JT_ROZ_MQ_SKULD,
+
+	//Beast Custom NPC
+	JT_KAFRA_NOVA = 13003,
+	JT_KAFRA_NOVA2 = 13004,
+	JT_S_DUMMY_LARGE1_R10 = 22566,
 
 	JT_NEW_NPC_3RD_END = 19999,
 	NPC_RANGE3_END, // Official: JT_NEW_NPC_3RD_END=19999
