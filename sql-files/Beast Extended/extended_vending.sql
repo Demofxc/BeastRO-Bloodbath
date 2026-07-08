@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS `vendings` (
   `head_direction` CHAR( 1 ) NOT NULL DEFAULT '0',
   `sit` CHAR( 1 ) NOT NULL DEFAULT '1',
   `autotrade` tinyint(4) NOT NULL,
-  `vending_item` int(10) unsigned NOT NULL default '0'
+  `vending_items` int(10) unsigned NOT NULL default '0'
 ) ENGINE=MyISAM;
